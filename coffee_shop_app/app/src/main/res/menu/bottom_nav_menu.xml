@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:title="Home"
+        android:icon="@drawable/outline_home_24"
+        android:id="@+id/homeFragment"/>
+    <item android:title="Menu"
+        android:icon="@drawable/outline_coffee_24"
+        android:id="@+id/menuFragment"/>
+    <item android:title="Stores"
+        android:icon="@drawable/outline_store_24"
+        android:id="@+id/storesFragment"/>
+    <item android:title="Order"
+        android:icon="@drawable/twotone_menu_book_24"
+        android:id="@+id/orderFragment"/>
+    <item android:title="Profile"
+        android:icon="@drawable/outline_profile_24"
+        android:id="@+id/profileFragment"/>
+</menu>
