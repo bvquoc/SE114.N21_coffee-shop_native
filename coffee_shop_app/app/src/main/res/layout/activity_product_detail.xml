@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="isLoading"
+            type="Boolean" />
+        <import type="android.view.View"/>
+
+        <variable
+            name="viewModel"
+            type="com.example.coffee_shop_app.viewmodels.ProductDetailViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/background"
+        tools:context=".activities.ProductDetailActivity">
+
+        <include
+            android:id="@+id/my_toolbar"
+            layout="@layout/custom_toolbar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@id/bottomView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/my_toolbar">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:orientation="vertical">
+
+                <include
+                    android:id="@+id/product_card"
+                    layout="@layout/product_card"
+                    app:viewModel="@{viewModel}" />
+                <!--        Sizes-->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/_16sdp"
+                    android:layout_marginTop="@dimen/_16sdp"
+                    app:cardCornerRadius="@dimen/_8sdp"
+                    app:cardElevation="0dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/_16sdp">
+
+                        <TextView
+                            style="@style/boldBlack16"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Size" />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/recyclerSize"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!--        Toppings-->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/_16sdp"
+                    android:layout_marginTop="@dimen/_16sdp"
+                    app:cardCornerRadius="@dimen/_8sdp"
+                    app:cardElevation="0dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/_16sdp">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                style="@style/boldBlack16"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Topping " />
+
+                            <TextView
+                                style="@style/regularBlack14"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="(maximum 2)"
+                                android:textColor="@color/grey_text" />
+                        </LinearLayout>
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/recyclerTopping"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!--                note-->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/_16sdp"
+                    android:layout_marginTop="@dimen/_16sdp"
+                    android:layout_marginBottom="@dimen/_16sdp"
+                    android:visibility="visible"
+                    app:cardCornerRadius="@dimen/_8sdp"
+                    app:cardElevation="0dp">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <EditText
+                            android:id="@+id/edtNote"
+                            style="@style/regularBlack14"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/_90sdp"
+                            android:layout_marginStart="@dimen/_16sdp"
+                            android:layout_marginTop="@dimen/_16sdp"
+                            android:layout_marginEnd="@dimen/_16sdp"
+                            android:layout_marginBottom="@dimen/_16sdp"
+                            android:autofillHints=""
+                            android:background="@drawable/custom_edit_text"
+                            android:gravity="top|start"
+                            android:hint="Your note to barista"
+                            android:inputType="text"
+                            android:maxLength="100"
+                            android:paddingHorizontal="@dimen/_16sdp"
+                            android:paddingVertical="@dimen/_10sdp"
+                            android:text="@={viewModel.note}"
+                            android:textColor="@color/black"
+                            android:textCursorDrawable="@null" />
+
+                        <TextView
+                            android:id="@+id/txtNoteCount"
+                            style="@style/regularGrey12"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignEnd="@id/edtNote"
+                            android:layout_alignBottom="@id/edtNote"
+                            android:layout_marginEnd="@dimen/_16sdp"
+                            android:layout_marginBottom="@dimen/_16sdp"
+                            android:text="@{'('+Integer.toString(viewModel.note.length())+'/'+`100`+')'}" />
+                    </RelativeLayout>
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/bottomView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            app:cardElevation="0dp"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/_16sdp"
+                android:layout_marginVertical="@dimen/_8sdp"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="@dimen/_40sdp"
+                        android:layout_height="match_parent"
+                        android:background="@{viewModel.minusEnable?@drawable/minus_button:@drawable/round_icon_button_disable, default=@drawable/round_icon_button_disable}"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:onClick="@{() -> viewModel.decreaseQuantity()}"
+                        android:padding="@dimen/_8sdp" />
+
+                    <TextView
+                        style="@style/regularBlack16"
+                        android:layout_width="@dimen/_40sdp"
+                        android:layout_height="@dimen/_40sdp"
+                        android:layout_marginHorizontal="@dimen/_4sdp"
+                        android:background="@drawable/square_amount_box"
+                        android:gravity="center"
+                        android:padding="@dimen/_8sdp"
+                        android:text="@{`` + viewModel.cartFood.quantity}" />
+
+                    <ImageView
+                        android:layout_width="@dimen/_40sdp"
+                        android:layout_height="@dimen/_40sdp"
+                        android:background="@drawable/round_icon_button_shape"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:onClick="@{() -> viewModel.increaseQuantity()}"
+                        android:padding="@dimen/_8sdp"
+                        android:src="@drawable/baseline_add_24" />
+                </LinearLayout>
+
+                <Button
+                    style="?android:attr/borderlessButtonStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_40sdp"
+                    android:layout_marginTop="@dimen/_8sdp"
+                    android:background="@drawable/rounded_button"
+                    android:elevation="0dp"
+                    android:text="@{@string/add_to_cart+' '+viewModel.cartFood.totalPrice+' '+'₫'}"
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_16sdp"
+                    app:backgroundTint="@null" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+        <ProgressBar
+            android:layout_width="@dimen/_25sdp"
+            android:layout_height="@dimen/_25sdp"
+            android:visibility="@{isLoading?View.VISIBLE:View.GONE, default=gone}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
