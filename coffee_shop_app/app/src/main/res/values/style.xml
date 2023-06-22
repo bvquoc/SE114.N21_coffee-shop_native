@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="MyToolbarTitle" parent="@android:style/TextAppearance">
-        <item name="android:textAllCaps">false</item>
-        <item name="android:textSize">18dp</item>
+    <style name="MyToolbarTitle" parent="Widget.AppCompat.Toolbar">
+        <item name="android:textSize">@dimen/font18</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:lineSpacingMultiplier">1.5</item>
         <item name="fontFamily">@font/inter_bold</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:padding">0dp</item>
+        <item name="android:textAllCaps">false</item>
     </style>
 
+    <!--Base application theme.-->
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">@color/blue</item>
+        <item name="colorPrimaryDark">@color/blue</item>
+        <item name="colorAccent">@color/blueRipple</item>
+    </style>
 </resources>

@@ -10,6 +10,7 @@ import java.util.List;
 
 public class Data {
     public static Data instance = new Data();
+    public String userId = "aCbVUBVvGxQOTJChPDIJbQnPk4u1";
     public List<Product> products = new ArrayList<Product>();
     public List<Product> favoriteProducts =new ArrayList<Product>();
     public List<AddressDelivery> addressDeliveries =new ArrayList<AddressDelivery>();

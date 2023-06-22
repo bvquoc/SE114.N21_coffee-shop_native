@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="font10">@dimen/_8sdp</dimen>
+    <dimen name="font12">@dimen/_10sdp</dimen>
+    <dimen name="font14">@dimen/_11sdp</dimen>
+    <dimen name="font16">@dimen/_13sdp</dimen>
+    <dimen name="font18">@dimen/_14sdp</dimen>
+</resources>

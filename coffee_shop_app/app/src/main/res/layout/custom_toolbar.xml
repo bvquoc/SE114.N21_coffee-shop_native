@@ -9,5 +9,5 @@
     app:navigationIcon="@drawable/ic_chevron_left_24"
     app:titleMarginStart="0dp"
     app:contentInsetStartWithNavigation="0dp"
-    android:titleTextAppearance="@style/MyToolbarTitle">
+    style="@style/MyToolbarTitle">
 </androidx.appcompat.widget.Toolbar>
