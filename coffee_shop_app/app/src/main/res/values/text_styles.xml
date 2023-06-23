@@ -2,133 +2,133 @@
 <resources>
     <style name="regularBlack16">
         <item name="fontFamily">@font/inter_regular</item>
-        <item name="android:textSize">16dp</item>
+        <item name="android:textSize">@dimen/font12</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:lineSpacingMultiplier">1.5</item>
     </style>
     <style name="regularBlack14">
         <item name="fontFamily">@font/inter_regular</item>
-        <item name="android:textSize">14dp</item>
+        <item name="android:textSize">@dimen/font14</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:lineSpacingMultiplier">1.5</item>
     </style>
     <style name="regularBlack14Blur">
         <item name="fontFamily">@font/inter_regular</item>
-        <item name="android:textSize">14dp</item>
+        <item name="android:textSize">@dimen/font14</item>
         <item name="android:textColor">@color/blackBlur10</item>
         <item name="android:lineSpacingMultiplier">1.5</item>
     </style>
     <style name="regularBlack10">
         <item name="fontFamily">@font/inter_regular</item>
-        <item name="android:textSize">10dp</item>
+        <item name="android:textSize">@dimen/font10</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:lineSpacingMultiplier">1.5</item>
     </style>
     <style name="regularGrey14">
         <item name="fontFamily">@font/inter_regular</item>
-        <item name="android:textSize">14dp</item>
+        <item name="android:textSize">@dimen/font14</item>
         <item name="android:textColor">@color/grey_text</item>
         <item name="android:lineSpacingMultiplier">1.5</item>
     </style>
     <style name="regularGrey12">
         <item name="fontFamily">@font/inter_regular</item>
-        <item name="android:textSize">12dp</item>
+        <item name="android:textSize">@dimen/font12</item>
         <item name="android:textColor">@color/grey_text</item>
         <item name="android:lineSpacingMultiplier">1.5</item>
     </style>
     <style name="regularGrey10">
         <item name="fontFamily">@font/inter_regular</item>
-        <item name="android:textSize">10dp</item>
+        <item name="android:textSize">@dimen/font10</item>
         <item name="android:textColor">@color/grey_text</item>
         <item name="android:lineSpacingMultiplier">1.5</item>
     </style>
     <style name="regularWhite16">
         <item name="fontFamily">@font/inter_regular</item>
-        <item name="android:textSize">16dp</item>
+        <item name="android:textSize">@dimen/font16</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:lineSpacingMultiplier">1.5</item>
     </style>
     <style name="regularWhite14">
         <item name="fontFamily">@font/inter_regular</item>
-        <item name="android:textSize">14dp</item>
+        <item name="android:textSize">@dimen/font14</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:lineSpacingMultiplier">1.5</item>
     </style>
     <style name="regularBlue16">
         <item name="fontFamily">@font/inter_regular</item>
-        <item name="android:textSize">16dp</item>
+        <item name="android:textSize">@dimen/font16</item>
         <item name="android:textColor">@color/blue</item>
         <item name="android:lineSpacingMultiplier">1.5</item>
     </style>
     <style name="regularBlue14">
         <item name="fontFamily">@font/inter_regular</item>
-        <item name="android:textSize">14dp</item>
+        <item name="android:textSize">@dimen/font14</item>
         <item name="android:textColor">@color/blue</item>
         <item name="android:lineSpacingMultiplier">1.5</item>
     </style>
     <style name="mediumBlack16">
         <item name="fontFamily">@font/inter_medium</item>
-        <item name="android:textSize">16dp</item>
+        <item name="android:textSize">@dimen/font16</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:lineSpacingMultiplier">1.5</item>
     </style>
     <style name="mediumBlack14">
         <item name="fontFamily">@font/inter_medium</item>
-        <item name="android:textSize">14dp</item>
+        <item name="android:textSize">@dimen/font14</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:lineSpacingMultiplier">1.5</item>
     </style>
     <style name="mediumBlack12">
         <item name="fontFamily">@font/inter_medium</item>
-        <item name="android:textSize">12dp</item>
+        <item name="android:textSize">@dimen/font12</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:lineSpacingMultiplier">1.5</item>
     </style>
     <style name="mediumGrey12">
         <item name="fontFamily">@font/inter_medium</item>
-        <item name="android:textSize">12dp</item>
+        <item name="android:textSize">@dimen/font12</item>
         <item name="android:textColor">@color/grey_text</item>
         <item name="android:lineSpacingMultiplier">1.5</item>
     </style>
     <style name="mediumBlue12">
         <item name="fontFamily">@font/inter_medium</item>
-        <item name="android:textSize">12dp</item>
+        <item name="android:textSize">@dimen/font12</item>
         <item name="android:textColor">@color/blue</item>
         <item name="android:lineSpacingMultiplier">1.5</item>
     </style>
     <style name="mediumWhite12">
         <item name="fontFamily">@font/inter_medium</item>
-        <item name="android:textSize">12dp</item>
+        <item name="android:textSize">@dimen/font12</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:lineSpacingMultiplier">1.5</item>
     </style>
     <style name="boldBlack18">
         <item name="fontFamily">@font/inter_bold</item>
-        <item name="android:textSize">18dp</item>
+        <item name="android:textSize">@dimen/font18</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:lineSpacingMultiplier">1.5</item>
     </style>
     <style name="boldBlack16">
         <item name="fontFamily">@font/inter_bold</item>
-        <item name="android:textSize">16dp</item>
+        <item name="android:textSize">@dimen/font16</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:lineSpacingMultiplier">1.5</item>
     </style>
     <style name="boldBlack14">
         <item name="fontFamily">@font/inter_bold</item>
-        <item name="android:textSize">14dp</item>
+        <item name="android:textSize">@dimen/font14</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:lineSpacingMultiplier">1.5</item>
     </style>
     <style name="boldBlack14Blur">
         <item name="fontFamily">@font/inter_bold</item>
-        <item name="android:textSize">14dp</item>
+        <item name="android:textSize">@dimen/font14</item>
         <item name="android:textColor">@color/blackBlur10</item>
         <item name="android:lineSpacingMultiplier">1.5</item>
     </style>
     <style name="boldWhite10">
         <item name="fontFamily">@font/inter_bold</item>
-        <item name="android:textSize">10dp</item>
+        <item name="android:textSize">@dimen/font10</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:lineSpacingMultiplier">1.5</item>
     </style>

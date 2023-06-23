@@ -23,7 +23,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             style="@style/boldBlack16"
-            android:text="Sorry, we nearly found it!"
+            android:text="Xin lỗi, chúng tôi đã gần tìm thấy!"
             android:textAlignment="center"/>
         <Space
             android:layout_width="match_parent"
@@ -32,7 +32,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             style="@style/regularBlack14"
-            android:text="Please try again, better luck next time"
+            android:text="Xin hãy thử lại, chúc bạn may mắn."
             android:textAlignment="center"/>
     </LinearLayout>
 
