@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="isLoading"
+            type="Boolean" />
+        <import type="android.view.View"/>
+
+        <variable
+            name="viewModel"
+            type="com.example.coffee_shop_app.viewmodels.CartViewModel" />
+    </data>
+
+    <RelativeLayout
+        android:background="@color/background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".activities.cart.CartDeliveryActivity">
+        <include
+            android:id="@+id/my_toolbar"
+            layout="@layout/custom_toolbar" />
+        <ScrollView
+            android:scrollbars="none"
+            android:layout_below="@id/my_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:padding="@dimen/_16sdp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Shipping details"
+                    style="@style/boldBlack16" />
+
+                <include layout="@layout/shipping_detail_card" />
+
+                <TextView
+                    android:layout_marginTop="@dimen/_16sdp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Order details"
+                    style="@style/boldBlack16" />
+
+                <include android:id="@+id/orderDetails" layout="@layout/order_details" />
+            </LinearLayout>
+        </ScrollView>
+
+        <androidx.cardview.widget.CardView
+            app:cardElevation="0dp"
+            android:id="@+id/bottomView"
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_marginHorizontal="@dimen/_16sdp"
+                android:layout_marginVertical="@dimen/_8sdp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+
+                <!--      pay button-->
+                <Button
+                    android:id="@+id/btnPay"
+                    android:textSize="16dp"
+                    android:textAllCaps="false"
+                    android:layout_marginTop="@dimen/_8sdp"
+                    app:backgroundTint="@null"
+                    android:elevation="0dp"
+                    android:textColor="@color/white"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_40sdp"
+                    android:text="Pay 334.000 ₫"
+                    android:background="@drawable/rounded_button"
+                    style="?android:attr/borderlessButtonStyle" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+    </RelativeLayout>
+</layout>
