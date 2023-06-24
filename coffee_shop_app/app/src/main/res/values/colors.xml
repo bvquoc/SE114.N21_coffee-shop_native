@@ -12,6 +12,7 @@
     <color name="grey_text">#808089</color>
     <color name="grey_border">#DDDDE3</color>
     <color name="grey_icon">#C4C4CF</color>
+    <color name="grey_box_disabled">#EBEBF0</color>
     <color name="red">#FF424F</color>
     <color name="blue">#1A94FF</color>
     <color name="blueRipple">#AFDAFF</color>

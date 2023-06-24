@@ -1,4 +1,4 @@
-package com.example.coffee_shop_app.activities;
+package com.example.coffee_shop_app.activities.store;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;

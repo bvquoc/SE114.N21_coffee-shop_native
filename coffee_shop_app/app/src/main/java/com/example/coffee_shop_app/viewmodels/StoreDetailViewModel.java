@@ -1,7 +1,5 @@
 package com.example.coffee_shop_app.viewmodels;
 
-import android.widget.Toast;
-
 import androidx.databinding.BaseObservable;
 import androidx.databinding.Bindable;
 import androidx.lifecycle.MutableLiveData;
@@ -10,7 +8,7 @@ import androidx.lifecycle.Observer;
 import com.example.coffee_shop_app.BR;
 import com.example.coffee_shop_app.models.Store;
 import com.example.coffee_shop_app.repository.StoreRepository;
-import com.example.coffee_shop_app.utils.interfaces.UpdateFavoriteListener;
+import com.example.coffee_shop_app.utils.interfaces.UpdateDataListener;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -118,9 +116,9 @@ public class StoreDetailViewModel extends BaseObservable {
         store.setFavorite(!store.isFavorite());
         notifyPropertyChanged(BR.store);
         isUpdatedFavorite = true;
-        StoreRepository.getInstance().updateFavorite(store.getId(), store.isFavorite(), new UpdateFavoriteListener() {
+        StoreRepository.getInstance().updateFavorite(store.getId(), store.isFavorite(), new UpdateDataListener() {
             @Override
-            public void onUpdateFavoriteSuccess(boolean success) {
+            public void onUpdateData(boolean success) {
                 if(!success)
                 {
                     store.setFavorite(!store.isFavorite());

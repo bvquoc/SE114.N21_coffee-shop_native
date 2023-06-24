@@ -64,7 +64,10 @@ public class ConfirmDialog extends AppCompatDialogFragment {
         }
         else
         {
-            noButton.setOnClickListener(onClickListenerNoButton);
+            noButton.setOnClickListener(v->{
+                dismiss();
+                onClickListenerNoButton.onClick(v);
+            });
         }
 
         if(onClickListenerYesButton == null)
@@ -76,8 +79,8 @@ public class ConfirmDialog extends AppCompatDialogFragment {
         else
         {
             yesButton.setOnClickListener(v->{
-                onClickListenerYesButton.onClick(v);
                 dismiss();
+                onClickListenerYesButton.onClick(v);
             });
         }
 

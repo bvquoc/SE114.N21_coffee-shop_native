@@ -4,11 +4,7 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1104f0fd-f378-4f41-9a75-7a0871e2622b" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/SE114.N21_coffee-shop_native.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-    </list>
+    <list default="true" id="1104f0fd-f378-4f41-9a75-7a0871e2622b" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -32,7 +28,7 @@
     "RunOnceActivity.cidr.known.project.marker": "true",
     "cidr.known.project.marker": "true",
     "jdk.selected.JAVA_MODULE": "Android Studio default JDK",
-    "last_opened_file_path": "T:/git/SE114.N21_coffee-shop_native/coffee_shop_app",
+    "last_opened_file_path": "D:/SE114.N21_coffee-shop_native/coffee_shop_app",
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2",

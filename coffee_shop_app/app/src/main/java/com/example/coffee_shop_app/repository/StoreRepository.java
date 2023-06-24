@@ -8,10 +8,8 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.coffee_shop_app.Data;
 import com.example.coffee_shop_app.models.Store;
 import com.example.coffee_shop_app.utils.LocationHelper;
-import com.example.coffee_shop_app.utils.interfaces.UpdateFavoriteListener;
-import com.example.coffee_shop_app.viewmodels.StoreDetailViewModel;
+import com.example.coffee_shop_app.utils.interfaces.UpdateDataListener;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -117,7 +115,7 @@ public class StoreRepository {
                     Log.e(TAG, "get store failed.");
                 });
     }
-    public void updateFavorite(String storeId, boolean isFavorite, UpdateFavoriteListener listener)
+    public void updateFavorite(String storeId, boolean isFavorite, UpdateDataListener listener)
     {
         DocumentReference userRef = firestore.collection("users").document(Data.instance.userId);
         if(isFavorite)
@@ -125,7 +123,7 @@ public class StoreRepository {
             userRef.update("favoriteStores", FieldValue.arrayUnion(storeId))
                     .addOnSuccessListener(aVoid -> {
                         Log.d(TAG, "update favorite success.");
-                        listener.onUpdateFavoriteSuccess(true);
+                        listener.onUpdateData(true);
                         List<Store> tempStores = storeListMutableLiveData.getValue();
                         for (Store store:tempStores) {
                             if(store.getId() == storeId)
@@ -138,7 +136,7 @@ public class StoreRepository {
                     })
                     .addOnFailureListener(e -> {
                         Log.e(TAG, "update favorite failed.");
-                        listener.onUpdateFavoriteSuccess(false);
+                        listener.onUpdateData(false);
                         return;
                     });
         }
@@ -147,7 +145,7 @@ public class StoreRepository {
             userRef.update("favoriteStores", FieldValue.arrayRemove(storeId))
                     .addOnSuccessListener(aVoid -> {
                         Log.d(TAG, "update favorite success.");
-                        listener.onUpdateFavoriteSuccess(true);
+                        listener.onUpdateData(true);
                         List<Store> tempStores = storeListMutableLiveData.getValue();
                         for (Store store:tempStores) {
                             if(store.getId() == storeId)
@@ -160,7 +158,7 @@ public class StoreRepository {
                     })
                     .addOnFailureListener(e -> {
                         Log.e(TAG, "update favorite failed.");
-                        listener.onUpdateFavoriteSuccess(false);
+                        listener.onUpdateData(false);
                         return;
                     });
         }

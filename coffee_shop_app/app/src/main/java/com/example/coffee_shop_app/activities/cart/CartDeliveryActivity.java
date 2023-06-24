@@ -67,10 +67,11 @@ public class CartDeliveryActivity extends AppCompatActivity {
         activityCartDeliveryBinding.btnPay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                viewModel.placeOrder(null, new AddressDelivery(
+                //TODO: open the comment
+                /*viewModel.placeOrder(null, new AddressDelivery(
                         new Address("nice", "quao", "1", "3"),
                         "name",
-                        "0123456"), null, "test");
+                        "0123456"), null, "test");*/
             }
         });
         cartFoods = new ArrayList<>();

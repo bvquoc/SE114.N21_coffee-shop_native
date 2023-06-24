@@ -1,5 +1,8 @@
 package com.example.coffee_shop_app.models;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
 public class MLocation {
     private String formattedAddress;
     private double lat;
@@ -21,5 +24,13 @@ public class MLocation {
 
     public double getLng() {
         return lng;
+    }
+    public static MLocation fromJson(JsonObject jsonObject)
+    {
+        String formattedAddress = jsonObject.get("place_name_vi").getAsString();
+        JsonArray coordinatesJsonArray = jsonObject.get("geometry").getAsJsonObject().get("coordinates").getAsJsonArray();
+        double lat = coordinatesJsonArray.get(1).getAsDouble();
+        double lng = coordinatesJsonArray.get(0).getAsDouble();
+        return new MLocation(formattedAddress, lat, lng);
     }
 }
