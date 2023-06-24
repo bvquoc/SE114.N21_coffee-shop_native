@@ -7,15 +7,11 @@ import androidx.databinding.Bindable;
 
 import com.example.coffee_shop_app.BR;
 import com.example.coffee_shop_app.models.CartFood;
-import com.example.coffee_shop_app.models.Topping;
-
-import java.util.List;
 
 public class ProductDetailViewModel extends BaseObservable {
     public ProductDetailViewModel(CartFood cartFood) {
         this.cartFood = cartFood;
     }
-
     @Bindable
     private CartFood cartFood;
 
@@ -82,5 +78,8 @@ public class ProductDetailViewModel extends BaseObservable {
         boolean value=!this.favorite;
         setFavorite(value);
     }
+    public void addToCart(){
+    }
+
 
 }

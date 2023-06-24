@@ -75,7 +75,10 @@ public class ConfirmDialog extends AppCompatDialogFragment {
         }
         else
         {
-            yesButton.setOnClickListener(onClickListenerNoButton);
+            yesButton.setOnClickListener(v->{
+                onClickListenerYesButton.onClick(v);
+                dismiss();
+            });
         }
 
         builder.setView(view);

@@ -6,15 +6,29 @@ import androidx.databinding.BaseObservable;
 import androidx.databinding.Bindable;
 
 import com.example.coffee_shop_app.BR;
+import com.example.coffee_shop_app.Data;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class CartFood extends BaseObservable {
+    private int id;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     private Product product;
     @Bindable
     private int quantity;
+    //size id
     private String size;
+    //topping id join by ', '
     private String topping;
     private String note;
     @Bindable
@@ -30,7 +44,15 @@ public class CartFood extends BaseObservable {
         this.note="";
         this.topping="";
     }
-
+    public CartFood(CartFood cartFood){
+        setProduct(cartFood.product);
+        setQuantity(cartFood.getQuantity());
+        setTopping(cartFood.getTopping());
+        setSize(cartFood.getSize());
+        setId(cartFood.getId());
+        setUnitPrice(cartFood.getUnitPrice());
+        setNote(cartFood.getNote());
+    }
     public double getTotalPrice() {
         return unitPrice*quantity;
     }
@@ -53,11 +75,28 @@ public class CartFood extends BaseObservable {
     public String getSize() {
         return size;
     }
-
+    public String getSizeName(){
+        return product.getSizes()
+                .stream()
+                .filter(s->s.getId().equals(this.size))
+                .findFirst()
+                .orElse(null)
+                .getName();
+    }
     public String getTopping() {
         return topping;
     }
-
+    public String getToppingName(){
+        List<String> toppings=Arrays.asList(this.topping.split(", "));
+        List<String> toppingNames=new ArrayList<>();
+        for (Topping topping:
+                product.getToppings()) {
+            if(toppings.contains(topping.getId().trim())){
+                toppingNames.add(topping.getName());
+            }
+        }
+        return String.join(", ", toppingNames);
+    }
     public String getNote() {
         return note;
     }
@@ -101,7 +140,7 @@ public class CartFood extends BaseObservable {
         List<String> toppingsName=Arrays.asList(this.topping.split(", "));
         for (Topping topping:
              product.getToppings()) {
-            if(toppingsName.contains(topping.getName().trim())){
+            if(toppingsName.contains(topping.getId().trim())){
                 unitPrice+=topping.getPrice();
             }
         }
