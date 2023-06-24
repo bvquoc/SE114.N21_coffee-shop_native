@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.cardview.widget.CardView
+            app:cardElevation="0dp"
+            android:layout_marginTop="8dp"
+            app:cardCornerRadius="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:paddingVertical="24dp"
+                android:paddingHorizontal="16dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <RelativeLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:layout_marginEnd="10dp"
+                        android:id="@+id/icon_store"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/baseline_location_on_24_blue" />
+
+                    <TextView
+                        style="@style/regularBlack14"
+                        android:id="@+id/fromTxt"
+                        android:layout_toEndOf="@id/icon_store"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Pick up location" />
+
+                    <TextView
+                        android:layout_marginTop="@dimen/_4sdp"
+                        style="@style/boldBlack14"
+                        android:layout_below="@id/fromTxt"
+                        android:layout_toEndOf="@id/icon_store"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="13 Han Thuyen, D.1, HCM city" />
+                </RelativeLayout>
+
+                <View
+                    android:layout_marginVertical="@dimen/_8sdp"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/divider" />
+
+                <RelativeLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:layout_marginEnd="@dimen/_10sdp"
+                        android:id="@+id/icon_location"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/baseline_access_time_filled_24" />
+
+                    <TextView
+                        style="@style/regularBlack14"
+                        android:id="@+id/toTxt"
+                        android:layout_toEndOf="@id/icon_location"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Pick up time" />
+
+                    <TextView
+                        android:layout_marginTop="4dp"
+                        android:id="@+id/txtToAddress"
+                        style="@style/boldBlack14"
+                        android:layout_below="@id/toTxt"
+                        android:layout_toEndOf="@id/icon_location"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="10:00, Today" />
+
+                    <ImageView
+                        android:id="@+id/btnPickTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerInParent="true"
+                        android:layout_marginEnd="10dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:src="@drawable/baseline_chevron_right_24" />
+                </RelativeLayout>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+    </RelativeLayout>
+</layout>

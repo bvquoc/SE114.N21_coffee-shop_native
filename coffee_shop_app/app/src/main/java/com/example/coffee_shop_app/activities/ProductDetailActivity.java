@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 
@@ -22,12 +21,14 @@ import com.example.coffee_shop_app.models.CartFood;
 import com.example.coffee_shop_app.models.Product;
 import com.example.coffee_shop_app.models.Size;
 import com.example.coffee_shop_app.models.Topping;
+import com.example.coffee_shop_app.utils.SqliteHelper;
 import com.example.coffee_shop_app.utils.ItemClickedListener;
 import com.example.coffee_shop_app.utils.keyboard.KeyboardHelper;
 import com.example.coffee_shop_app.utils.keyboard.OnKeyboardVisibilityListener;
 import com.example.coffee_shop_app.viewmodels.ProductDetailViewModel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -98,6 +99,30 @@ public class ProductDetailActivity extends AppCompatActivity {
             }
         });
 
+        activityProductDetailBinding.btnAddToCart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean isAdded=false;
+                SqliteHelper repo=new SqliteHelper(ProductDetailActivity.this);
+                ArrayList<HashMap<String, Object>> items= repo.getCartFood("1");
+                CartFood cartFoodToAdd=viewModel.getCartFood();
+                for (HashMap<String, Object> item :
+                        items) {
+                    if(item.get(SqliteHelper.COLUMN_FOOD_ID).toString().equals(cartFoodToAdd.getProduct().getId())
+                    && item.get(SqliteHelper.COLUMN_SIZE).toString().equals(cartFoodToAdd.getSize())
+                    && item.get(SqliteHelper.COLUMN_TOPPING).toString().equals(cartFoodToAdd.getTopping())){
+                        isAdded=true;
+                        CartFood updatedCartFood=new CartFood(cartFoodToAdd);
+                        updatedCartFood.setQuantity(cartFoodToAdd.getQuantity()+(int)item.get(SqliteHelper.COLUMN_QUANTITY));
+                        updatedCartFood.setId(Integer.valueOf((String)item.get("id")));
+                        repo.updateCartFood(updatedCartFood);
+                    }
+                }
+                if(!isAdded) {
+                    repo.createCartFood(viewModel.getCartFood());
+                }
+            }
+        });
         String[] imageList = {"https://product.hstatic.net/1000075078/product/chocolatenong_949029_c1932e1298a841e18537713220be2333_large.jpg",
                 "https://aeonmall-long-bien.com.vn/wp-content/uploads/2021/01/aeon-mall-tra-sen-750x468.jpg"};
         setImageViewPager(imageList);
@@ -149,7 +174,7 @@ public class ProductDetailActivity extends AppCompatActivity {
             @Override
             public void onItemClick(int position) {
                 String joinedTopping= toppingItemAdapter.getSelectedToppings().stream()
-                        .map(Topping::getName)
+                        .map(Topping::getId)
                         .collect(Collectors.joining(", "));
                 activityProductDetailBinding.getViewModel().getCartFood().setTopping(joinedTopping);
             }
