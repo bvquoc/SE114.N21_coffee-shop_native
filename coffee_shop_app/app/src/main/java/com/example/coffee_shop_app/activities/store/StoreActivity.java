@@ -1,4 +1,4 @@
-package com.example.coffee_shop_app.activities;
+package com.example.coffee_shop_app.activities.store;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -13,9 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import com.example.coffee_shop_app.R;
 import com.example.coffee_shop_app.adapters.StoreAdapter;
@@ -23,7 +21,6 @@ import com.example.coffee_shop_app.databinding.ActivityStoreBinding;
 import com.example.coffee_shop_app.fragments.StoresFragment;
 import com.example.coffee_shop_app.models.Store;
 import com.example.coffee_shop_app.viewmodels.StoreSearchViewModel;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 
@@ -123,11 +120,6 @@ public class StoreActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
                 handler.removeCallbacks(searchRunnable);
                 searchRunnable = new Runnable() {
                     @Override
@@ -137,6 +129,11 @@ public class StoreActivity extends AppCompatActivity {
 
                 };
                 handler.postDelayed(searchRunnable, MILISECOND_DELAY_SEARCH);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
             }
         });
     }

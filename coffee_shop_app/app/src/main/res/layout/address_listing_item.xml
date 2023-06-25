@@ -3,25 +3,26 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:paddingHorizontal="16dp"
-    android:paddingVertical="8dp"
+    android:paddingStart="@dimen/_16sdp"
+    android:paddingEnd="@dimen/_4sdp"
+    android:paddingVertical="@dimen/_8sdp"
     android:background="@drawable/border_ffffff_8">
     <ImageView
         android:id="@+id/image_location"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@id/separator1"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:contentDescription="@null"
-        android:src="@drawable/ic_location_on_24"/>
+        android:src="@drawable/ic_location_24"/>
     <View
         android:id="@+id/separator1"
         app:layout_constraintRight_toLeftOf="@id/address_info"
         app:layout_constraintLeft_toRightOf="@id/image_location"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="@id/address_info"
-        android:layout_width="8dp"
+        android:layout_width="@dimen/_8sdp"
         android:layout_height="0dp"/>
     <LinearLayout
         android:id="@+id/address_info"
@@ -38,10 +39,10 @@
             android:text="285 CMT8, D.10, HCM city"
             android:ellipsize="end"
             android:maxLines="1"
-            style="@style/boldBlack14"/>
+            style="@style/mediumBlack14"/>
         <View
             android:layout_width="wrap_content"
-            android:layout_height="4dp"/>
+            android:layout_height="@dimen/_4sdp"/>
         <TableLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -79,20 +80,27 @@
     </LinearLayout>
     <View
         android:id="@+id/separator2"
-        app:layout_constraintRight_toLeftOf="@id/image_pen"
+        app:layout_constraintRight_toLeftOf="@id/btnPen"
         app:layout_constraintLeft_toRightOf="@id/address_info"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="@id/address_info"
-        android:layout_width="8dp"
+        android:layout_width="@dimen/_8sdp"
         android:layout_height="0dp"/>
-    <ImageView
-        android:id="@+id/image_pen"
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnPen"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toRightOf="@id/separator2"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toBottomOf="@id/address_info"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:contentDescription="@null"
-        android:src="@drawable/ic_edit_outline_24"/>
+        android:layout_gravity="top"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        app:iconGravity="textStart"
+        android:paddingHorizontal="@dimen/_8sdp"
+        app:iconPadding="0dp"
+        android:minWidth="0dp"
+        android:text=""
+        android:background="@android:color/transparent"
+        app:iconTint="@color/grey_text"
+        app:icon="@drawable/ic_edit_outline_24"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

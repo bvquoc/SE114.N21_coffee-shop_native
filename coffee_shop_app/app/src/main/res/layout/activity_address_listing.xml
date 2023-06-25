@@ -1,62 +1,123 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".activities.AddressListingActivity">
-    <!-- Include the custom toolbar here -->
-    <include
-        layout="@layout/custom_toolbar"
-        android:id="@+id/my_toolbar" />
-    <!-- Add any other views for the activity here -->
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/scroll_view"
-        app:layout_constraintTop_toBottomOf="@id/my_toolbar"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <import type="android.view.View" />
+        <variable
+            name="viewModel"
+            type="com.example.coffee_shop_app.viewmodels.AddressListingViewModel"/>
+    </data>
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:paddingHorizontal="16dp"
-        android:layout_height="0dp"
-        android:scrollbarStyle="outsideInset"
-        android:focusableInTouchMode="true"
-        android:focusable="true">
-        <LinearLayout
+        android:layout_height="match_parent"
+        tools:context=".activities.address.AddressListingActivity"
+        android:background="@color/background">
+        <!-- Include the custom toolbar here -->
+        <include
+            layout="@layout/custom_toolbar"
+            android:id="@+id/my_toolbar" />
+        <!-- Add any other views for the activity here -->
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scroll_view"
+            app:layout_constraintTop_toBottomOf="@id/my_toolbar"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingVertical="16dp"
-            android:orientation="vertical">
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/address_listing_recyclerview"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"/>
+            android:paddingHorizontal="16dp"
+            android:layout_height="0dp"
+            android:scrollbarStyle="outsideInset"
+            android:focusableInTouchMode="true"
+            android:focusable="true">
             <LinearLayout
-                android:id="@+id/add_address_linear"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="8dp"
-                android:layout_marginTop="12dp"
-                android:orientation="horizontal"
-                android:background="@drawable/border_ffffff_8">
-                <TextView
-                    android:layout_width="wrap_content"
+                android:paddingVertical="@dimen/_12sdp"
+                android:orientation="vertical">
+                <LinearLayout
+                    android:id="@+id/google_map_button"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/font_awesome_free_solid_900"
-                    android:text="plus"
-                    android:textColor="@color/blue"
-                    android:textSize="14dp"/>
-                <Space
-                    android:layout_width="13dp"
-                    android:layout_height="match_parent"/>
+                    android:paddingHorizontal="@dimen/_16sdp"
+                    android:paddingVertical="@dimen/_8sdp"
+                    android:orientation="horizontal"
+                    android:background="@drawable/border_ffffff_8"
+                    android:clickable="true">
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:contentDescription="Google Map"
+                        android:src="@drawable/ic_map_24"/>
+                    <Space
+                        android:layout_width="@dimen/_8sdp"
+                        android:layout_height="wrap_content"/>
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        app:layout_constraintRight_toLeftOf="@id/separator2"
+                        app:layout_constraintLeft_toRightOf="@id/separator1"
+                        app:layout_constraintTop_toTopOf="parent">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Google map"
+                            android:ellipsize="end"
+                            style="@style/mediumBlack14"/>
+                        <Space
+                            android:layout_width="wrap_content"
+                            android:layout_height="@dimen/_4sdp"/>
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Dùng google map để chọn vị trí"
+                            android:ellipsize="end"
+                            android:maxLines="1"
+                            style="@style/regularGrey12"/>
+                    </LinearLayout>
+                </LinearLayout>
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="New address"
-                    style="@style/boldBlack14"/>
+                    android:layout_marginTop="@dimen/_16sdp"
+                    android:text="Địa chỉ đã lưu"
+                    style="@style/boldBlack16" />
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/address_listing_recyclerview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"
+                    android:layout_marginTop="@dimen/_8sdp"/>
+                <LinearLayout
+                    android:id="@+id/new_address_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="@dimen/_16sdp"
+                    android:paddingVertical="@dimen/_8sdp"
+                    android:layout_marginTop="@dimen/_12sdp"
+                    android:orientation="horizontal"
+                    android:clickable="true"
+                    android:background="@drawable/border_ffffff_8">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/font_awesome_free_solid_900"
+                        android:text="plus"
+                        android:textColor="@color/blue"
+                        android:textSize="@dimen/font14"/>
+                    <Space
+                        android:layout_width="@dimen/_8sdp"
+                        android:layout_height="match_parent"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Thêm địa chỉ mới"
+                        style="@style/boldBlack14"/>
+                </LinearLayout>
             </LinearLayout>
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
-</androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
