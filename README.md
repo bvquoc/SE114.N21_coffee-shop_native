@@ -23,9 +23,9 @@
 
 - **IDE:** Android Studio
 - **Ngôn ngữ lập trình:** Java
-- **Framework & Library:** 
 - **Design Pattern:** MVVM
-- **Database**: Firebase
+- **Backend** Golang
+- **Database**: Firestore
 
 ### Tính năng
 
