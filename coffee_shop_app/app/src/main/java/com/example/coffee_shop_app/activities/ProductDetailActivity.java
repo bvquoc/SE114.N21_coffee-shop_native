@@ -71,8 +71,9 @@ public class ProductDetailActivity extends AppCompatActivity {
         toppings.add(new Topping("2", "Espresso (1 shot)", 10000, "https://product.hstatic.net/1000075078/product/chocolatenong_949029_c1932e1298a841e18537713220be2333_large.jpg"));
 
         Product product = Data.instance.products.get(0);
-        product.setSizes(sizes);
-        product.setToppings(toppings);
+        //TODO: fix this
+//        product.setSizes(sizes);
+//        product.setToppings(toppings);
         ProductDetailViewModel viewModel=new ProductDetailViewModel(new CartFood(product, null, 0));
         activityProductDetailBinding.setViewModel(viewModel);
 
@@ -127,9 +128,10 @@ public class ProductDetailActivity extends AppCompatActivity {
                 "https://aeonmall-long-bien.com.vn/wp-content/uploads/2021/01/aeon-mall-tra-sen-750x468.jpg"};
         setImageViewPager(imageList);
 
-        setSizeRecycler(product.getSizes());
-
-        setToppingRecycler(product.getToppings());
+        //TODO: fix this
+        //setSizeRecycler(product.getSizes());
+        //TODO: fix this
+        //setToppingRecycler(product.getToppings());
 
         activityProductDetailBinding.setIsLoading(false);
     }

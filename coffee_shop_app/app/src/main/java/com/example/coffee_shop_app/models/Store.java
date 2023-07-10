@@ -10,8 +10,10 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 public class Store {
     private String id;
@@ -21,9 +23,12 @@ public class Store {
     private Date timeOpen;
     private Date timeClose;
     private List<String> images;
+    private Map<String, List<String>> stateFood;
+    private List<String> stateTopping;
     private boolean isFavorite;
 
-    public Store(String id ,String shortName, MLocation address, String phone, Date timeOpen, Date timeClose, List<String> images, boolean isFavorite) {
+
+    public Store(String id, String shortName, MLocation address, String phone, Date timeOpen, Date timeClose, List<String> images, Map<String, List<String>> stateFood, List<String> stateTopping, boolean isFavorite) {
         this.id = id;
         this.shortName = shortName;
         this.address = address;
@@ -31,6 +36,8 @@ public class Store {
         this.timeOpen = timeOpen;
         this.timeClose = timeClose;
         this.images = images;
+        this.stateFood = stateFood;
+        this.stateTopping = stateTopping;
         this.isFavorite = isFavorite;
     }
 
@@ -62,6 +69,14 @@ public class Store {
         return images;
     }
 
+    public Map<String, List<String>> getStateFood() {
+        return stateFood;
+    }
+
+    public List<String> getStateTopping() {
+        return stateTopping;
+    }
+
     public boolean isFavorite() {
         return isFavorite;
     }
@@ -90,6 +105,20 @@ public class Store {
 
         List<String> images = (List<String>)map.get("images");
 
-        return new Store(id, shortName, address, phone, timeOpen, timeClose, images, isFavorite);
+        Map<String, List<String>> stateFoods = new HashMap<String, List<String>>();
+        Map<String, Object> sizeFireStores = (Map<String, Object>)map.get("stateFood");
+        sizeFireStores.forEach((key, value) -> {
+            if(value instanceof Boolean)
+            {
+                stateFoods.put(key, new ArrayList<>());
+            }
+            else
+            {
+                stateFoods.put(key, (List<String>) value);
+            }
+        });
+
+        List<String> stateToppings = (List<String>)map.get("stateToppings");
+        return new Store(id, shortName, address, phone, timeOpen, timeClose, images, stateFoods, stateToppings, isFavorite);
     }
 }

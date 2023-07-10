@@ -23,6 +23,7 @@ import com.example.coffee_shop_app.utils.interfaces.OnEditAddressClickListener;
 import com.example.coffee_shop_app.utils.styles.RecyclerViewGapDecoration;
 import com.example.coffee_shop_app.adapters.AddressListingItemAdapter;
 import com.example.coffee_shop_app.viewmodels.AddressListingViewModel;
+import com.example.coffee_shop_app.viewmodels.CartButtonViewModel;
 
 import java.util.ArrayList;
 
@@ -46,7 +47,8 @@ public class AddressListingActivity extends AppCompatActivity {
     private OnAddressClickListener addressTouchListener = new OnAddressClickListener() {
         @Override
         public void onAddressClick(AddressDelivery addressDelivery) {
-            Toast.makeText(AddressListingActivity.this, addressDelivery.getAddress().getFormattedAddress(), Toast.LENGTH_SHORT).show();
+            CartButtonViewModel.getInstance().getSelectedAddressDelivery().postValue(addressDelivery);
+            finish();
         }
     };
     private ActivityResultLauncher<Intent> activityEditAddressResultLauncher = registerForActivityResult(
@@ -100,7 +102,9 @@ public class AddressListingActivity extends AppCompatActivity {
                         double lat = intent.getDoubleExtra("lat", 0);
                         double lng = intent.getDoubleExtra("lng",  0);
                         MLocation mLocation = new MLocation(formattedAddress, lat, lng);
-                        Toast.makeText(getApplicationContext(), formattedAddress, Toast.LENGTH_SHORT).show();
+                        AddressDelivery addressDelivery = new AddressDelivery(mLocation, "Nick", "0123456789", "");
+                        CartButtonViewModel.getInstance().getSelectedAddressDelivery().postValue(addressDelivery);
+                        finish();
                     }
                 } else {
                     //User do nothing

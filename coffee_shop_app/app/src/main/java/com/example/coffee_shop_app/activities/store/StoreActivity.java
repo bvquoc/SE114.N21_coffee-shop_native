@@ -10,52 +10,75 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.text.Editable;
-import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.coffee_shop_app.R;
 import com.example.coffee_shop_app.adapters.StoreAdapter;
 import com.example.coffee_shop_app.databinding.ActivityStoreBinding;
+import com.example.coffee_shop_app.databinding.FragmentStoresBinding;
 import com.example.coffee_shop_app.fragments.StoresFragment;
 import com.example.coffee_shop_app.models.Store;
-import com.example.coffee_shop_app.viewmodels.StoreSearchViewModel;
+import com.example.coffee_shop_app.repository.StoreRepository;
+import com.example.coffee_shop_app.utils.interfaces.OnStoreClickListener;
+import com.example.coffee_shop_app.viewmodels.CartButtonViewModel;
+import com.example.coffee_shop_app.viewmodels.StoreViewModel;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class StoreActivity extends AppCompatActivity {
-    private static final String TAG = "StoreActivity";
     private ActivityStoreBinding activityStoreBinding;
-    private StoreAdapter storeAdapter;
-    private Handler handler = new Handler();
-    private Runnable searchRunnable;
-    private final int MILISECOND_DELAY_SEARCH  = 300;
-    private StoresFragment.OnStoreTouchListener listener = new StoresFragment.OnStoreTouchListener() {
+    private StoreAdapter nearestStoreAdapter = new StoreAdapter(new ArrayList<Store>());
+    private StoreAdapter favoriteStoresAdapter = new StoreAdapter(new ArrayList<Store>());
+    private StoreAdapter otherStoresAdapter = new StoreAdapter(new ArrayList<Store>());
+    private int previousLocation;
+    private OnStoreClickListener listener = new OnStoreClickListener() {
         @Override
-        public void onStoreTouch(String storeId) {
-            Intent intent = new Intent(getApplicationContext(), StoreDetailActivity.class);
-            intent.putExtra("storeId", storeId);
-            activitySeeStoreDetailResultLauncher.launch(intent);
+        public void onStoreClick(String storeId) {
+            List<Store> storeList = StoreRepository.getInstance().getStoreListMutableLiveData().getValue();
+            Store selectedStore = null;
+            for (Store store:
+                 storeList) {
+                if(store.getId().equals(storeId))
+                {
+                    selectedStore = store;
+                    break;
+                }
+            }
+            CartButtonViewModel.getInstance().getSelectedStore().postValue(selectedStore);
+            finish();
         }
     } ;
-    private ActivityResultLauncher<Intent> activitySeeStoreDetailResultLauncher = registerForActivityResult(
+    private ActivityResultLauncher<Intent> activityFindStoreResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == Activity.RESULT_OK) {
                     Intent data = result.getData();
                     if (data != null) {
-                        Intent intent = new Intent();
-                        intent.putExtra("orderType", data.getSerializableExtra("orderType"));
-                        intent.putExtra("storeId", data.getStringExtra("storeId"));
-                        setResult(RESULT_OK, intent);
+                        String storeId = data.getStringExtra("storeId");
+                        List<Store> storeList = StoreRepository.getInstance().getStoreListMutableLiveData().getValue();
+                        Store selectedStore = null;
+                        for (Store store:
+                                storeList) {
+                            if(store.getId().equals(storeId))
+                            {
+                                selectedStore = store;
+                                break;
+                            }
+                        }
+                        CartButtonViewModel.getInstance().getSelectedStore().postValue(selectedStore);
                         finish();
                     }
                 } else {
-                    //User don't choose "Mang đi" or "Giao hàng"
+                    //User do nothing
                 }
             }
     );
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,78 +86,92 @@ public class StoreActivity extends AppCompatActivity {
 
         activityStoreBinding = DataBindingUtil.setContentView(this, R.layout.activity_store);
 
+        init();
+    }
+    private void init()
+    {
         Toolbar toolbar = findViewById(R.id.my_toolbar);
-        toolbar.setTitle("Tìm kiếm cửa hàng");
-        setSupportActionBar(toolbar);
+        toolbar.setTitle("Cửa hàng");
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onBackPressed();
             }
         });
+        nearestStoreAdapter.setOnClickListener(listener);
+        favoriteStoresAdapter.setOnClickListener(listener);
+        otherStoresAdapter.setOnClickListener(listener);
 
-        init();
-    }
-    private void init()
-    {
-        StoreSearchViewModel storeViewModel = new StoreSearchViewModel();
-        storeAdapter = new StoreAdapter(new ArrayList<Store>(), true);
-        storeAdapter.setOnTouchListener(listener);
-        activityStoreBinding.findStoresRecyclerView.setAdapter(storeAdapter);
-        storeViewModel.getLiveStoreData().observe(this, storeList->{
-            if(storeList == null)
-            {
-                storeViewModel.getIsLoading().setValue(true);
-                return;
+        activityStoreBinding.nearestStore.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        activityStoreBinding.nearestStore.setAdapter(nearestStoreAdapter);
+
+        activityStoreBinding.favoriteStores.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        activityStoreBinding.favoriteStores.setAdapter(favoriteStoresAdapter);
+
+        activityStoreBinding.otherStores.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        activityStoreBinding.otherStores.setAdapter(otherStoresAdapter);
+        activityStoreBinding.findStoreFrame.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                previousLocation = activityStoreBinding.nestedScrollView.getScrollY();
+                Intent intent = new Intent(getApplicationContext(), StoreSearchActivity.class);
+                intent.putExtra("isPurposeForShowingDetail", false);
+                activityFindStoreResultLauncher.launch(intent);
             }
-            storeAdapter.changeDataSet(storeList);
-            storeViewModel.getIsLoading().setValue(false);
         });
-        storeViewModel.getIsLoading().observe(this, isLoading->{
+        StoreViewModel storeViewModel = new StoreViewModel();
+        storeViewModel.getNearestStoreMutableLiveData().observe(this, nearestStore ->{
+            if(nearestStore == null)
+            {
+                storeViewModel.setHasNearestStore(false);
+                nearestStoreAdapter.changeDataSet(new ArrayList<Store>());
+            }
+            else
+            {
+                storeViewModel.setHasNearestStore(true);
+
+                List<Store> storeList = new ArrayList<Store>();
+                storeList.add(nearestStore);
+                nearestStoreAdapter.changeDataSet(storeList);
+            }
+        });
+        storeViewModel.getFavoriteStores().observe(this, favoriteStores ->{
+            if(favoriteStores.size() == 0)
+            {
+                storeViewModel.setHasFavoriteStores(false);
+
+                favoriteStoresAdapter.changeDataSet(new ArrayList<Store>());
+            }
+            else
+            {
+                storeViewModel.setHasFavoriteStores(true);
+
+                favoriteStoresAdapter.changeDataSet(favoriteStores);
+            }
+
+        });
+        storeViewModel.getOtherStores().observe(this, otherStores ->{
+            otherStoresAdapter.changeDataSet(otherStores);
+        });
+        storeViewModel.getIsLoading().observe(this, isLoading ->{
             if(isLoading)
             {
-                activityStoreBinding.findStoresRecyclerView.setVisibility(View.GONE);
                 activityStoreBinding.shimmerLayout.setVisibility(View.VISIBLE);
+                activityStoreBinding.nestedScrollView.setVisibility(View.GONE);
+                activityStoreBinding.searchTextBox.setVisibility(View.GONE);
                 activityStoreBinding.shimmerLayout.startShimmer();
             }
             else
             {
-                activityStoreBinding.findStoresRecyclerView.setVisibility(View.VISIBLE);
                 activityStoreBinding.shimmerLayout.setVisibility(View.GONE);
+                activityStoreBinding.nestedScrollView.setVisibility(View.VISIBLE);
+                activityStoreBinding.searchTextBox.setVisibility(View.VISIBLE);
                 activityStoreBinding.shimmerLayout.stopShimmer();
             }
         });
         activityStoreBinding.setViewModel(storeViewModel);
-        activityStoreBinding.findStoresRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        activityStoreBinding.cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
-        activityStoreBinding.editText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                handler.removeCallbacks(searchRunnable);
-                searchRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        storeAdapter.getFilter().filter(s);
-                    }
-
-                };
-                handler.postDelayed(searchRunnable, MILISECOND_DELAY_SEARCH);
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
+    }
+    public interface OnStoreTouchListener {
+        void onStoreTouch(String storeId);
     }
 }

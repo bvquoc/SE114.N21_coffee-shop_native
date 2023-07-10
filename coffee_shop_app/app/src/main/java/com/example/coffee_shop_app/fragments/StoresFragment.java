@@ -17,11 +17,15 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.coffee_shop_app.R;
-import com.example.coffee_shop_app.activities.store.StoreActivity;
+import com.example.coffee_shop_app.activities.store.StoreSearchActivity;
 import com.example.coffee_shop_app.activities.store.StoreDetailActivity;
 import com.example.coffee_shop_app.adapters.StoreAdapter;
 import com.example.coffee_shop_app.databinding.FragmentStoresBinding;
 import com.example.coffee_shop_app.models.Store;
+import com.example.coffee_shop_app.repository.StoreRepository;
+import com.example.coffee_shop_app.utils.interfaces.OnStoreClickListener;
+import com.example.coffee_shop_app.viewmodels.CartButtonViewModel;
+import com.example.coffee_shop_app.viewmodels.OrderType;
 import com.example.coffee_shop_app.viewmodels.StoreViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -35,11 +39,12 @@ public class StoresFragment extends Fragment {
     private StoreAdapter favoriteStoresAdapter = new StoreAdapter(new ArrayList<Store>());
     private StoreAdapter otherStoresAdapter = new StoreAdapter(new ArrayList<Store>());
     private int previousLocation;
-    private OnStoreTouchListener listener = new OnStoreTouchListener() {
+    private OnStoreClickListener listener = new OnStoreClickListener() {
         @Override
-        public void onStoreTouch(String storeId) {
+        public void onStoreClick(String storeId) {
             Intent intent = new Intent(getContext(), StoreDetailActivity.class);
             intent.putExtra("storeId", storeId);
+            intent.putExtra("isPurposeForShowingDetail", true);
             activitySeeStoreDetailResultLauncher.launch(intent);
         }
     } ;
@@ -49,15 +54,25 @@ public class StoresFragment extends Fragment {
                 if (result.getResultCode() == Activity.RESULT_OK) {
                     Intent data = result.getData();
                     if (data != null) {
+                        OrderType orderType = (OrderType)data.getSerializableExtra("orderType");
+                        String storeId = data.getStringExtra("storeId");
+                        if(CartButtonViewModel.getInstance().getSelectedOrderType().getValue()!= orderType)
+                        {
+                            CartButtonViewModel.getInstance().getSelectedOrderType().postValue(orderType);
+                        }
+                        List<Store> storeList = StoreRepository.getInstance().getStoreListMutableLiveData().getValue();
+                        Store selectedStore = null;
+                        for (Store store:
+                                storeList) {
+                            if(store.getId().equals(storeId))
+                            {
+                                selectedStore = store;
+                                break;
+                            }
+                        }
+                        CartButtonViewModel.getInstance().getSelectedStore().postValue(selectedStore);
                         BottomNavigationView bottomNavigationView = getActivity().findViewById(R.id.bottomNavView);
                         bottomNavigationView.setSelectedItemId(R.id.menuFragment);
-                        StoreDetailActivity.OrderType orderType = (StoreDetailActivity.OrderType)data.getSerializableExtra("orderType");
-                        String storeId = data.getStringExtra("storeId");
-                        Toast.makeText(
-                                getContext(),
-                                orderType.toString() + storeId,
-                                Toast.LENGTH_SHORT
-                        ).show();
                     }
                 } else {
                     //User do nothing
@@ -75,16 +90,26 @@ public class StoresFragment extends Fragment {
                 if (result.getResultCode() == Activity.RESULT_OK) {
                     Intent data = result.getData();
                     if (data != null) {
+                        OrderType orderType =
+                                (OrderType)data.getSerializableExtra("orderType");
+                        String storeId = data.getStringExtra("storeId");
+                        if(CartButtonViewModel.getInstance().getSelectedOrderType().getValue()!= orderType)
+                        {
+                            CartButtonViewModel.getInstance().getSelectedOrderType().postValue(orderType);
+                        }
+                        List<Store> storeList = StoreRepository.getInstance().getStoreListMutableLiveData().getValue();
+                        Store selectedStore = null;
+                        for (Store store:
+                                storeList) {
+                            if(store.getId().equals(storeId))
+                            {
+                                selectedStore = store;
+                                break;
+                            }
+                        }
+                        CartButtonViewModel.getInstance().getSelectedStore().postValue(selectedStore);
                         BottomNavigationView bottomNavigationView = getActivity().findViewById(R.id.bottomNavView);
                         bottomNavigationView.setSelectedItemId(R.id.menuFragment);
-                        StoreDetailActivity.OrderType orderType =
-                                (StoreDetailActivity.OrderType)data.getSerializableExtra("orderType");
-                        String storeId = data.getStringExtra("storeId");
-                        Toast.makeText(
-                                getContext(),
-                                orderType.toString() + storeId,
-                                Toast.LENGTH_SHORT
-                        ).show();
                     }
                 } else {
                     //User don't choose "Mang đi" or "Giao hàng"
@@ -103,7 +128,6 @@ public class StoresFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
     }
     void setToolBarTittle()
@@ -115,9 +139,9 @@ public class StoresFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         setToolBarTittle();
-        nearestStoreAdapter.setOnTouchListener(listener);
-        favoriteStoresAdapter.setOnTouchListener(listener);
-        otherStoresAdapter.setOnTouchListener(listener);
+        nearestStoreAdapter.setOnClickListener(listener);
+        favoriteStoresAdapter.setOnClickListener(listener);
+        otherStoresAdapter.setOnClickListener(listener);
         //set databinding
         fragmentStoresBinding = FragmentStoresBinding.inflate(inflater, container, false);
 
@@ -133,7 +157,7 @@ public class StoresFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 previousLocation = fragmentStoresBinding.nestedScrollView.getScrollY();
-                Intent intent = new Intent(getActivity(), StoreActivity.class);
+                Intent intent = new Intent(getActivity(), StoreSearchActivity.class);
                 activityFindStoreResultLauncher.launch(intent);
             }
         });
@@ -190,8 +214,5 @@ public class StoresFragment extends Fragment {
         fragmentStoresBinding.setViewModel(storeViewModel);
 
         return fragmentStoresBinding.getRoot();
-    }
-    public interface OnStoreTouchListener {
-        void onStoreTouch(String storeId);
     }
 }

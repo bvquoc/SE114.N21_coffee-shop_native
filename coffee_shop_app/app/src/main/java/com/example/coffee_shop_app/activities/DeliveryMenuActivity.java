@@ -19,7 +19,7 @@ import android.widget.LinearLayout;
 
 import com.example.coffee_shop_app.Data;
 import com.example.coffee_shop_app.activities.address.AddressListingActivity;
-import com.example.coffee_shop_app.adapters.ProductItemAdapter;
+import com.example.coffee_shop_app.adapters.ProductAdapter;
 import com.example.coffee_shop_app.R;
 import com.example.coffee_shop_app.utils.styles.RecyclerViewGapDecoration;
 
@@ -30,8 +30,8 @@ public class DeliveryMenuActivity extends AppCompatActivity {
     private ConstraintLayout storeDeliveryPickerView;
     private ConstraintLayout storeDeliveryPickerFrame;
     private ConstraintLayout addressPickerView;
-    private ProductItemAdapter productsAdapter;
-    private ProductItemAdapter favoriteProductsAdapter;
+    private ProductAdapter productsAdapter;
+    private ProductAdapter favoriteProductsAdapter;
     private Button scrollButton;
     private NestedScrollView nestedScrollView;
 
@@ -90,8 +90,8 @@ public class DeliveryMenuActivity extends AppCompatActivity {
         productRecyclerView.addItemDecoration(new RecyclerViewGapDecoration((int) (8*dp)));
         favoriteProductRecyclerView.addItemDecoration(new RecyclerViewGapDecoration((int) (8*dp)));
 
-        productsAdapter = new ProductItemAdapter(Data.instance.products);
-        favoriteProductsAdapter = new ProductItemAdapter(Data.instance.favoriteProducts);
+        productsAdapter = new ProductAdapter(Data.instance.products);
+        favoriteProductsAdapter = new ProductAdapter(Data.instance.favoriteProducts);
 
         productRecyclerView.setAdapter(productsAdapter);
         favoriteProductRecyclerView.setAdapter(favoriteProductsAdapter);

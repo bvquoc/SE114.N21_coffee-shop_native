@@ -58,6 +58,7 @@ public class AddressRepository {
             public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
                 Log.d(TAG, "get address started.");
                 getAddress(value);
+                Log.d(TAG, "get address finished.");
             }
         });
     }
@@ -65,11 +66,18 @@ public class AddressRepository {
     {
         List<AddressDelivery> addressDeliveries = new ArrayList<AddressDelivery>();
         Map<String, Object> data = value.getData();
-        List<Object> addresses = (List<Object>)data.get("addresses");
-        for (Object address: addresses) {
-            addressDeliveries.add(AddressDelivery.fromFireBase((Map<String, Object>) address));
+        if(data.get("addresses") != null)
+        {
+            List<Object> addresses = (List<Object>)data.get("addresses");
+            for (Object address: addresses) {
+                addressDeliveries.add(AddressDelivery.fromFireBase((Map<String, Object>) address));
+            }
+            addressListMutableLiveData.postValue(addressDeliveries);
         }
-        addressListMutableLiveData.postValue(addressDeliveries);
+        else
+        {
+            addressListMutableLiveData.postValue(new ArrayList<>());
+        }
     }
     public void deleteAddress(int index, UpdateDataListener listener)
     {

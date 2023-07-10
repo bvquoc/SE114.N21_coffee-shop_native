@@ -14,17 +14,13 @@ import com.example.coffee_shop_app.R;
 import com.example.coffee_shop_app.adapters.ImageViewPagerAdapter;
 import com.example.coffee_shop_app.databinding.ActivityStoreDetailBinding;
 import com.example.coffee_shop_app.models.Store;
+import com.example.coffee_shop_app.viewmodels.OrderType;
 import com.example.coffee_shop_app.viewmodels.StoreDetailViewModel;
 
 import java.util.ArrayList;
 
 
 public class StoreDetailActivity extends AppCompatActivity {
-    public enum OrderType
-    {
-        Delivery,
-        PickUp
-    }
     private ActivityStoreDetailBinding activityStoreDetailBinding;
 
     @Override
@@ -103,7 +99,7 @@ public class StoreDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent();
-                intent.putExtra("orderType", OrderType.PickUp);
+                intent.putExtra("orderType", OrderType.StorePickUp);
                 intent.putExtra("storeId", storeDetailViewModel.getStore().getId());
                 setResult(RESULT_OK, intent);
                 finish();

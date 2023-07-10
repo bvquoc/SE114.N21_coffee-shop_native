@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.example.coffee_shop_app.R;
+import com.example.coffee_shop_app.repository.StoreRepository;
 import com.example.coffee_shop_app.utils.LocationHelper;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -79,5 +80,7 @@ public class MainPageActivity extends AppCompatActivity {
                 .findFragmentById(R.id.fragmentContainerView);
         NavController navController = navHostFragment.getNavController();
         NavigationUI.setupWithNavController(bottomNavView, navController);
+
+        StoreRepository.getInstance().registerSnapshotListener();
     }
 }
