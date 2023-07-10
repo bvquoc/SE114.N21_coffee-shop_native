@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:allowBackup="true"
@@ -16,9 +17,14 @@
         android:theme="@style/AppTheme"
         tools:targetApi="31">
         <activity
+            android:name=".activities.promo.QRCodeScannerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.promo.PromoActivity"
+            android:exported="false"/>
+        <activity
             android:name=".activities.store.StoreActivity"
             android:exported="false" />
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyBosQ4pNoDkbozACtL1XEkyyvkdbwJRqUw" />
@@ -53,7 +59,7 @@
         </activity>
         <activity
             android:name=".activities.HomeActivity"
-            android:exported="false"></activity>
+            android:exported="false" />
         <activity
             android:name=".activities.SearchFoodActivity"
             android:exported="false"

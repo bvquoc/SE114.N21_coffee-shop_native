@@ -171,7 +171,4 @@ public class StoreActivity extends AppCompatActivity {
         });
         activityStoreBinding.setViewModel(storeViewModel);
     }
-    public interface OnStoreTouchListener {
-        void onStoreTouch(String storeId);
-    }
 }
