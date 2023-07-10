@@ -1,5 +1,12 @@
 package com.example.coffee_shop_app.models;
 
+import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 public class Size {
     private String id;
     private String name;
@@ -27,5 +34,15 @@ public class Size {
 
     public String getImage() {
         return image;
+    }
+
+    public static Size fromFireBase(QueryDocumentSnapshot doc)
+    {
+        String id = doc.getId();
+        Map<String, Object> map = doc.getData();
+        String name = map.get("name").toString();
+        double price = (double)map.get("price");
+        String image = map.get("image").toString();
+        return new Size(id, name, price, image);
     }
 }

@@ -71,15 +71,16 @@ public class CartViewModel extends ViewModel {
                 this.cartFoods.getValue()) {
 
             //TODO: get the size and topping properly
-            OrderFood ord= new OrderFood(
-                    cartFood.getProduct().getImage(),
-                    cartFood.getProduct().getName(),
-                    cartFood.getQuantity(),
-                    cartFood.getSize(),
-                    cartFood.getUnitPrice());
-            ord.setNote(cartFood.getNote());
-            ord.setTopping(cartFood.getTopping());
-            orderFoods.add(ord);
+            //TODO: fix this
+//            OrderFood ord= new OrderFood(
+//                    cartFood.getProduct().getImage(),
+//                    cartFood.getProduct().getName(),
+//                    cartFood.getQuantity(),
+//                    cartFood.getSize(),
+//                    cartFood.getUnitPrice());
+//            ord.setNote(cartFood.getNote());
+//            ord.setTopping(cartFood.getTopping());
+//            orderFoods.add(ord);
         }
         Order order=new Order(new Date(), orderFoods, status);
         order.setTotal(this.total.getValue());

@@ -1,5 +1,9 @@
 package com.example.coffee_shop_app.models;
 
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import java.util.Map;
+
 public class Topping {
     private String id;
     private String name;
@@ -27,5 +31,14 @@ public class Topping {
 
     public String getImage() {
         return image;
+    }
+    public static Topping fromFireBase(QueryDocumentSnapshot doc)
+    {
+        String id = doc.getId();
+        Map<String, Object> map = doc.getData();
+        String name = map.get("name").toString();
+        double price = (double)map.get("price");
+        String image = map.get("image").toString();
+        return new Topping(id, name, price, image);
     }
 }

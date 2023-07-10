@@ -19,7 +19,7 @@ import android.widget.TextView;
 import com.example.coffee_shop_app.Data;
 import com.example.coffee_shop_app.R;
 import com.example.coffee_shop_app.utils.styles.RecyclerViewGapDecoration;
-import com.example.coffee_shop_app.adapters.ProductItemAdapter;
+import com.example.coffee_shop_app.adapters.ProductAdapter;
 import com.example.coffee_shop_app.models.Product;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -78,7 +78,7 @@ public class HomeActivity extends AppCompatActivity {
 
         mayLikeProductRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         mayLikeProductRecyclerView.addItemDecoration(new RecyclerViewGapDecoration(0, (int) (12*dp)));
-        ProductItemAdapter mayLikeProductAdapter = new ProductItemAdapter(Data.instance.products.subList(0, 5), true);
+        ProductAdapter mayLikeProductAdapter = new ProductAdapter(Data.instance.products.subList(0, 5), true);
         mayLikeProductRecyclerView.setAdapter(mayLikeProductAdapter);
 
         recentProductRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -214,7 +214,7 @@ public class HomeActivity extends AppCompatActivity {
         } else {
             recentSeeTextView.setAlpha(1);
         }
-        ProductItemAdapter recentProductAdapter = new ProductItemAdapter(products);
+        ProductAdapter recentProductAdapter = new ProductAdapter(products);
         recentProductRecyclerView.setAdapter(recentProductAdapter);
     }
     @Override

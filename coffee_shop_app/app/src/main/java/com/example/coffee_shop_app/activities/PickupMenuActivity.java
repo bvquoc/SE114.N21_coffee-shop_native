@@ -20,15 +20,15 @@ import android.widget.LinearLayout;
 import com.example.coffee_shop_app.Data;
 import com.example.coffee_shop_app.R;
 import com.example.coffee_shop_app.utils.styles.RecyclerViewGapDecoration;
-import com.example.coffee_shop_app.adapters.ProductItemAdapter;
+import com.example.coffee_shop_app.adapters.ProductAdapter;
 
 public class PickupMenuActivity extends AppCompatActivity {
     private RecyclerView productRecyclerView;
     private RecyclerView favoriteProductRecyclerView;
     private LinearLayout productsLayout;
     private ConstraintLayout storesPickerView;
-    private ProductItemAdapter productsAdapter;
-    private ProductItemAdapter favoriteProductsAdapter;
+    private ProductAdapter productsAdapter;
+    private ProductAdapter favoriteProductsAdapter;
     private Button scrollButton;
     private NestedScrollView nestedScrollView;
     @Override
@@ -82,8 +82,8 @@ public class PickupMenuActivity extends AppCompatActivity {
         productRecyclerView.addItemDecoration(new RecyclerViewGapDecoration((int) (8*dp)));
         favoriteProductRecyclerView.addItemDecoration(new RecyclerViewGapDecoration((int) (8*dp)));
 
-        productsAdapter = new ProductItemAdapter(Data.instance.products);
-        favoriteProductsAdapter = new ProductItemAdapter(Data.instance.favoriteProducts);
+        productsAdapter = new ProductAdapter(Data.instance.products);
+        favoriteProductsAdapter = new ProductAdapter(Data.instance.favoriteProducts);
 
         productRecyclerView.setAdapter(productsAdapter);
         favoriteProductRecyclerView.setAdapter(favoriteProductsAdapter);

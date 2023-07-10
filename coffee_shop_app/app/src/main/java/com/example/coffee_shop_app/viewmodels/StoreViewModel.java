@@ -1,8 +1,5 @@
 package com.example.coffee_shop_app.viewmodels;
 
-import android.location.Location;
-import android.view.View;
-
 import androidx.databinding.BaseObservable;
 import androidx.databinding.Bindable;
 import androidx.lifecycle.MutableLiveData;

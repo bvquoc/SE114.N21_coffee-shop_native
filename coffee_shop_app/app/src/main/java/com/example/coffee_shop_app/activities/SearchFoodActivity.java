@@ -18,7 +18,7 @@ import android.widget.TextView;
 import com.example.coffee_shop_app.Data;
 import com.example.coffee_shop_app.R;
 import com.example.coffee_shop_app.utils.styles.RecyclerViewGapDecoration;
-import com.example.coffee_shop_app.adapters.ProductItemAdapter;
+import com.example.coffee_shop_app.adapters.ProductAdapter;
 import com.example.coffee_shop_app.models.Product;
 
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ public class SearchFoodActivity extends AppCompatActivity {
     private TextView clearButton;
     private TextView introduceTextView;
     private RecyclerView searchProductRecycleView;
-    private ProductItemAdapter searchProductItemAdapter;
+    private ProductAdapter searchProductAdapter;
 
     private Handler handler = new Handler();
     private Runnable searchRunnable;
@@ -80,8 +80,8 @@ public class SearchFoodActivity extends AppCompatActivity {
 
         searchProductRecycleView.setLayoutManager(new LinearLayoutManager(this));
         searchProductRecycleView.addItemDecoration(new RecyclerViewGapDecoration((int) (8*dp)));
-        searchProductItemAdapter = new ProductItemAdapter(products, false, true);
-        searchProductRecycleView.setAdapter(searchProductItemAdapter);
+        searchProductAdapter = new ProductAdapter(products, false, true);
+        searchProductRecycleView.setAdapter(searchProductAdapter);
 
         searchEditText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -103,7 +103,7 @@ public class SearchFoodActivity extends AppCompatActivity {
                 searchRunnable = new Runnable() {
                     @Override
                     public void run() {
-                        searchProductItemAdapter.getFilter().filter(s);
+                        searchProductAdapter.getFilter().filter(s);
                         if ( s!=null && s.length() > 0) {
                             introduceTextView.setVisibility(View.GONE);
                         } else {

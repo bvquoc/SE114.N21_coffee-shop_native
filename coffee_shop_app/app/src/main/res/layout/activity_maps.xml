@@ -77,7 +77,7 @@
                         android:inputType="text"
                         android:hint="Tìm kiếm..."
                         android:text="@{viewModel.searchText}"
-                        android:onTextChanged="@{viewModel.onSearchTextChanged}"
+                        android:onTextChanged="@{viewModel::onSearchTextChanged}"
                         app:hintTextAppearance="@style/regularGrey14"
                         style="@style/regularBlack14"/>
                 </com.google.android.material.textfield.TextInputLayout>

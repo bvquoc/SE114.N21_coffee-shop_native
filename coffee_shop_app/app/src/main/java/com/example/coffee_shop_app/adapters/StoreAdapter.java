@@ -20,6 +20,7 @@ import com.example.coffee_shop_app.fragments.StoresFragment;
 import com.example.coffee_shop_app.models.Product;
 import com.example.coffee_shop_app.models.Store;
 import com.example.coffee_shop_app.utils.LocationHelper;
+import com.example.coffee_shop_app.utils.interfaces.OnStoreClickListener;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.w3c.dom.Text;
@@ -36,12 +37,12 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private List<Store> storeFilter = new ArrayList<Store>();
 
     //Properties handle touch
-    private StoresFragment.OnStoreTouchListener onStoreTouchListener;
+    private OnStoreClickListener onStoreClickListener;
     private Handler handler = new Handler();
     private boolean isLongPress = false;
 
-    public void setOnTouchListener(StoresFragment.OnStoreTouchListener onStoreTouchListener) {
-        this.onStoreTouchListener = onStoreTouchListener;
+    public void setOnClickListener(OnStoreClickListener onStoreClickListener) {
+        this.onStoreClickListener = onStoreClickListener;
     }
 
     public StoreAdapter(List<Store> stores, boolean isNeedSearch)
@@ -113,7 +114,7 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
                 viewHolder.storeDistance.setText(formattedNumber + " km");
             }
-            if(onStoreTouchListener!=null)
+            if(onStoreClickListener!=null)
             {
                 viewHolder.itemView.setOnTouchListener(new View.OnTouchListener() {
                     @Override
@@ -125,7 +126,7 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                                 break;
                             case MotionEvent.ACTION_UP:
                                 if (!isLongPress) {
-                                    onStoreTouchListener.onStoreTouch(store.getId());
+                                    onStoreClickListener.onStoreClick(store.getId());
                                 }
                                 handler.removeCallbacks(longPressRunnable);
                                 break;

@@ -4,11 +4,13 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 
 import com.example.coffee_shop_app.Data;
 import com.example.coffee_shop_app.models.Store;
 import com.example.coffee_shop_app.utils.LocationHelper;
 import com.example.coffee_shop_app.utils.interfaces.UpdateDataListener;
+import com.example.coffee_shop_app.viewmodels.CartButtonViewModel;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
@@ -30,6 +32,49 @@ public class StoreRepository {
         storeListMutableLiveData = new MutableLiveData<>();
         //define firestore
         firestore = FirebaseFirestore.getInstance();
+
+        storeListMutableLiveData.observeForever(new Observer<List<Store>>() {
+            @Override
+            public void onChanged(List<Store> stores) {
+                //Change store in cart_button
+                Store prevSelectedStore = CartButtonViewModel.getInstance().getSelectedStore().getValue();
+                if(prevSelectedStore!=null)
+                {
+                    Object newSelectedStore = null;
+                    for (Store store:
+                            stores) {
+                        if(store.getId().equals(prevSelectedStore.getId()))
+                        {
+                            newSelectedStore = store;
+                            break;
+                        }
+                    }
+                    if(newSelectedStore != null)
+                    {
+                        CartButtonViewModel.getInstance().getSelectedStore().postValue((Store) newSelectedStore);
+                    }
+                    else if(stores.size() != 0)
+                    {
+                        CartButtonViewModel.getInstance().getSelectedStore().postValue(stores.get(0));
+                    }
+                    else
+                    {
+                        CartButtonViewModel.getInstance().getSelectedStore().postValue(null);
+                    }
+                }
+                else
+                {
+                    if(stores.size() != 0)
+                    {
+                        CartButtonViewModel.getInstance().getSelectedStore().postValue(stores.get(0));
+                    }
+                    else
+                    {
+                        CartButtonViewModel.getInstance().getSelectedStore().postValue(null);
+                    }
+                }
+            }
+        });
     }
     public static synchronized StoreRepository getInstance() {
         if (instance == null) {
@@ -40,7 +85,7 @@ public class StoreRepository {
 
     //properties
     private MutableLiveData<List<Store>> storeListMutableLiveData;
-    FirebaseFirestore firestore;
+    private FirebaseFirestore firestore;
 
     //get stores from firebase firestore
     public MutableLiveData<List<Store>> getStoreListMutableLiveData() {
@@ -50,14 +95,14 @@ public class StoreRepository {
         }
         return storeListMutableLiveData;
     }
-    void registerSnapshotListener()
+    public void registerSnapshotListener()
     {
         firestore.collection("Store").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 Log.d(TAG, "get stores started.");
-                //get the favoriteStores
                 getStore(value);
+                Log.d(TAG, "get stores finishes.");
             }
         });
     }
@@ -68,7 +113,12 @@ public class StoreRepository {
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
-                        List<String> favoriteStoreList = (List<String>)documentSnapshot.get("favoriteStores");
+                        List<String> favoriteStoreList = new ArrayList<>();
+                        Object favoriteStores = documentSnapshot.get("favoriteStores");
+                        if(favoriteStores != null)
+                        {
+                            favoriteStoreList = (List<String>)favoriteStores;
+                        }
                         List<Store> storeList = new ArrayList<>();
                         for (QueryDocumentSnapshot doc : value) {
                             if (doc != null) {

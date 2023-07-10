@@ -76,12 +76,14 @@ public class CartFood extends BaseObservable {
         return size;
     }
     public String getSizeName(){
-        return product.getSizes()
-                .stream()
-                .filter(s->s.getId().equals(this.size))
-                .findFirst()
-                .orElse(null)
-                .getName();
+        //TODO: fix this
+//        return product.getSizes()
+//                .stream()
+//                .filter(s->s.getId().equals(this.size))
+//                .findFirst()
+//                .orElse(null)
+//                .getName();
+        return "";
     }
     public String getTopping() {
         return topping;
@@ -89,12 +91,13 @@ public class CartFood extends BaseObservable {
     public String getToppingName(){
         List<String> toppings=Arrays.asList(this.topping.split(", "));
         List<String> toppingNames=new ArrayList<>();
-        for (Topping topping:
-                product.getToppings()) {
-            if(toppings.contains(topping.getId().trim())){
-                toppingNames.add(topping.getName());
-            }
-        }
+        //TODO: fix this
+//        for (Topping topping:
+//                product.getToppings()) {
+//            if(toppings.contains(topping.getId().trim())){
+//                toppingNames.add(topping.getName());
+//            }
+//        }
         return String.join(", ", toppingNames);
     }
     public String getNote() {
@@ -138,19 +141,20 @@ public class CartFood extends BaseObservable {
     public void countUnitPrice(){
         double unitPrice=product.getPrice();
         List<String> toppingsName=Arrays.asList(this.topping.split(", "));
-        for (Topping topping:
-             product.getToppings()) {
-            if(toppingsName.contains(topping.getId().trim())){
-                unitPrice+=topping.getPrice();
-            }
-        }
-
-        for (Size size :
-                product.getSizes()) {
-            if(size.getId().equals(this.getSize())){
-                unitPrice+=size.getPrice();
-            }
-        }
+        //TODO: fix this
+//        for (Topping topping:
+//             product.getToppings()) {
+//            if(toppingsName.contains(topping.getId().trim())){
+//                unitPrice+=topping.getPrice();
+//            }
+//        }
+        //TODO: fix this
+//        for (Size size :
+//                product.getSizes()) {
+//            if(size.getId().equals(this.getSize())){
+//                unitPrice+=size.getPrice();
+//            }
+//        }
         setUnitPrice(unitPrice);
 
         Log.d("UNIT PRICE", "countUnitPrice: "+unitPrice);
