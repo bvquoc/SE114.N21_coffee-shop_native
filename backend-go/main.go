@@ -1,36 +1,36 @@
 package main
 
 import (
-	"fmt"
-	"html/template"
+	"coffee_shop_backend/routes"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
-func formatAsDate(t time.Time) string {
-	year, month, day := t.Date()
-	return fmt.Sprintf("%d%02d/%02d", year, month, day)
+func main() {
+	godotenv.Load(".env")
+	// run the server mode
+	// utils.InitParamData()
+	runHTTPServer()
 }
 
-func main() {
-	router := gin.Default()
-	router.Delims("{[{", "}]}")
-	router.SetFuncMap(template.FuncMap{
-		"formatAsDate": formatAsDate,
-	})
-	router.LoadHTMLFiles("./testdata/raw.tmpl")
+func runHTTPServer() {
+	// wg := &sync.WaitGroup{}
+	// wg.Add(2)
 
-	router.GET("/", func(c *gin.Context) {
-		c.Data(http.StatusOK, "text/plain; charset=utf-8", []byte("Coffee Shop Backend"))
-	})
+	// go func() {
+	// 	defer wg.Done()
+	// 	// go firestore.initialapp
+	// }()
+	// wg.Wait()
 
-	router.GET("/raw", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "raw.tmpl", gin.H{
-			"now": time.Date(2017, 0o7, 0o1, 0, 0, 0, 0, time.UTC),
+	g := gin.Default()
+	g = routes.Routes(g)
+	g.GET("/ping", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "pong",
 		})
 	})
-
-	router.Run(":8080")
+	g.Run()
 }
