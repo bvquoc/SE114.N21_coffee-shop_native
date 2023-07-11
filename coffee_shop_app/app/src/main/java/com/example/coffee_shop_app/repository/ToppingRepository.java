@@ -39,7 +39,7 @@ public class ToppingRepository {
     private FirebaseFirestore firestore;
 
     //Function
-    public MutableLiveData<List<Topping>> getProductListMutableLiveData() {
+    public MutableLiveData<List<Topping>> getToppingListMutableLiveData() {
         if(toppingListMutableLiveData.getValue() == null)
         {
             registerSnapshotListener();

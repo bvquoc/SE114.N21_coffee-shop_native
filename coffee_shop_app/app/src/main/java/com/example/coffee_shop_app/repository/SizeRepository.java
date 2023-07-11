@@ -45,7 +45,7 @@ public class SizeRepository {
     private FirebaseFirestore firestore;
 
     //Function
-    public MutableLiveData<List<Size>> getProductListMutableLiveData() {
+    public MutableLiveData<List<Size>> getSizeListMutableLiveData() {
         if(sizeListMutableLiveData.getValue() == null)
         {
             registerSnapshotListener();
