@@ -4,6 +4,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.example.coffee_shop_app.Data;
 import com.example.coffee_shop_app.models.Order;
 import com.example.coffee_shop_app.models.OrderFood;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -29,7 +30,7 @@ public class CartRepository {
 
     public void addOrder(Order order){
         HashMap<String, Object> orderMap=new HashMap<>();
-        orderMap.put("user", "1");
+        orderMap.put("user", Data.instance.userId);
         if(order.getStore()!=null){
             orderMap.put("store", order.getStore().getId());
         }

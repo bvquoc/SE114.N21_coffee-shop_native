@@ -6,7 +6,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.example.coffee_shop_app.viewmodels.CartViewModel" />
+            type="com.example.coffee_shop_app.viewmodels.CartPickupViewModel" />
     </data>
 
     <RelativeLayout

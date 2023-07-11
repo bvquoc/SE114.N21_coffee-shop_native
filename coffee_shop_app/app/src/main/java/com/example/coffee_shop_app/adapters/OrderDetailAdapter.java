@@ -26,7 +26,8 @@ public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailAdapter.
         this.onCartQuantityUpdate = onCartQuantityUpdate;
     }
 
-    public OrderDetailAdapter() {
+    public OrderDetailAdapter(List<CartFood> cartFoods) {
+        this.cartFoods=cartFoods;
     }
 
     public void setCartFoods(List<CartFood> cartFoods) {
