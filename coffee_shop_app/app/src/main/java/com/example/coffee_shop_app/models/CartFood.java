@@ -4,9 +4,12 @@ import android.util.Log;
 
 import androidx.databinding.BaseObservable;
 import androidx.databinding.Bindable;
+import androidx.lifecycle.Observer;
 
 import com.example.coffee_shop_app.BR;
 import com.example.coffee_shop_app.Data;
+import com.example.coffee_shop_app.repository.SizeRepository;
+import com.example.coffee_shop_app.repository.ToppingRepository;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -75,29 +78,40 @@ public class CartFood extends BaseObservable {
     public String getSize() {
         return size;
     }
+    private String sizeName;
     public String getSizeName(){
-        //TODO: fix this
-//        return product.getSizes()
-//                .stream()
-//                .filter(s->s.getId().equals(this.size))
-//                .findFirst()
-//                .orElse(null)
-//                .getName();
-        return "";
+        SizeRepository.getInstance().getSizeListMutableLiveData().observeForever(new Observer<List<Size>>() {
+            @Override
+            public void onChanged(List<Size> sizes) {
+                sizeName = sizes.stream()
+                        .filter(s->s.getId().equals(size))
+                        .findFirst()
+                        .orElse(null)
+                        .getName();
+
+            }
+        });
+        return sizeName;
     }
     public String getTopping() {
         return topping;
     }
+
+    private String toppingName;
     public String getToppingName(){
         List<String> toppings=Arrays.asList(this.topping.split(", "));
         List<String> toppingNames=new ArrayList<>();
+
         //TODO: fix this
-//        for (Topping topping:
-//                product.getToppings()) {
-//            if(toppings.contains(topping.getId().trim())){
-//                toppingNames.add(topping.getName());
-//            }
-//        }
+        if(ToppingRepository.getInstance().getToppingListMutableLiveData().getValue()==null){
+            return "hi topping";
+        }
+        for (Topping topping:
+                ToppingRepository.getInstance().getToppingListMutableLiveData().getValue()) {
+            if(toppings.contains(topping.getId().trim())){
+                toppingNames.add(topping.getName());
+            }
+        }
         return String.join(", ", toppingNames);
     }
     public String getNote() {
@@ -140,21 +154,26 @@ public class CartFood extends BaseObservable {
 
     public void countUnitPrice(){
         double unitPrice=product.getPrice();
-        List<String> toppingsName=Arrays.asList(this.topping.split(", "));
-        //TODO: fix this
-//        for (Topping topping:
-//             product.getToppings()) {
-//            if(toppingsName.contains(topping.getId().trim())){
-//                unitPrice+=topping.getPrice();
-//            }
-//        }
-        //TODO: fix this
-//        for (Size size :
-//                product.getSizes()) {
-//            if(size.getId().equals(this.getSize())){
-//                unitPrice+=size.getPrice();
-//            }
-//        }
+        if(this.topping!=null && !this.topping.equals("")){
+            List<String> toppings=Arrays.asList(this.topping.split(", "));
+            if(ToppingRepository.getInstance().getToppingListMutableLiveData().getValue()!=null){
+                for (Topping all :
+                        ToppingRepository.getInstance().getToppingListMutableLiveData().getValue()) {
+                    if(toppings.contains(all.getId().trim())){
+                        unitPrice+=all.getPrice();
+                    }
+                }
+            }
+
+        }
+        if(SizeRepository.getInstance().getSizeListMutableLiveData().getValue()!=null){
+            for (Size s :
+                    SizeRepository.getInstance().getSizeListMutableLiveData().getValue()) {
+                if(s.getId().equals(getSize())){
+                    unitPrice+=s.getPrice();
+                }
+            }
+        }
         setUnitPrice(unitPrice);
 
         Log.d("UNIT PRICE", "countUnitPrice: "+unitPrice);

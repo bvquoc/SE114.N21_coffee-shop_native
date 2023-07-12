@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
         <variable
-            name="pickupVM"
-            type="com.example.coffee_shop_app.viewmodels.PickupTimeViewModel" />
+            name="viewModel"
+            type="com.example.coffee_shop_app.viewmodels.CartPickupViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
+        android:layout_height="wrap_content"
+        tools:context=".fragments.TimePickerBottomSheet">
 
         <RelativeLayout
             android:id="@+id/relativeLayout"
@@ -53,6 +53,9 @@
             app:layout_constraintTop_toBottomOf="@+id/relativeLayout">
 
             <NumberPicker
+                android:clickable="false"
+                android:inputType="none"
+                android:descendantFocusability="blocksDescendants"
                 android:id="@+id/np"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -62,6 +65,8 @@
                 android:theme="@style/DefaultNumberPickerTheme" />
 
             <NumberPicker
+                android:inputType="none"
+                android:descendantFocusability="blocksDescendants"
                 android:id="@+id/np2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -71,9 +76,9 @@
                 android:theme="@style/DefaultNumberPickerTheme" />
         </LinearLayout>
 
-            <!--        apply time button-->
+        <!--        apply time button-->
         <Button
-            android:id="@+id/button"
+            android:id="@+id/btnApply"
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_40sdp"

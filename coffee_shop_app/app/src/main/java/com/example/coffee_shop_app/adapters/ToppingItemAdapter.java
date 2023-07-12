@@ -2,9 +2,11 @@ package com.example.coffee_shop_app.adapters;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
@@ -67,7 +69,12 @@ public class ToppingItemAdapter extends RecyclerView.Adapter<ToppingItemAdapter.
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if(isChecked){
-                        selectedToppings.add(topping);
+                        if(selectedToppings.size()>=2){
+                            buttonView.setChecked(false);
+                            Toast.makeText(toppingItemBinding.getRoot().getContext(), "Bạn không được chọn quá 2 loại topping!", Toast.LENGTH_SHORT).show();
+                        }else{
+                            selectedToppings.add(topping);
+                        }
                     } else {
                         selectedToppings.remove(topping);
                     }
@@ -79,7 +86,11 @@ public class ToppingItemAdapter extends RecyclerView.Adapter<ToppingItemAdapter.
                 @Override
                 public void onClick(View v) {
                     boolean isChecked=toppingItemBinding.cbTopping.isChecked();
-                    toppingItemBinding.cbTopping.setChecked(!isChecked);
+                    if(!isChecked && selectedToppings.size()>=2){
+                            Toast.makeText(toppingItemBinding.getRoot().getContext(), "Bạn không được chọn quá 2 loại topping!", Toast.LENGTH_SHORT).show();
+                    } else{
+                        toppingItemBinding.cbTopping.setChecked(!isChecked);
+                    }
                 }
             });
         }

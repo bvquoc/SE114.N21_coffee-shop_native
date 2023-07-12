@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import com.example.coffee_shop_app.Data;
 import com.example.coffee_shop_app.models.CartFood;
 import com.example.coffee_shop_app.models.Product;
+import com.example.coffee_shop_app.repository.ProductRepository;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,7 +50,7 @@ public class SqliteHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(COLUMN_FOOD_ID, cartFood.getProduct().getId());
         values.put(COLUMN_QUANTITY, cartFood.getQuantity());
-        values.put(COLUMN_USER_ID, "1");
+        values.put(COLUMN_USER_ID, Data.instance.userId);
         values.put(COLUMN_SIZE, cartFood.getSize());
         values.put(COLUMN_TOPPING, cartFood.getTopping());
         values.put(COLUMN_NOTE, cartFood.getNote());
@@ -58,7 +59,7 @@ public class SqliteHelper extends SQLiteOpenHelper {
         db.close();
         return id;
     }
-    public ArrayList<HashMap<String, Object>> getCartFood(String userId) {
+    public ArrayList<CartFood> getCartFood(String userId) {
         SQLiteDatabase db = this.getWritableDatabase();
         String[] projection = {
                 COLUMN_ID,
@@ -89,7 +90,23 @@ public class SqliteHelper extends SQLiteOpenHelper {
         }
         cursor.close();
         db.close();
-        return items;
+        ArrayList<CartFood> cartFoods=new ArrayList<>();
+        for (HashMap<String, Object> item :
+                items) {
+            Product prd = ProductRepository.getInstance().getProductListMutableLiveData().getValue()
+                    .stream()
+                    .filter(p -> p.getId().equals(item.get("foodId")))
+                    .findFirst()
+                    .orElse(null);
+            CartFood cartFood = new CartFood(prd, item.get("size").toString(), 0);
+            cartFood.setId(Integer.valueOf((String) item.get("id")));
+            if (item.get("topping") != null) {
+                cartFood.setTopping(item.get("topping").toString());
+            }
+            cartFood.setQuantity((int) item.get("quantity"));
+            cartFoods.add(cartFood);
+        }
+        return cartFoods;
     }
 
     public long updateCartFood(CartFood cartFood) {
@@ -97,7 +114,7 @@ public class SqliteHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(COLUMN_FOOD_ID, cartFood.getProduct().getId());
         values.put(COLUMN_QUANTITY, cartFood.getQuantity());
-        values.put(COLUMN_USER_ID, "1");
+        values.put(COLUMN_USER_ID, Data.instance.userId);
         values.put(COLUMN_SIZE, cartFood.getSize());
         values.put(COLUMN_TOPPING, cartFood.getTopping());
         values.put(COLUMN_NOTE, cartFood.getNote());

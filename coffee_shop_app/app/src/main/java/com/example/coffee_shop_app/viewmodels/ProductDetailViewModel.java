@@ -78,8 +78,4 @@ public class ProductDetailViewModel extends BaseObservable {
         boolean value=!this.favorite;
         setFavorite(value);
     }
-    public void addToCart(){
-    }
-
-
 }

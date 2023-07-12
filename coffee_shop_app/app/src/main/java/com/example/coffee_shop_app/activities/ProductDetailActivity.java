@@ -3,6 +3,7 @@ package com.example.coffee_shop_app.activities;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.viewpager2.widget.ViewPager2;
@@ -20,11 +21,17 @@ import com.example.coffee_shop_app.databinding.ActivityProductDetailBinding;
 import com.example.coffee_shop_app.models.CartFood;
 import com.example.coffee_shop_app.models.Product;
 import com.example.coffee_shop_app.models.Size;
+import com.example.coffee_shop_app.models.Store;
 import com.example.coffee_shop_app.models.Topping;
+import com.example.coffee_shop_app.repository.ProductRepository;
+import com.example.coffee_shop_app.repository.SizeRepository;
+import com.example.coffee_shop_app.repository.ToppingRepository;
 import com.example.coffee_shop_app.utils.SqliteHelper;
 import com.example.coffee_shop_app.utils.ItemClickedListener;
 import com.example.coffee_shop_app.utils.keyboard.KeyboardHelper;
 import com.example.coffee_shop_app.utils.keyboard.OnKeyboardVisibilityListener;
+import com.example.coffee_shop_app.viewmodels.CartButtonViewModel;
+import com.example.coffee_shop_app.viewmodels.CartViewModel;
 import com.example.coffee_shop_app.viewmodels.ProductDetailViewModel;
 
 import java.util.ArrayList;
@@ -36,6 +43,15 @@ public class ProductDetailActivity extends AppCompatActivity {
     private ActivityProductDetailBinding activityProductDetailBinding;
     private SizeItemAdapter sizeAdapter;
     private ToppingItemAdapter toppingItemAdapter;
+    private Product product;
+    private List<Size> listSizes=new ArrayList<>();
+    private List<String> listBannedSize;
+    private List<Size> listProductSize;
+    private List<Topping> listToppings=new ArrayList<>();
+    private List<String> listBannedTopping;
+    private List<Topping> listProductTopping;
+    private Store selectedStore;
+    private ProductDetailViewModel viewModel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,8 +66,87 @@ public class ProductDetailActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
+
+        String prdId = ProductDetailActivity.this.getIntent().getStringExtra("productId");
+
+        ProductRepository.getInstance().getProductListMutableLiveData().observe(this, new Observer<List<Product>>() {
+            @Override
+            public void onChanged(List<Product> products) {
+                product = null;
+                for (Product prd: products
+                ) {
+                    if(prd.getId().equals(prdId))
+                    {
+                        product = prd;
+                        setProduct();
+                        break;
+                    }
+                }
+            }
+        });
         init();
     }
+    private void setProduct(){
+        CartButtonViewModel.getInstance().getSelectedStore().observe(this, new Observer<Store>() {
+            @Override
+            public void onChanged(Store store) {
+                if(store.getStateFood().containsKey(product.getId())
+                        && store.getStateFood().get(product.getId())!=null){
+                    listBannedSize=store.getStateFood().get(product.getId());
+                    listBannedTopping=store.getStateTopping();
+                    setSize();
+                }
+            }
+        });
+        viewModel=new ProductDetailViewModel(new CartFood(product, null, 0));
+        activityProductDetailBinding.setViewModel(viewModel);
+        setImageViewPager(product.getImages().toArray(new String[0]));
+
+        SizeRepository.getInstance().getSizeListMutableLiveData().observe(this, new Observer<List<Size>>() {
+            @Override
+            public void onChanged(List<Size> sizes) {
+                listSizes=sizes;
+                setSize();
+            }
+        });
+        ToppingRepository.getInstance().getToppingListMutableLiveData().observe(this, new Observer<List<Topping>>() {
+            @Override
+            public void onChanged(List<Topping> toppings) {
+                listToppings=toppings;
+                setTopping();
+            }
+        });
+    }
+    private void setSize(){
+        if(listBannedSize==null){
+            listBannedSize=new ArrayList<>();
+        }
+        listProductSize=new ArrayList<>();
+        for (Size s :
+                listSizes) {
+            if(product.getSizes().contains(s.getId())
+            && !listBannedSize.contains(s.getId())){
+                listProductSize.add(s);
+            }
+        }
+        setSizeRecycler(listProductSize);
+    }
+    private void setTopping(){
+        if(listBannedTopping==null){
+            listBannedTopping=new ArrayList<>();
+        }
+        listProductTopping=new ArrayList<>();
+        if(product.getToppings()!=null && !product.getToppings().isEmpty()){
+            for (Topping t :
+                    listToppings) {
+                if(product.getToppings().contains(t.getId())&&!listBannedTopping.contains(t.getId())){
+                    listProductTopping.add(t);
+                }
+            }
+            setToppingRecycler(listProductTopping);
+        }
+    }
+
     public boolean onKeyPreIme(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
             activityProductDetailBinding.edtNote.clearFocus();
@@ -61,21 +156,6 @@ public class ProductDetailActivity extends AppCompatActivity {
     }
     private void init() {
         activityProductDetailBinding.setIsLoading(true);
-
-        List<Size> sizes = new ArrayList<>();
-        sizes.add(new Size("1", "Small", 0, "https://product.hstatic.net/1000075078/product/chocolatenong_949029_c1932e1298a841e18537713220be2333_large.jpg"));
-        sizes.add(new Size("2", "Large", 10000, "https://product.hstatic.net/1000075078/product/chocolatenong_949029_c1932e1298a841e18537713220be2333_large.jpg"));
-
-        List<Topping> toppings = new ArrayList<>();
-        toppings.add(new Topping("1", "Cheese", 5000, "https://product.hstatic.net/1000075078/product/chocolatenong_949029_c1932e1298a841e18537713220be2333_large.jpg"));
-        toppings.add(new Topping("2", "Espresso (1 shot)", 10000, "https://product.hstatic.net/1000075078/product/chocolatenong_949029_c1932e1298a841e18537713220be2333_large.jpg"));
-
-        Product product = Data.instance.products.get(0);
-        //TODO: fix this
-//        product.setSizes(sizes);
-//        product.setToppings(toppings);
-        ProductDetailViewModel viewModel=new ProductDetailViewModel(new CartFood(product, null, 0));
-        activityProductDetailBinding.setViewModel(viewModel);
 
         activityProductDetailBinding.productCard.txtName.setVisibility(View.VISIBLE);
         activityProductDetailBinding.productCard.txtPrice.setVisibility(View.VISIBLE);
@@ -105,34 +185,27 @@ public class ProductDetailActivity extends AppCompatActivity {
             public void onClick(View v) {
                 boolean isAdded=false;
                 SqliteHelper repo=new SqliteHelper(ProductDetailActivity.this);
-                ArrayList<HashMap<String, Object>> items= repo.getCartFood("1");
+                ArrayList<CartFood> items= repo.getCartFood(Data.instance.userId);
                 CartFood cartFoodToAdd=viewModel.getCartFood();
-                for (HashMap<String, Object> item :
+                for (CartFood item :
                         items) {
-                    if(item.get(SqliteHelper.COLUMN_FOOD_ID).toString().equals(cartFoodToAdd.getProduct().getId())
-                    && item.get(SqliteHelper.COLUMN_SIZE).toString().equals(cartFoodToAdd.getSize())
-                    && item.get(SqliteHelper.COLUMN_TOPPING).toString().equals(cartFoodToAdd.getTopping())){
+                    if(item.getProduct().getId().equals(cartFoodToAdd.getProduct().getId())
+                    && item.getSize().equals(cartFoodToAdd.getSize())
+                    && item.getTopping().equals(cartFoodToAdd.getTopping())){
                         isAdded=true;
                         CartFood updatedCartFood=new CartFood(cartFoodToAdd);
-                        updatedCartFood.setQuantity(cartFoodToAdd.getQuantity()+(int)item.get(SqliteHelper.COLUMN_QUANTITY));
-                        updatedCartFood.setId(Integer.valueOf((String)item.get("id")));
+                        updatedCartFood.setQuantity(cartFoodToAdd.getQuantity()+(int)item.getQuantity());
+                        updatedCartFood.setId(item.getId());
                         repo.updateCartFood(updatedCartFood);
                     }
                 }
                 if(!isAdded) {
                     repo.createCartFood(viewModel.getCartFood());
                 }
+                CartViewModel.getInstance().getCartFoods().setValue(repo.getCartFood(Data.instance.userId));
+                finish();
             }
         });
-        String[] imageList = {"https://product.hstatic.net/1000075078/product/chocolatenong_949029_c1932e1298a841e18537713220be2333_large.jpg",
-                "https://aeonmall-long-bien.com.vn/wp-content/uploads/2021/01/aeon-mall-tra-sen-750x468.jpg"};
-        setImageViewPager(imageList);
-
-        //TODO: fix this
-        //setSizeRecycler(product.getSizes());
-        //TODO: fix this
-        //setToppingRecycler(product.getToppings());
-
         activityProductDetailBinding.setIsLoading(false);
     }
 

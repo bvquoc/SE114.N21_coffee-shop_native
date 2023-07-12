@@ -41,7 +41,7 @@ public class Size {
         String id = doc.getId();
         Map<String, Object> map = doc.getData();
         String name = map.get("name").toString();
-        double price = (double)map.get("price");
+        double price = ((Number) map.get("price")).doubleValue();
         String image = map.get("image").toString();
         return new Size(id, name, price, image);
     }

@@ -19,7 +19,10 @@ import com.example.coffee_shop_app.models.Address;
 import com.example.coffee_shop_app.models.AddressDelivery;
 import com.example.coffee_shop_app.models.CartFood;
 import com.example.coffee_shop_app.models.Product;
+import com.example.coffee_shop_app.models.Store;
+import com.example.coffee_shop_app.repository.ProductRepository;
 import com.example.coffee_shop_app.utils.SqliteHelper;
+import com.example.coffee_shop_app.viewmodels.CartDeliveryViewModel;
 import com.example.coffee_shop_app.viewmodels.CartViewModel;
 
 import java.util.ArrayList;
@@ -28,7 +31,7 @@ import java.util.List;
 
 public class CartDeliveryActivity extends AppCompatActivity {
     private ActivityCartDeliveryBinding activityCartDeliveryBinding;
-    private CartViewModel viewModel;
+    private CartDeliveryViewModel viewModel;
     private ArrayList<CartFood> cartFoods;
 
     @Override
@@ -51,7 +54,7 @@ public class CartDeliveryActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        init();
+//        init();
     }
 
     private void init() {
@@ -61,62 +64,44 @@ public class CartDeliveryActivity extends AppCompatActivity {
                 DividerItemDecoration.VERTICAL));
 
         SqliteHelper repo = new SqliteHelper(CartDeliveryActivity.this);
-        ArrayList<HashMap<String, Object>> items = repo.getCartFood("1");
-        viewModel = new ViewModelProvider(this).get(CartViewModel.class);
+        cartFoods = repo.getCartFood(Data.instance.userId);
+        viewModel = new CartDeliveryViewModel();
         activityCartDeliveryBinding.setViewModel(viewModel);
         activityCartDeliveryBinding.btnPay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: open the comment
-                /*viewModel.placeOrder(null, new AddressDelivery(
-                        new Address("nice", "quao", "1", "3"),
-                        "name",
-                        "0123456"), null, "test");*/
+                //TODO: place order
+//                viewModel.placeOrder(null, null, null, null);
             }
         });
-        cartFoods = new ArrayList<>();
-        for (HashMap<String, Object> item :
-                items) {
-            Product prd = Data.instance.products
-                    .stream()
-                    .filter(p -> p.getId().equals(item.get("foodId")))
-                    .findFirst()
-                    .orElse(null);
-            CartFood cartFood = new CartFood(prd, item.get("size").toString(), 0);
-            cartFood.setId(Integer.valueOf((String) item.get("id")));
-            if (item.get("topping") != null) {
-                cartFood.setTopping(item.get("topping").toString());
-            }
-            cartFood.setQuantity((int) item.get("quantity"));
-            cartFoods.add(cartFood);
-        }
-        OrderDetailAdapter adapter = new OrderDetailAdapter();
+
+        OrderDetailAdapter adapter = new OrderDetailAdapter(cartFoods);
         adapter.setOnCartQuantityUpdate(new OrderDetailAdapter.OnCartQuantityUpdate() {
             @Override
             public void onItemClick(CartFood cartFood, boolean isRemoved) {
                 List<CartFood> newList = new ArrayList<>();
                 cartFood = new CartFood(cartFood);
                 for (CartFood cf :
-                        viewModel.getCartFoods().getValue()) {
+                        viewModel.getCartViewModel().getCartFoods().getValue()) {
                     if (cartFood.getId() != cf.getId()) {
                         newList.add(cf);
                     } else if (!isRemoved) {
                         newList.add(cartFood);
                     }
                 }
-                viewModel.getCartFoods().setValue(newList);
+                viewModel.getCartViewModel().getCartFoods().setValue(newList);
             }
         });
         activityCartDeliveryBinding.orderDetails.recyclerOrderDetails.setAdapter(adapter);
 
-        viewModel.getCartFoods().setValue(cartFoods);
-        viewModel.getCartFoods().observe(this, new Observer<List<CartFood>>() {
+        viewModel.getCartViewModel().getCartFoods().setValue(cartFoods);
+        viewModel.getCartViewModel().getCartFoods().observe(this, new Observer<List<CartFood>>() {
             @Override
             public void onChanged(List<CartFood> cartFoods) {
                 viewModel.calculateTotalPrice();
                 activityCartDeliveryBinding.btnPay.setText(viewModel.getTotal().getValue() + getString(R.string.vndUnit));
                 activityCartDeliveryBinding.orderDetails
-                        .txtPrice.setText(viewModel.getTotalFood().getValue() + getString(R.string.vndUnit));
+                        .txtPrice.setText(viewModel.getCartViewModel().getTotalFood().getValue() + getString(R.string.vndUnit));
 
                 if (viewModel.getDeliveryCost().getValue() == null) {
                     activityCartDeliveryBinding.orderDetails.txtShip.setVisibility(View.GONE);
@@ -127,10 +112,22 @@ public class CartDeliveryActivity extends AppCompatActivity {
                             .txtShip.setText(viewModel.getDeliveryCost().getValue() + getString(R.string.vndUnit));
                 }
                 adapter.setCartFoods(cartFoods);
-
                 adapter.notifyDataSetChanged();
             }
         });
-
+        viewModel.getFromStore().observe(this, new Observer<Store>() {
+            @Override
+            public void onChanged(Store store) {
+                activityCartDeliveryBinding.shippingDetails.txtFromStore.setText(store.getAddress().getFormattedAddress());
+            }
+        });
+        viewModel.getToAddress().observe(this, new Observer<AddressDelivery>() {
+            @Override
+            public void onChanged(AddressDelivery addressDelivery) {
+                String txt=addressDelivery.getNameReceiver()+" • " +addressDelivery.getPhone();
+                activityCartDeliveryBinding.shippingDetails.txtToAddress.setText(txt);
+                activityCartDeliveryBinding.shippingDetails.toTxt.setText(addressDelivery.getAddress().getFormattedAddress());
+            }
+        });
     }
 }

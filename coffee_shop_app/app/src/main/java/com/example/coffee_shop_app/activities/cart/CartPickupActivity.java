@@ -4,33 +4,36 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
 
 import com.example.coffee_shop_app.Data;
 import com.example.coffee_shop_app.R;
 import com.example.coffee_shop_app.adapters.OrderDetailAdapter;
 import com.example.coffee_shop_app.databinding.ActivityCartPickupBinding;
-import com.example.coffee_shop_app.models.Address;
-import com.example.coffee_shop_app.models.AddressDelivery;
+import com.example.coffee_shop_app.fragments.TimePickerBottomSheet;
 import com.example.coffee_shop_app.models.CartFood;
-import com.example.coffee_shop_app.models.Product;
+
+import com.example.coffee_shop_app.models.Store;
 import com.example.coffee_shop_app.utils.SqliteHelper;
-import com.example.coffee_shop_app.viewmodels.CartViewModel;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.example.coffee_shop_app.viewmodels.CartPickupViewModel;
+
+import org.joda.time.DateTime;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Date;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class CartPickupActivity extends AppCompatActivity {
     private ActivityCartPickupBinding activityCartPickupBinding;
-    private CartViewModel viewModel;
+    private CartPickupViewModel viewModel;
     private ArrayList<CartFood> cartFoods;
 
     @Override
@@ -48,12 +51,13 @@ public class CartPickupActivity extends AppCompatActivity {
             }
         });
         init();
+        startTimer();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        init();
+//        init();
     }
 
     private void init() {
@@ -65,36 +69,18 @@ public class CartPickupActivity extends AppCompatActivity {
         SqliteHelper repo = new SqliteHelper(CartPickupActivity.this);
 
         //TODO: get the user properly
-        ArrayList<HashMap<String, Object>> items = repo.getCartFood("1");
-        viewModel = new ViewModelProvider(this).get(CartViewModel.class);
+        cartFoods = repo.getCartFood(Data.instance.userId);
+        viewModel = new CartPickupViewModel();
         activityCartPickupBinding.setViewModel(viewModel);
         activityCartPickupBinding.btnPay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: open the comment
-//                viewModel.placeOrder(null, new AddressDelivery(
-//                        new Address("nice", "quao", "1", "3"),
-//                        "name",
-//                        "0123456"), null, "test");
+                //TODO: place order
+//                viewModel.placeOrder(null, null, null, null);
             }
         });
-        cartFoods = new ArrayList<>();
-        for (HashMap<String, Object> item :
-                items) {
-            Product prd = Data.instance.products
-                    .stream()
-                    .filter(p -> p.getId().equals(item.get("foodId")))
-                    .findFirst()
-                    .orElse(null);
-            CartFood cartFood = new CartFood(prd, item.get("size").toString(), 0);
-            cartFood.setId(Integer.valueOf((String) item.get("id")));
-            if (item.get("topping") != null) {
-                cartFood.setTopping(item.get("topping").toString());
-            }
-            cartFood.setQuantity((int) item.get("quantity"));
-            cartFoods.add(cartFood);
-        }
-        OrderDetailAdapter adapter = new OrderDetailAdapter();
+
+        OrderDetailAdapter adapter = new OrderDetailAdapter(cartFoods);
         adapter.setOnCartQuantityUpdate(new OrderDetailAdapter.OnCartQuantityUpdate() {
             @Override
             public void onItemClick(CartFood cartFood, boolean isRemoved) {
@@ -102,41 +88,47 @@ public class CartPickupActivity extends AppCompatActivity {
 
                 cartFood = new CartFood(cartFood);
                 for (CartFood cf :
-                        viewModel.getCartFoods().getValue()) {
+                        viewModel.getCartViewModel().getCartFoods().getValue()) {
                     if (cartFood.getId() != cf.getId()) {
                         newList.add(cf);
                     } else if (!isRemoved) {
                         newList.add(cartFood);
                     }
                 }
-                viewModel.getCartFoods().setValue(newList);
+                viewModel.getCartViewModel().getCartFoods().setValue(newList);
             }
         });
         activityCartPickupBinding.orderDetails.recyclerOrderDetails.setAdapter(adapter);
 
-        viewModel.getCartFoods().setValue(cartFoods);
-        viewModel.getCartFoods().observe(this, new Observer<List<CartFood>>() {
+        viewModel.getCartViewModel().getCartFoods().setValue(cartFoods);
+        viewModel.getCartViewModel().getCartFoods().observe(this, new Observer<List<CartFood>>() {
             @Override
             public void onChanged(List<CartFood> cartFoods) {
                 viewModel.calculateTotalPrice();
-                activityCartPickupBinding.btnPay.setText(viewModel.getTotal().getValue() + getString(R.string.vndUnit));
+                activityCartPickupBinding.btnPay.setText(viewModel.getCartViewModel().getTotalFood().getValue() + getString(R.string.vndUnit));
                 activityCartPickupBinding.orderDetails
-                        .txtPrice.setText(viewModel.getTotalFood().getValue() + getString(R.string.vndUnit));
+                        .txtPrice.setText(viewModel.getCartViewModel().getTotalFood().getValue() + getString(R.string.vndUnit));
 
-                if (viewModel.getDeliveryCost().getValue() == null) {
-                    activityCartPickupBinding.orderDetails.txtShip.setVisibility(View.GONE);
-                    activityCartPickupBinding.orderDetails.txtShipStr.setVisibility(View.GONE);
+                activityCartPickupBinding.orderDetails.txtShip.setVisibility(View.GONE);
+                activityCartPickupBinding.orderDetails.txtShipStr.setVisibility(View.GONE);
 
-                } else {
-                    activityCartPickupBinding.orderDetails
-                            .txtShip.setText(viewModel.getDeliveryCost().getValue() + getString(R.string.vndUnit));
-                }
                 adapter.setCartFoods(cartFoods);
-
                 adapter.notifyDataSetChanged();
             }
         });
-
+        viewModel.getTimePickup().observe(this, new Observer<Date>() {
+            @Override
+            public void onChanged(Date date) {
+                activityCartPickupBinding.pickupDetailCard.txtPickupTime
+                        .setText(viewModel.datetimeToPickup(new DateTime(date)));
+            }
+        });
+        viewModel.getStorePickup().observe(this, new Observer<Store>() {
+            @Override
+            public void onChanged(Store store) {
+                activityCartPickupBinding.pickupDetailCard.txtPickupStore.setText(store.getAddress().getFormattedAddress());
+            }
+        });
         initPickupTime();
     }
 
@@ -148,19 +140,45 @@ public class CartPickupActivity extends AppCompatActivity {
             }
         });
     }
-
+    TimePickerBottomSheet bottomSheet;
     private void showBottomSheetDialog() {
+        bottomSheet=new TimePickerBottomSheet(viewModel);
+        bottomSheet.show(getSupportFragmentManager(), null);
+//        viewModel.getHourStartTimeList().observe(this, new Observer<List<Integer>>() {
+//            @Override
+//            public void onChanged(List<Integer> integers) {
+//                if(bottomSheet!=null && bottomSheet.getDialog().isShowing()){
+//                    bottomSheet.initNumberPicker();
+//                }
+//            }
+//        });
+    }
 
-        final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
-        bottomSheetDialog.setContentView(R.layout.time_picker_bottom_sheet);
-        ImageView btnClose=bottomSheetDialog.findViewById(R.id.btnClosePick);
-        btnClose.setOnClickListener(new View.OnClickListener() {
+    final Handler handler = new Handler();
+    int i=0;
+    Runnable timerRunnable = new Runnable() {
+        @Override
+        public void run() {
+            viewModel.initDayTimeList();
+            Log.d("TIMER", new Date().toString()+"   " +i++);
+        }
+    };
+    Timer timer = new Timer();
+    private void startTimer(){
+
+        TimerTask doAsynchronousTask = new TimerTask() {
             @Override
-            public void onClick(View v) {
-                bottomSheetDialog.dismiss();
+            public void run() {
+                handler.post(timerRunnable);
             }
-        });
-
-        bottomSheetDialog.show();
+        };
+        timer.schedule(doAsynchronousTask, 0, 10000); //execute in every 5 second
+    }
+    @Override
+    public void onPause() {
+        super.onPause();
+        timer.cancel();
+        timer.purge();
+        handler.removeCallbacks(timerRunnable);
     }
 }

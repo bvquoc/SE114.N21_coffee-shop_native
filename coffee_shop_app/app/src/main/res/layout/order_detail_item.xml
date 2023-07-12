@@ -62,7 +62,7 @@
                 android:layout_height="wrap_content"
                 android:text="@{Double.toString(cartFood.totalPrice)+' '+ '₫'}"
                 style="@style/boldBlack14" />
-F
+
             <TextView
                 android:visibility="@{cartFood.note.isEmpty() ? View.GONE:View.VISIBLE, default=gone}"
                 android:layout_marginTop="@dimen/_4sdp"
