@@ -1,22 +1,26 @@
 package models
 
+import "coffee_shop_backend/constants"
+
 type User struct {
-	Email        string
-	AvatarURL    string
-	CoverURL     string
-	Name         string
-	IsSuperAdmin bool
-	IsAdmin      bool
-	IsStaff      bool
-	StaffOf      string
+	ID           string `json:"id"`
+	Email        string `json:"email"`
+	Name         string `json:"name"`
+	AvatarURL    string `json:"avatarURL"`
+	CoverURL     string `json:"coverURL"`
+	IsSuperAdmin bool   `json:"isSuperAdmin"`
+	IsAdmin      bool   `json:"isAdmin"`
+	IsStaff      bool   `json:"isStaff"`
+	StaffOf      string `json:"staffOf"`
 }
 
 func NewUser(userInfo map[string]interface{}) *User {
 	user := &User{
+		ID:           "",
 		Email:        "",
-		AvatarURL:    "https://st3.depositphotos.com/6672868/13701/v/450/depositphotos_137014128-stock-illustration-user-profile-icon.jpg",
-		CoverURL:     "https://img.freepik.com/free-vector/restaurant-mural-wallpaper_23-2148703851.jpg?w=740&t=st=1680897435~exp=1680898035~hmac=8f6c47b6646a831c4a642b560cf9b10f1ddf80fda5d9d997299e1b2f71fe4cb9",
-		Name:         "Coffee Shop Employee",
+		AvatarURL:    constants.AVATAR_URL,
+		CoverURL:     constants.COVER_URL,
+		Name:         constants.DEFAULT_USER_NAME,
 		IsSuperAdmin: false,
 		IsAdmin:      false,
 		IsStaff:      false,
@@ -29,6 +33,7 @@ func NewUser(userInfo map[string]interface{}) *User {
 		"coverURL":  &user.CoverURL,
 		"name":      &user.Name,
 		"staffOf":   &user.StaffOf,
+		"id":        &user.ID,
 	}
 
 	boolFields := map[string]*bool{

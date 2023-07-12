@@ -5,42 +5,7 @@ import (
 	"log"
 
 	"cloud.google.com/go/firestore"
-	firebase "firebase.google.com/go"
 )
-
-// FirestoreClient is a struct that holds the Firestore client instance.
-type FirestoreClient struct {
-	client *firestore.Client
-}
-
-// NewFirestoreClient initializes a new Firestore client.
-func NewFirestoreClient(projectID string) (*FirestoreClient, error) {
-	ctx := context.Background()
-
-	// Initialize the Firebase app with credentials file.
-	conf := &firebase.Config{ProjectID: projectID}
-	app, err := firebase.NewApp(ctx, conf)
-	if err != nil {
-		log.Fatalf("Failed to create Firebase app: %v", err)
-		return nil, err
-	}
-
-	// Initialize Firestore client.
-	client, err := app.Firestore(ctx)
-	if err != nil {
-		log.Fatalf("Failed to create Firestore client: %v", err)
-		return nil, err
-	}
-
-	return &FirestoreClient{
-		client: client,
-	}, nil
-}
-
-// Close closes the Firestore client connection.
-func (c *FirestoreClient) Close() {
-	c.client.Close()
-}
 
 func (c *FirestoreClient) GetDocument(collection, documentID string) (*firestore.DocumentSnapshot, error) {
 	docRef := c.client.Collection(collection).Doc(documentID)
