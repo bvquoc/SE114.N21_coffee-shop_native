@@ -31,5 +31,6 @@ func OrderCreate(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request body"})
 		return
 	}
+
 	c.JSON(http.StatusCreated, map[string]interface{}{"orderID": ordersId})
 }
