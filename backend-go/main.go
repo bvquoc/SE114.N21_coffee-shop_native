@@ -1,36 +1,38 @@
 package main
 
 import (
-	"coffee_shop_backend/routes"
-	"net/http"
+	"coffee_shop_backend/firestore"
+	"coffee_shop_backend/models"
+	"fmt"
+	"log"
+	"os"
 
-	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
 
 func main() {
 	godotenv.Load(".env")
-	// run the server mode
-	// utils.InitParamData()
-	runHTTPServer()
-}
 
-func runHTTPServer() {
-	// wg := &sync.WaitGroup{}
-	// wg.Add(2)
+	firestoreClient, err := firestore.NewFirestoreClient(os.Getenv("PROJECT_ID"))
+	if err != nil {
+		log.Fatalln(err)
+	}
 
-	// go func() {
-	// 	defer wg.Done()
-	// 	// go firestore.initialapp
-	// }()
-	// wg.Wait()
+	fmt.Println(firestoreClient.GetDocumentMap("Food", "AmericanoDa"))
 
-	g := gin.Default()
-	g = routes.Routes(g)
-	g.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
+	user := models.NewUser(map[string]interface{}{
+		"name":    "Bui Vi Quoc",
+		"isAdmin": true,
 	})
-	g.Run()
+	fmt.Println()
+	fmt.Println(user)
+	// g := gin.Default()
+	// g = routes.Routes(g)
+	// g.GET("/ping", func(c *gin.Context) {
+	// 	c.JSON(http.StatusOK, gin.H{
+	// 		"message": "pong",
+	// 	})
+	// })
+	// g.Run()
+
 }
