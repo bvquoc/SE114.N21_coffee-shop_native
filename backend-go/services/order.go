@@ -28,6 +28,7 @@ func OrderCreate(c *gin.Context) {
 	json.Unmarshal(dataBytes, &data)
 	ordersId, err := app_context.AppFirestoreClient.CreateDocument("beorders", data)
 	if err != nil {
+		fmt.Println("Error create firestore document:", err)
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request body"})
 		return
 	}
