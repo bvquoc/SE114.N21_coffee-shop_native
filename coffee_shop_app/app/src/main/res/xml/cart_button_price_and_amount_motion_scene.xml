@@ -41,10 +41,5 @@
         app:constraintSetEnd="@id/end"
         app:constraintSetStart="@id/start">
 
-        <OnSwipe
-            app:dragDirection="dragDown"
-            app:touchAnchorId="@id/cart_button_price_and_amount_motion_layout"
-            app:touchAnchorSide="top"/>
-
     </Transition>
 </MotionScene>
