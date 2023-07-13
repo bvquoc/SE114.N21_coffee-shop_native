@@ -1,5 +1,16 @@
 package services
 
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+func GetAllOrders(c *gin.Context) {
+	var arr []int
+	c.JSON(http.StatusCreated, gin.H{"orders": arr})
+}
+
 // func OrderCreate(c *gin.Context) {
 // 	var newOrder models.Order
 // 	if err := c.ShouldBindJSON(&newOrder); err != nil || newOrder.IDUser == "" {

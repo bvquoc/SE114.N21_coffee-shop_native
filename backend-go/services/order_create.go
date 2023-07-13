@@ -48,7 +48,7 @@ func OrderCreate(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, map[string]interface{}{"orderID": ordersId})
+	c.JSON(http.StatusCreated, gin.H{"orderID": ordersId})
 }
 
 func calcPrice(ord *models.Order) {

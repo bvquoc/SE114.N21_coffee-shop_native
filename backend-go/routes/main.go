@@ -14,6 +14,7 @@ func Routes(router *gin.Engine) *gin.Engine {
 	})
 
 	// Create a new user
+	router.GET("/users", services.GetAllOrders)
 	router.POST("/users", services.UserCreateUser)
 
 	// Create an order
