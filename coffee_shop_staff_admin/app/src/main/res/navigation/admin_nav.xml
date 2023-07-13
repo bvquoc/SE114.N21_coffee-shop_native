@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/admin_nav"
+    app:startDestination="@id/productAdminFragment">
+
+    <fragment
+        android:id="@+id/productAdminFragment"
+        android:name="com.example.coffee_shop_staff_admin.fragments.ProductAdminFragment"
+        android:label="fragment_product_admin"
+        tools:layout="@layout/fragment_product_admin" />
+    <fragment
+        android:id="@+id/storeAdminFragment"
+        android:name="com.example.coffee_shop_staff_admin.fragments.StoreAdminFragment"
+        android:label="fragment_store_admin"
+        tools:layout="@layout/fragment_store_admin" />
+    <fragment
+        android:id="@+id/promoAdminFragment"
+        android:name="com.example.coffee_shop_staff_admin.fragments.PromoAdminFragment"
+        android:label="fragment_promo_admin"
+        tools:layout="@layout/fragment_promo_admin" />
+    <fragment
+        android:id="@+id/manageStoreAdminFragment"
+        android:name="com.example.coffee_shop_staff_admin.fragments.ManageStoreAdminFragment"
+        android:label="fragment_manage_store_admin"
+        tools:layout="@layout/fragment_manage_store_admin" />
+    <fragment
+        android:id="@+id/usersAdminFragment"
+        android:name="com.example.coffee_shop_staff_admin.fragments.UsersAdminFragment"
+        android:label="fragment_users_admin"
+        tools:layout="@layout/fragment_users_admin" />
+</navigation>
