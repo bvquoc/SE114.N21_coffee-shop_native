@@ -7,8 +7,7 @@ import (
 )
 
 func GetAllOrders(c *gin.Context) {
-	var arr []int
-	c.JSON(http.StatusCreated, gin.H{"orders": arr})
+	c.JSON(http.StatusOK, gin.H{"orders": make([]int, 0)})
 }
 
 // func OrderCreate(c *gin.Context) {
