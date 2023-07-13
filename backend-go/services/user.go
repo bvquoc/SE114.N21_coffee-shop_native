@@ -1,34 +1,18 @@
 package services
 
 import (
-	"net/http"
+	"coffee_shop_backend/models"
 
 	"github.com/gin-gonic/gin"
 )
 
-func UsersGroup(c *gin.Context) {
+func UserCreateUser(c *gin.Context) {
+	var newUser models.User
+	if err := c.ShouldBindJSON(&newUser); err != nil {
+		c.JSON(400, gin.H{"message": "Invalid request body"})
+		return
+	}
 
-	// var searchParams models.SearchParams
-	// if err := c.BindJSON(&searchParams); err != nil {
-	// 	log.Fatalf("Can not parse search params: %v", err)
-	// }
-
-	// var searchResult = models.SearchResult{}
-	// searchResult.Hits = make([]interface{}, 0)
-
-	// if len(searchParams.Status) == 0 {
-	// 	searchResult.Total = 0
-	// 	c.JSON(http.StatusOK, gin.H{
-	// 		"status": "OK",
-	// 		"result": searchResult,
-	// 	})
-	// 	return
-	// }
-
-	// searchResult = searchlogic.BasicSearch(searchParams, utils.EsClient)
-
-	c.JSON(http.StatusOK, gin.H{
-		"status": "OK",
-		"result": "user",
-	})
+	// users = append(users, newUser)
+	// c.JSON(201)
 }

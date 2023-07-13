@@ -1,8 +1,11 @@
 package main
 
 import (
+	app_context "coffee_shop_backend/context"
+	"coffee_shop_backend/db"
 	"coffee_shop_backend/routes"
-	"net/http"
+	"log"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -10,27 +13,14 @@ import (
 
 func main() {
 	godotenv.Load(".env")
-	// run the server mode
-	// utils.InitParamData()
-	runHTTPServer()
-}
 
-func runHTTPServer() {
-	// wg := &sync.WaitGroup{}
-	// wg.Add(2)
-
-	// go func() {
-	// 	defer wg.Done()
-	// 	// go firestore.initialapp
-	// }()
-	// wg.Wait()
+	firestoreClient, err := db.NewFirestoreClient(os.Getenv("PROJECT_ID"))
+	if err != nil {
+		log.Fatalln(err)
+	}
+	app_context.AppFirestoreClient = firestoreClient
 
 	g := gin.Default()
 	g = routes.Routes(g)
-	g.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
-	})
 	g.Run()
 }

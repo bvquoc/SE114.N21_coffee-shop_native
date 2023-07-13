@@ -7,8 +7,10 @@ import (
 )
 
 func Routes(router *gin.Engine) *gin.Engine {
-	router.POST("/user", services.UsersGroup)
-	router.GET("/user", services.UsersGroup)
+	// Create a new user
+	router.POST("/users", services.UserCreateUser)
+
+	router.POST("/orders", services.OrderCreate)
 	// router.GET("/location", location.GetLocation)
 	// router.GET("/propertytype", propertytype.GetPropertyType)
 	return router
