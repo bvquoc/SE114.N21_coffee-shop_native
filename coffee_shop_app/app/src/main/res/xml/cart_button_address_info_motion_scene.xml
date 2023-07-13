@@ -75,10 +75,6 @@
         app:constraintSetEnd="@id/end"
         app:constraintSetStart="@id/start">
 
-        <OnSwipe
-            app:dragDirection="dragDown"
-            app:touchAnchorId="@id/address_info_motion_layout"
-            app:touchAnchorSide="top"/>
 
     </Transition>
 </MotionScene>

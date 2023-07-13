@@ -15,6 +15,8 @@ import com.example.coffee_shop_app.models.Store;
 import com.example.coffee_shop_app.repository.ProductRepository;
 import com.example.coffee_shop_app.utils.LocationHelper;
 
+import java.text.DecimalFormat;
+
 public class CartButtonViewModel extends BaseObservable {
     //Singleton
     private static CartButtonViewModel instance;
@@ -160,7 +162,21 @@ public class CartButtonViewModel extends BaseObservable {
 
     public void setDistance(double distance) {
         this.distance = distance;
+        DecimalFormat formatter = new DecimalFormat("##0.##");
+        String formattedDistance = formatter.format(distance);
+        setDistanceString(formattedDistance + "km");
         notifyPropertyChanged(BR.distance);
+    }
+
+    @Bindable
+    private String distanceString = "";
+
+    public String getDistanceString() {
+        return distanceString;
+    }
+
+    public void setDistanceString(String distanceString) {
+        this.distanceString = distanceString;
     }
 
     public void changeDistance()

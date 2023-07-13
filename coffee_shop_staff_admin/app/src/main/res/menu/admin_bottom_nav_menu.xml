@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:title="Sản phẩm"
+        android:icon="@drawable/ic_outline_coffee_24"
+        android:id="@+id/productAdminFragment"/>
+    <item android:title="Cửa hàng"
+        android:icon="@drawable/ic_outline_store_24"
+        android:id="@+id/storeAdminFragment"/>
+    <item android:title="Giảm giá"
+        android:icon="@drawable/ic_outline_ballot_24"
+        android:id="@+id/promoAdminFragment"/>
+    <item android:title="Quản lý"
+        android:icon="@drawable/ic_gear_24"
+        android:id="@+id/manageStoreAdminFragment"/>
+    <item android:title="Người dùng"
+        android:icon="@drawable/ic_supervisor_account_24"
+        android:id="@+id/usersAdminFragment"/>
+</menu>
