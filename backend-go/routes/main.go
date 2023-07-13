@@ -7,6 +7,12 @@ import (
 )
 
 func Routes(router *gin.Engine) *gin.Engine {
+	router.GET("/", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "Coffee Shop Apis!",
+		})
+	})
+
 	// Create a new user
 	router.POST("/users", services.UserCreateUser)
 
