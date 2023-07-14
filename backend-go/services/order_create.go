@@ -111,6 +111,7 @@ func calcPrice(ord *models.Order) {
 
 	for i, v := range ord.OrderedFoods {
 		sl := v.Quantity
+		ord.OrderedFoods[i].Image = mapFood[v.ID].Images[0]
 		// size
 		sizePrice := mapSize[v.Size].Price
 		ord.PriceProducts += sizePrice * sl

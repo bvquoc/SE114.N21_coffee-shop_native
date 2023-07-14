@@ -64,6 +64,13 @@ func ToFood(data map[string]interface{}) models.Food {
 		food.Price = price
 	}
 
+	if imgs, ok := data["images"].([]interface{}); ok {
+		food.Images = make([]string, len(imgs))
+		for i, img := range imgs {
+			food.Images[i] = fmt.Sprint(img)
+		}
+	}
+
 	return food
 }
 
