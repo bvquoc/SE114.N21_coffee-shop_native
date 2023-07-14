@@ -29,9 +29,8 @@ func OrderCreate(c *gin.Context) {
 	// }
 	// fmt.Println(user)
 
-	newOrder.Status = constants.ORDER_PROCESSING
-	calcPrice(&newOrder)
-
+	var orderId string
+	newOrder.Status = constants.ORDER_CREATED
 	dataBytes, err := json.Marshal(newOrder)
 	if err != nil {
 		fmt.Println("Error marshaling struct:", err)
@@ -40,15 +39,32 @@ func OrderCreate(c *gin.Context) {
 	}
 	var data map[string]interface{}
 	json.Unmarshal(dataBytes, &data)
-
 	ordersId, err := app_context.AppFirestoreClient.CreateDocument("beorders", data)
 	if err != nil {
 		fmt.Println("Error create firestore document:", err)
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request body"})
 		return
 	}
-
+	orderId = ordersId
 	c.JSON(http.StatusCreated, gin.H{"orderID": ordersId})
+
+	go func() {
+		newOrder.Status = constants.ORDER_PROCESSING
+		calcPrice(&newOrder)
+
+		dataBytes, _ := json.Marshal(newOrder)
+		var data map[string]interface{}
+		delete(data, "orderedFoods")
+		delete(data, "dateOrder")
+		delete(data, "pickupTime")
+		delete(data, "address")
+		delete(data, "promo")
+		delete(data, "store")
+		delete(data, "user")
+		json.Unmarshal(dataBytes, &data)
+
+		app_context.AppFirestoreClient.UpdateDocument("beorders", orderId, data)
+	}()
 }
 
 func calcPrice(ord *models.Order) {
