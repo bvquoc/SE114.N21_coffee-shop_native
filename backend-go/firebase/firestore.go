@@ -43,6 +43,16 @@ func (c *FirebaseClient) CreateDocument(collection string, data map[string]inter
 	return docRef.ID, nil
 }
 
+func (c *FirebaseClient) CreateDocumentWithId(collection string, ID string, data map[string]interface{}) error {
+	docRef := c.client.Collection(collection).Doc(ID)
+	_, err := docRef.Set(context.Background(), data)
+	if err != nil {
+		log.Printf("Failed to create document: %v", err)
+		return err
+	}
+	return nil
+}
+
 // UpdateDocument updates an existing document in the specified collection with the given document ID.
 func (c *FirebaseClient) UpdateDocument(collection, documentID string, data map[string]interface{}) error {
 	docRef := c.client.Collection(collection).Doc(documentID)

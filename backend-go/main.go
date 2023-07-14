@@ -20,32 +20,6 @@ func main() {
 	}
 	app_context.App = firestoreClient
 
-	// ctx := context.Background()
-	// app, err := firebase.NewApp(ctx, nil)
-	// if err != nil {
-	// 	log.Fatalf("Failed to create Firebase app: %v", err)
-	// }
-
-	// auth, err := app.Auth(ctx)
-	// if err != nil {
-	// 	log.Fatalf("Failed to get Auth client: %v", err)
-	// }
-
-	// Create a new user account
-	// params := (&firebase.UserToCreate{}).
-	// 	Email("user@example.com").
-	// 	EmailVerified(false).
-	// 	Password("password123").
-	// 	DisplayName("John Doe").
-	// 	Disabled(false)
-
-	// user, err := auth.CreateUser(ctx, params)
-	// if err != nil {
-	// 	log.Fatalf("Failed to create user: %v", err)
-	// }
-
-	// log.Printf("User created: %v", user)
-
 	g := gin.Default()
 	g = routes.Routes(g)
 	g.Run()
