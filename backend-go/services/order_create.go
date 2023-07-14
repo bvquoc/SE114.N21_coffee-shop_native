@@ -29,9 +29,8 @@ func OrderCreate(c *gin.Context) {
 	// }
 	// fmt.Println(user)
 
-	newOrder.Status = constants.ORDER_PROCESSING
-	calcPrice(&newOrder)
-
+	var orderId string
+	newOrder.Status = constants.ORDER_CREATED
 	dataBytes, err := json.Marshal(newOrder)
 	if err != nil {
 		fmt.Println("Error marshaling struct:", err)
@@ -40,15 +39,36 @@ func OrderCreate(c *gin.Context) {
 	}
 	var data map[string]interface{}
 	json.Unmarshal(dataBytes, &data)
-
+	delete(data, "orderedFoods")
+	delete(data, "discountPrice")
+	delete(data, "totalPrice")
+	delete(data, "totalProduct")
+	delete(data, "deliveryCost")
 	ordersId, err := app_context.AppFirestoreClient.CreateDocument("beorders", data)
 	if err != nil {
 		fmt.Println("Error create firestore document:", err)
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request body"})
 		return
 	}
+	orderId = ordersId
+	c.JSON(http.StatusCreated, gin.H{"orderID": ordersId})
 
-	c.JSON(http.StatusCreated, map[string]interface{}{"orderID": ordersId})
+	go func() {
+		newOrder.Status = constants.ORDER_PROCESSING
+		calcPrice(&newOrder)
+
+		dataBytes, _ := json.Marshal(newOrder)
+		var data map[string]interface{}
+		delete(data, "dateOrder")
+		delete(data, "pickupTime")
+		delete(data, "address")
+		delete(data, "promo")
+		delete(data, "store")
+		delete(data, "user")
+		json.Unmarshal(dataBytes, &data)
+
+		app_context.AppFirestoreClient.UpdateDocument("beorders", orderId, data)
+	}()
 }
 
 func calcPrice(ord *models.Order) {
@@ -67,7 +87,8 @@ func calcPrice(ord *models.Order) {
 	for _, v := range ord.OrderedFoods {
 		setSizeId.Add(v.Size)
 		setFoodId.Add(v.ID)
-		for _, t := range v.Toppings {
+
+		for _, t := range v.ToppingIds {
 			setToppingId.Add(t)
 		}
 	}
@@ -88,17 +109,24 @@ func calcPrice(ord *models.Order) {
 		mapFood[foodId] = helpers.ToFood(respMpFood)
 	}
 
-	for _, v := range ord.OrderedFoods {
+	for i, v := range ord.OrderedFoods {
 		sl := v.Quantity
 		// size
 		sizePrice := mapSize[v.Size].Price
 		ord.PriceProducts += sizePrice * sl
+		ord.OrderedFoods[i].Size = mapSize[v.Size].Name
 		// food
 		foodPrice := mapFood[v.ID].Price
 		ord.PriceProducts += foodPrice * sl
 		// topping
-		for _, t := range v.Toppings {
+		for _, t := range v.ToppingIds {
 			ord.PriceProducts += mapTopping[t].Price * sl
+			str := ord.OrderedFoods[i].ToppingsStr
+			if str != "" {
+				str = str + ", "
+			}
+			str = str + mapTopping[t].Name
+			ord.OrderedFoods[i].ToppingsStr = str
 		}
 	}
 
