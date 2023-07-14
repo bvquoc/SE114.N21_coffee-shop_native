@@ -1,4 +1,15 @@
+basePath: /
+host: localhost:8080
 info:
-  contact: {}
+  contact:
+    email: 21520095@gm.uit.edu.vn
+    name: Bui Vi Quoc
+    url: https://www.facebook.com/bviquoc/
+  description: This is a coffee shop server.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  title: Coffee Shop APIs
+  version: "1.0"
 paths: {}
 swagger: "2.0"
