@@ -13,12 +13,13 @@ func Routes(router *gin.Engine) *gin.Engine {
 		})
 	})
 
-	// Create a new user
+	// USER GROUP
 	router.POST("/users", services.UserCreateUser)
 
-	// Create an order
-	router.GET("/orders", services.GetAllOrders)
+	// ORDER GROUP
+	router.GET("/orders", services.OrderGetAll)
 	router.POST("/orders", services.OrderCreate)
+	router.PUT("/orders/:orderId", services.OrderChangeStatus)
 
 	return router
 }

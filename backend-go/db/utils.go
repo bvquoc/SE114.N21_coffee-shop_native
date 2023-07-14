@@ -46,11 +46,21 @@ func (c *FirestoreClient) CreateDocument(collection string, data map[string]inte
 // UpdateDocument updates an existing document in the specified collection with the given document ID.
 func (c *FirestoreClient) UpdateDocument(collection, documentID string, data map[string]interface{}) error {
 	docRef := c.client.Collection(collection).Doc(documentID)
-	_, err := docRef.Set(context.Background(), data, firestore.MergeAll)
+
+	updates := make([]firestore.Update, 0, len(data))
+	for key, value := range data {
+		updates = append(updates, firestore.Update{
+			Path:  key,
+			Value: value,
+		})
+	}
+
+	_, err := docRef.Update(context.Background(), updates)
 	if err != nil {
 		log.Printf("Failed to update document %s: %v", documentID, err)
 		return err
 	}
+
 	return nil
 }
 

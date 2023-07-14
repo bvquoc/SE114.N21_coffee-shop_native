@@ -8,3 +8,24 @@ const ORDER_READY = "Đã chuẩn bị"
 const ORDER_COMPLETE = "Hoàn thành"
 const ORDER_CANCELLED = "Đã hủy"
 const ORDER_CREATED = "Đã tạo"
+
+func IsOrderStatus(value string) bool {
+	orderStatuses := []string{
+		ORDER_PROCESSING,
+		ORDER_DELIVERING,
+		ORDER_DELIVERED,
+		ORDER_DELIVERY_FAILED,
+		ORDER_READY,
+		ORDER_COMPLETE,
+		ORDER_CANCELLED,
+		ORDER_CREATED,
+	}
+
+	for _, status := range orderStatuses {
+		if value == status {
+			return true
+		}
+	}
+
+	return false
+}
