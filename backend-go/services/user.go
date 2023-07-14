@@ -7,5 +7,5 @@ import (
 )
 
 func UserGetAll(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"orders": make([]int, 0)})
+	c.JSON(http.StatusOK, gin.H{"users": make([]int, 0)})
 }

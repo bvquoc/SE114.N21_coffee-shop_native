@@ -14,6 +14,7 @@ func Routes(router *gin.Engine) *gin.Engine {
 	})
 
 	// USER GROUP
+	router.GET("/users", services.UserGetAll)
 	router.POST("/users", services.UserCreateUser)
 
 	// ORDER GROUP
