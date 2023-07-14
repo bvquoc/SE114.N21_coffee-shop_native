@@ -1,7 +1,10 @@
-package com.example.coffee_shop_app.repository;
+package com.example.coffee_shop_staff_admin.repositories;
 
-import com.example.coffee_shop_app.utils.HttpClient;
-import com.squareup.okhttp.Callback;
+import com.example.coffee_shop_staff_admin.utils.HttpClient;
+
+import java.io.IOException;
+
+import okhttp3.Callback;
 
 public class LocationAPI {
     private static final String MAP_BOX_API_KEY = "pk.eyJ1IjoiemVyb3JlaSIsImEiOiJjbGlidXpyYTQwOXNmM2Zxb3BpdWQwaDFqIn0.xrYRn0Fyr85ddyR5DoHXEw";
