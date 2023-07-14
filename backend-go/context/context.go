@@ -1,7 +1,7 @@
 package app_context
 
 import (
-	"coffee_shop_backend/db"
+	fireclient "coffee_shop_backend/firebase"
 )
 
-var AppFirestoreClient *db.FirestoreClient
+var App *fireclient.FirebaseClient

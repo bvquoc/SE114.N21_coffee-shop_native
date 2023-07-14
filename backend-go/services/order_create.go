@@ -22,7 +22,7 @@ func OrderCreate(c *gin.Context) {
 		return
 	}
 
-	// user, err := app_context.AppFirestoreClient.GetDocumentMap("users", newOrder.IDUser)
+	// user, err := app_context.App.GetDocumentMap("users", newOrder.IDUser)
 	// if err != nil {
 	// 	c.JSON(http.StatusBadRequest, gin.H{"message": "Permission denied! User is not created."})
 	// 	return
@@ -44,7 +44,7 @@ func OrderCreate(c *gin.Context) {
 	delete(data, "totalPrice")
 	delete(data, "totalProduct")
 	delete(data, "deliveryCost")
-	ordersId, err := app_context.AppFirestoreClient.CreateDocument("beorders", data)
+	ordersId, err := app_context.App.CreateDocument("beorders", data)
 	if err != nil {
 		fmt.Println("Error create firestore document:", err)
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request body"})
@@ -67,7 +67,7 @@ func OrderCreate(c *gin.Context) {
 		delete(data, "user")
 		json.Unmarshal(dataBytes, &data)
 
-		app_context.AppFirestoreClient.UpdateDocument("beorders", orderId, data)
+		app_context.App.UpdateDocument("beorders", orderId, data)
 	}()
 }
 
@@ -95,17 +95,17 @@ func calcPrice(ord *models.Order) {
 
 	mapSize := make(map[string]models.Size)
 	for sizeId := range setSizeId {
-		respMpSize, _ := app_context.AppFirestoreClient.GetDocumentMap(constants.CLT_SIZE, sizeId)
+		respMpSize, _ := app_context.App.GetDocumentMap(constants.CLT_SIZE, sizeId)
 		mapSize[sizeId] = helpers.ToSize(respMpSize)
 	}
 	mapTopping := make(map[string]models.Topping)
 	for toppingId := range setToppingId {
-		respMpTopping, _ := app_context.AppFirestoreClient.GetDocumentMap(constants.CLT_TOPPING, toppingId)
+		respMpTopping, _ := app_context.App.GetDocumentMap(constants.CLT_TOPPING, toppingId)
 		mapTopping[toppingId] = helpers.ToTopping(respMpTopping)
 	}
 	mapFood := make(map[string]models.Food)
 	for foodId := range setFoodId {
-		respMpFood, _ := app_context.AppFirestoreClient.GetDocumentMap(constants.CLT_FOOD, foodId)
+		respMpFood, _ := app_context.App.GetDocumentMap(constants.CLT_FOOD, foodId)
 		mapFood[foodId] = helpers.ToFood(respMpFood)
 	}
 
@@ -131,7 +131,7 @@ func calcPrice(ord *models.Order) {
 	}
 
 	if len(ord.IDPromo) > 0 {
-		respPromo, _ := app_context.AppFirestoreClient.GetDocumentMap("Promo", ord.IDPromo)
+		respPromo, _ := app_context.App.GetDocumentMap("Promo", ord.IDPromo)
 
 		canUse := false
 		for _, v := range respPromo["stores"].([]interface{}) {

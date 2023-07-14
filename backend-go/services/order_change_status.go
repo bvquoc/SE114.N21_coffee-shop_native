@@ -27,7 +27,7 @@ func OrderChangeStatus(c *gin.Context) {
 
 	data := make(map[string]interface{})
 	data["status"] = requestBody.Status
-	err := app_context.AppFirestoreClient.UpdateDocument(constants.CLT_ORDER, orderID, data)
+	err := app_context.App.UpdateDocument(constants.CLT_ORDER, orderID, data)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"orderId": orderID, "error": "Invalid order ID"})
 		return
