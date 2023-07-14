@@ -21,9 +21,6 @@ import (
 // @contact.url https://www.facebook.com/bviquoc/
 // @contact.email 21520095@gm.uit.edu.vn
 
-// @license.name MIT
-// @license.url https://opensource.org/licenses/MIT
-
 // @host localhost:8080
 // @BasePath /
 // @query.collection.format multi
