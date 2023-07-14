@@ -76,6 +76,10 @@ func calcPrice(ord *models.Order) {
 
 	if (ord.PickupTime == time.Time{}) {
 		fmt.Println("[ORDER_CREATE] Delivery")
+		respMpStore, _ := app_context.App.GetDocumentMap(constants.CLT_STORE, ord.IDStore)
+		store := helpers.ToStore(respMpStore)
+		distanceInKm := helpers.CalculateDistance(store.Address.Lat, store.Address.Lng, ord.Address.Lat, ord.Address.Lng)
+		ord.DeliveryCost = int(math.Ceil(float64(constants.SHIPPING_FEE_PER_KM) * distanceInKm))
 	} else {
 		fmt.Println("[ORDER_CREATE] Pickup")
 	}

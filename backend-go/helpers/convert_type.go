@@ -3,9 +3,7 @@ package helpers
 import (
 	"coffee_shop_backend/models"
 	"fmt"
-	"math/rand"
 	"strconv"
-	"strings"
 )
 
 /* For model Size */
@@ -74,45 +72,50 @@ func ToFood(data map[string]interface{}) models.Food {
 	return food
 }
 
-/* Functions */
+/* For model Address */
 
-var (
-	lowerCharSet   = "abcdedfghijklmnopqrst"
-	upperCharSet   = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	specialCharSet = "!@#$%&*"
-	numberSet      = "0123456789"
-	allCharSet     = lowerCharSet + upperCharSet + specialCharSet + numberSet
-)
+func ToAddress(data map[string]interface{}) models.Address {
+	var address models.Address
 
-func GeneratePassword(passwordLength, minSpecialChar, minNum, minUpperCase int) string {
-	var password strings.Builder
-
-	//Set special character
-	for i := 0; i < minSpecialChar; i++ {
-		random := rand.Intn(len(specialCharSet))
-		password.WriteString(string(specialCharSet[random]))
+	if addressNote, ok := data["addressNote"].(string); ok {
+		address.AddressNote = addressNote
 	}
 
-	//Set numeric
-	for i := 0; i < minNum; i++ {
-		random := rand.Intn(len(numberSet))
-		password.WriteString(string(numberSet[random]))
+	if formattedAddress, ok := data["formattedAddress"].(string); ok {
+		address.FormattedAddress = formattedAddress
 	}
 
-	//Set uppercase
-	for i := 0; i < minUpperCase; i++ {
-		random := rand.Intn(len(upperCharSet))
-		password.WriteString(string(upperCharSet[random]))
+	if lat, ok := data["lat"].(float64); ok {
+		address.Lat = lat
 	}
 
-	remainingLength := passwordLength - minSpecialChar - minNum - minUpperCase
-	for i := 0; i < remainingLength; i++ {
-		random := rand.Intn(len(allCharSet))
-		password.WriteString(string(allCharSet[random]))
+	if lng, ok := data["lng"].(float64); ok {
+		address.Lng = lng
 	}
-	inRune := []rune(password.String())
-	rand.Shuffle(len(inRune), func(i, j int) {
-		inRune[i], inRune[j] = inRune[j], inRune[i]
-	})
-	return string(inRune)
+
+	if nameReceiver, ok := data["nameReceiver"].(string); ok {
+		address.NameReceiver = nameReceiver
+	}
+
+	if phone, ok := data["phone"].(string); ok {
+		address.Phone = phone
+	}
+
+	return address
+}
+
+/* For model Store */
+
+func ToStore(data map[string]interface{}) models.Store {
+	var store models.Store
+
+	if name, ok := data["shortName"].(string); ok {
+		store.Name = name
+	}
+
+	if addressData, ok := data["address"].(map[string]interface{}); ok {
+		store.Address = ToAddress(addressData)
+	}
+
+	return store
 }
