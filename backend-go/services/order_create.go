@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"math"
 	"net/http"
+	"sync"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -104,20 +105,33 @@ func calcPrice(ord *models.Order) {
 	}
 
 	mapSize := make(map[string]models.Size)
-	for sizeId := range setSizeId {
-		respMpSize, _ := app_context.App.GetDocumentMap(constants.CLT_SIZE, sizeId)
-		mapSize[sizeId] = helpers.ToSize(respMpSize)
-	}
 	mapTopping := make(map[string]models.Topping)
-	for toppingId := range setToppingId {
-		respMpTopping, _ := app_context.App.GetDocumentMap(constants.CLT_TOPPING, toppingId)
-		mapTopping[toppingId] = helpers.ToTopping(respMpTopping)
-	}
 	mapFood := make(map[string]models.Food)
-	for foodId := range setFoodId {
-		respMpFood, _ := app_context.App.GetDocumentMap(constants.CLT_FOOD, foodId)
-		mapFood[foodId] = helpers.ToFood(respMpFood)
-	}
+
+	var wg sync.WaitGroup
+	wg.Add(3)
+	go func() { // fetchSizes
+		defer wg.Done()
+		for sizeId := range setSizeId {
+			respMpSize, _ := app_context.App.GetDocumentMap(constants.CLT_SIZE, sizeId)
+			mapSize[sizeId] = helpers.ToSize(respMpSize)
+		}
+	}()
+	go func() { // fetchToppings
+		defer wg.Done()
+		for toppingId := range setToppingId {
+			respMpTopping, _ := app_context.App.GetDocumentMap(constants.CLT_TOPPING, toppingId)
+			mapTopping[toppingId] = helpers.ToTopping(respMpTopping)
+		}
+	}()
+	go func() { // fetchFoods
+		defer wg.Done()
+		for foodId := range setFoodId {
+			respMpFood, _ := app_context.App.GetDocumentMap(constants.CLT_FOOD, foodId)
+			mapFood[foodId] = helpers.ToFood(respMpFood)
+		}
+	}()
+	wg.Wait()
 
 	for i, v := range ord.OrderedFoods {
 		unitPrice := 0
@@ -148,28 +162,30 @@ func calcPrice(ord *models.Order) {
 	}
 
 	if len(ord.IDPromo) > 0 {
-		respPromo, _ := app_context.App.GetDocumentMap("Promo", ord.IDPromo)
+		respPromo, err := app_context.App.GetDocumentMap("Promo", ord.IDPromo)
+		if err != nil {
+			fmt.Println("Invalid promo code")
+		} else {
+			canUse := false
+			for _, v := range respPromo["stores"].([]interface{}) {
+				if s, ok := v.(string); ok {
+					if s == ord.IDStore {
+						canUse = true
+						break
+					}
+				}
+			}
 
-		canUse := false
-		for _, v := range respPromo["stores"].([]interface{}) {
-			if s, ok := v.(string); ok {
-				if s == ord.IDStore {
-					canUse = true
-					break
+			if canUse {
+				canUse = false
+				atLeastPrice := int(respPromo["minPrice"].(int64))
+				maxDiscount := int(respPromo["maxPrice"].(int64))
+
+				if ord.PriceProducts >= atLeastPrice {
+					ord.PriceDiscount = int(math.Min(float64(ord.PriceProducts)*respPromo["percent"].(float64), float64(maxDiscount)))
 				}
 			}
 		}
-
-		if canUse {
-			canUse = false
-			atLeastPrice := int(respPromo["minPrice"].(int64))
-			maxDiscount := int(respPromo["maxPrice"].(int64))
-
-			if ord.PriceProducts >= atLeastPrice {
-				ord.PriceDiscount = int(math.Min(float64(ord.PriceProducts)*respPromo["percent"].(float64), float64(maxDiscount)))
-			}
-		}
-
 	}
 
 	ord.PriceTotal = int(math.Max(0.0, float64(ord.PriceProducts-ord.PriceDiscount+ord.DeliveryCost)))
