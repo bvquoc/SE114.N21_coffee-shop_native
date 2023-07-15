@@ -33,7 +33,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/recyclerOrderDetails"
-                    android:text="Price"
+                    android:text="Tổng tiền"
                     style="@style/regularBlack14" />
 
                 <TextView
@@ -52,7 +52,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/txtPrice"
-                    android:text="Shipping fee"
+                    android:text="Phí vận chuyển"
                     style="@style/regularBlack14" />
 
                 <TextView
