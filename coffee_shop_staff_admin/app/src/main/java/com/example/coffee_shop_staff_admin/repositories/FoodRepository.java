@@ -1,38 +1,41 @@
 package com.example.coffee_shop_staff_admin.repositories;
 
+import android.net.Uri;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.coffee_shop_staff_admin.models.Food;
 import com.example.coffee_shop_staff_admin.utils.interfaces.UpdateDataListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class FoodRepository {
     private static final String TAG = "FoodRepository";
     //singleton
     private static FoodRepository instance;
-    private MutableLiveData<List<Food>> foodListMutableLiveData;
-    private FirebaseFirestore firestore;
+    private final MutableLiveData<List<Food>> foodListMutableLiveData;
+    private final FirebaseFirestore fireStore;
+    private final StorageReference storageRef;
     private FoodRepository() {
         foodListMutableLiveData = new MutableLiveData<>();
-        //define firestore
-        firestore = FirebaseFirestore.getInstance();
+        //define fireStore
+        fireStore = FirebaseFirestore.getInstance();
+        storageRef = FirebaseStorage.getInstance().getReference();
     }
     public static synchronized FoodRepository getInstance() {
         if (instance == null) {
@@ -49,13 +52,13 @@ public class FoodRepository {
     }
     public void registerSnapshotListener()
     {
-        firestore.collection("Food").addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                Log.d(TAG, "get foods started.");
+        fireStore.collection("Food").addSnapshotListener((value, error) -> {
+            Log.d(TAG, "get foods started.");
+            if(value!=null)
+            {
                 getFood(value);
-                Log.d(TAG, "get foods finishes.");
             }
+            Log.d(TAG, "get foods finishes.");
         });
     }
     void getFood(QuerySnapshot value)
@@ -68,12 +71,7 @@ public class FoodRepository {
             }
         }
 
-        foodList.sort(new Comparator<Food>() {
-            @Override
-            public int compare(Food o1, Food o2) {
-                return  o1.getName().compareTo(o2.getName());
-            }
-        });
+        foodList.sort(Comparator.comparing(Food::getName));
 
         foodListMutableLiveData.postValue(foodList);
     }
@@ -81,34 +79,119 @@ public class FoodRepository {
     {
         try
         {
-            DocumentReference foodRef = firestore.collection("Food").document(foodId);
+            DocumentReference foodRef = fireStore.collection("Food").document(foodId);
             Map<String, Object> updates = new HashMap<>();
             updates.put("toppings", toppingIds);
             updates.put("sizes", sizeIds);
-            foodRef.update(updates).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void unused) {
-                    listener.onUpdateData(true);
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    listener.onUpdateData(false);
-                }
-            });
+            foodRef.update(updates)
+                    .addOnSuccessListener(unused -> listener.onUpdateData(true))
+                    .addOnFailureListener(e -> listener.onUpdateData(false));
         }
         catch (Exception e)
         {
             listener.onUpdateData(false);
         }
     }
-    public void deleteFood(String foodId, UpdateDataListener listener)
+    public void updateFood(Food food, UpdateDataListener listener)
     {
-        DocumentReference foodRef = firestore.collection("Food").document(foodId);
-        foodRef.delete().addOnSuccessListener(taskSnapshot -> {
-            listener.onUpdateData(true);
-        }).addOnFailureListener(exception -> {
-            listener.onUpdateData(false);
-        });
+        DocumentReference foodRef = fireStore.collection("Food").document(food.getId());
+        Map<String, Object> newData = new HashMap<>();
+        newData.put("name", food.getName());
+        newData.put("price", (int)food.getPrice());
+        newData.put("description", food.getDescription());
+        newData.put("sizes", food.getSizes());
+        newData.put("toppings", food.getToppings());
+
+        List<String> images = new ArrayList<>();
+        int amountImage = food.getImages().size();
+        for (String image: food.getImages()) {
+            Uri uriFood = Uri.parse(image);
+            String scheme = uriFood.getScheme();
+            if (scheme != null) {
+                if (scheme.equals("https") || scheme.equals("gs")) {
+                    //The image is still from firebase
+                    images.add(image);
+                    if (images.size() == amountImage) {
+                        newData.put("images", images);
+                        foodRef.update(newData)
+                                .addOnSuccessListener(unused -> listener.onUpdateData(true))
+                                .addOnFailureListener(e -> listener.onUpdateData(false));
+                    }
+                } else {
+                    //The image is from phone
+                    String imageId = UUID.randomUUID().toString().replace("-", "");
+                    StorageReference imageRef = storageRef.child("products/food/" + imageId);
+                    UploadTask uploadTask = imageRef.putFile(uriFood);
+                    uploadTask.addOnSuccessListener(
+                            taskSnapshot -> imageRef.getDownloadUrl()
+                                    .addOnSuccessListener(uri -> {
+                                        images.add(uri.toString());
+                                        if (images.size() == amountImage) {
+                                            newData.put("images", images);
+                                            foodRef.update(newData)
+                                                    .addOnSuccessListener(
+                                                            unused -> listener.onUpdateData(true))
+                                                    .addOnFailureListener(
+                                                            e -> listener.onUpdateData(false));
+                                        }
+                                    }).addOnFailureListener(exception -> {
+                                        Log.e(TAG, "Failed to get the download URL");
+                                        listener.onUpdateData(false);
+                                    })).addOnFailureListener(exception -> {
+                                        Log.e(TAG, "Failed to upload the image");
+                                        listener.onUpdateData(false);
+                                    });
+                }
+            } else {
+                Log.e(TAG, "The URI does not have a scheme or is invalid");
+                listener.onUpdateData(false);
+            }
+        }
+    }
+
+    public void insertFood(Food food, UpdateDataListener listener)
+    {
+        CollectionReference collectionFoodRef = fireStore.collection("Food");
+        Map<String, Object> newData = new HashMap<>();
+        newData.put("name", food.getName());
+        newData.put("description", food.getDescription());
+        newData.put("price", (int)food.getPrice());
+        newData.put("sizes", food.getSizes());
+        newData.put("toppings", food.getToppings());
+
+        List<String> images = new ArrayList<>();
+        int amountImage = food.getImages().size();
+        for (String image: food.getImages()) {
+            Uri uriFood = Uri.parse(image);
+
+            String imageId = UUID.randomUUID().toString().replace("-", "");
+            StorageReference imageRef = storageRef.child("products/food/" + imageId);
+            UploadTask uploadTask = imageRef.putFile(uriFood);
+            uploadTask.addOnSuccessListener(taskSnapshot ->
+                    imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                        images.add(uri.toString());
+                        if (images.size() == amountImage) {
+                            newData.put("images", images);
+                            newData.put("createAt", new Date());
+                            collectionFoodRef.add(newData)
+                                    .addOnSuccessListener(unused -> listener.onUpdateData(true))
+                                    .addOnFailureListener(e -> listener.onUpdateData(false));
+                        }
+                    }).addOnFailureListener(exception -> {
+                        Log.e(TAG, "Failed to get the download URL");
+                        listener.onUpdateData(false);
+                    })).addOnFailureListener(exception -> {
+                Log.e(TAG, "Failed to upload the image");
+                listener.onUpdateData(false);
+            });
+        }
+    }
+    public void deleteFood(String foodId, UpdateDataListener listener) {
+        DocumentReference foodRef = fireStore.collection("Food").document(foodId);
+        foodRef.delete()
+                .addOnSuccessListener(
+                    taskSnapshot -> listener.onUpdateData(true))
+                .addOnFailureListener(
+                        exception -> listener.onUpdateData(false));
     }
 }

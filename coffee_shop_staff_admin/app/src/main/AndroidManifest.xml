@@ -11,13 +11,28 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="31">
+        <activity
+            android:name=".activities.RuleManagementActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize"/>
+        <activity
+            android:name=".activities.FoodAdminEditActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.PromoAdminEditActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.PromoAdminDetailActivity"
+            android:exported="false" />
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyBosQ4pNoDkbozACtL1XEkyyvkdbwJRqUw" />
+
         <activity
             android:name=".activities.MapsActivity"
             android:exported="false"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".activities.StoreAdminEditActivity"
             android:exported="false" />
@@ -32,7 +47,8 @@
             android:exported="false" />
         <activity
             android:name=".activities.SizeAdminDetailActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".activities.ToppingAdminDetailActivity"
             android:exported="false" />
