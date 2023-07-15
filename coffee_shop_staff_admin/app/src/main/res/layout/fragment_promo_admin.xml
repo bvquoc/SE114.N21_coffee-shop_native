@@ -1,14 +1,160 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".fragments.PromoAdminFragment">
-
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <import type="android.view.View"/>
+        <variable
+            name="viewModel"
+            type="com.example.coffee_shop_staff_admin.viewmodels.PromoAdminViewModel" />
+    </data>
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        tools:context=".fragments.PromoAdminFragment"
+        android:background="@color/background">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <com.facebook.shimmer.ShimmerFrameLayout
+                android:id="@+id/shimmer_layout"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:orientation="vertical"
+                app:duration="500"
+                android:paddingHorizontal="@dimen/_16sdp"
+                android:paddingVertical="@dimen/_8sdp"
+                android:visibility="@{viewModel.loading?View.VISIBLE:View.GONE}">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
-</FrameLayout>
+                    <include layout="@layout/store_admin_item_skeleton" />
+
+                    <include layout="@layout/store_admin_item_skeleton" />
+
+                    <include layout="@layout/store_admin_item_skeleton" />
+
+                    <include layout="@layout/store_admin_item_skeleton" />
+
+                    <include layout="@layout/store_admin_item_skeleton" />
+
+                    <include layout="@layout/store_admin_item_skeleton" />
+
+                    <include layout="@layout/store_admin_item_skeleton" />
+                    <include layout="@layout/store_admin_item_skeleton" />
+
+                    <include layout="@layout/store_admin_item_skeleton" />
+
+                    <include layout="@layout/store_admin_item_skeleton" />
+
+                    <include layout="@layout/store_admin_item_skeleton" />
+
+                    <include layout="@layout/store_admin_item_skeleton" />
+                </LinearLayout>
+            </com.facebook.shimmer.ShimmerFrameLayout>
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:visibility="@{viewModel.loading?View.GONE:View.VISIBLE}">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/search_text_box"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/nested_scroll_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="@dimen/_16sdp"
+                    android:paddingEnd="0dp"
+                    android:paddingTop="@dimen/_8sdp"
+                    android:paddingBottom="@dimen/_16sdp"
+                    android:background="@color/white">
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/edit_text_frame"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toLeftOf="@id/add_button"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:layout_marginTop="0dp"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:startIconDrawable="@drawable/ic_search_24"
+                        app:startIconTint="@color/blue"
+                        app:endIconMode="clear_text"
+                        app:endIconDrawable="@drawable/ic_clear_white_24"
+                        app:endIconTint="@color/blue"
+                        app:boxStrokeColor="@color/black"
+                        app:boxCornerRadiusBottomEnd="@dimen/_4sdp"
+                        app:boxCornerRadiusBottomStart="@dimen/_4sdp"
+                        app:boxCornerRadiusTopEnd="@dimen/_4sdp"
+                        app:boxCornerRadiusTopStart="@dimen/_4sdp"
+                        app:startIconMinSize="@dimen/_38sdp"
+                        app:hintAnimationEnabled="false"
+                        app:hintEnabled="false">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edit_text"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingVertical="@dimen/_8sdp"
+                            android:paddingHorizontal="0dp"
+                            android:maxLines="1"
+                            android:inputType="text"
+                            android:hint="Tìm kiếm mã giảm giá"
+                            app:hintTextAppearance="@style/regularGrey14"
+                            style="@style/regularBlack14"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+                    <Button
+                        android:id="@+id/add_button"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/edit_text_frame"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingHorizontal="@dimen/_16sdp"
+                        android:minWidth="0dp"
+                        style="@style/Widget.MaterialComponents.Button.TextButton"
+                        android:text="Thêm"
+                        android:textAppearance="@style/regularBlue14"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+                <androidx.core.widget.NestedScrollView
+                    android:id="@+id/nested_scroll_view"
+                    app:layout_constraintTop_toBottomOf="@id/search_text_box"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:scrollbarStyle="outsideInset">
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="@dimen/_16sdp"
+                        android:layout_marginVertical="@dimen/_6sdp"
+                        android:nestedScrollingEnabled="false"
+                        android:focusable="false"
+                        android:clickable="false"
+                        android:focusableInTouchMode="false">
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/recycler_view"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:nestedScrollingEnabled="false"
+                            android:focusable="false"
+                            android:focusableInTouchMode="false"
+                            android:clickable="false"/>
+                    </RelativeLayout>
+                </androidx.core.widget.NestedScrollView>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </FrameLayout>
+</layout>
