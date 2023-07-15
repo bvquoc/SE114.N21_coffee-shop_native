@@ -3,7 +3,7 @@ package services
 import (
 	"coffee_shop_backend/constants"
 	app_context "coffee_shop_backend/context"
-	"coffee_shop_backend/datastruct"
+	ds "coffee_shop_backend/datastruct"
 	"coffee_shop_backend/helpers"
 	"coffee_shop_backend/models"
 	"encoding/json"
@@ -43,8 +43,10 @@ func OrderCreate(c *gin.Context) {
 	delete(data, "discountPrice")
 	delete(data, "totalPrice")
 	delete(data, "totalProduct")
+	delete(data, "pickupTime")
+	delete(data, "address")
 	delete(data, "deliveryCost")
-	ordersId, err := app_context.App.CreateDocument("beorders", data)
+	ordersId, err := app_context.App.CreateDocument(constants.CLT_ORDER, data)
 	if err != nil {
 		fmt.Println("Error create firestore document:", err)
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request body"})
@@ -60,14 +62,19 @@ func OrderCreate(c *gin.Context) {
 		dataBytes, _ := json.Marshal(newOrder)
 		var data map[string]interface{}
 		delete(data, "dateOrder")
-		delete(data, "pickupTime")
 		delete(data, "address")
 		delete(data, "promo")
 		delete(data, "store")
 		delete(data, "user")
+		if (newOrder.PickupTime == time.Time{}) {
+			delete(data, "pickupTime")
+		} else {
+			delete(data, "address")
+		}
+
 		json.Unmarshal(dataBytes, &data)
 
-		app_context.App.UpdateDocument("beorders", orderId, data)
+		app_context.App.UpdateDocument(constants.CLT_ORDER, orderId, data)
 	}()
 }
 
@@ -84,9 +91,9 @@ func calcPrice(ord *models.Order) {
 		fmt.Println("[ORDER_CREATE] Pickup")
 	}
 
-	setFoodId := make(datastruct.SetOfString)
-	setToppingId := make(datastruct.SetOfString)
-	setSizeId := make(datastruct.SetOfString)
+	setFoodId := make(ds.SetOfString)
+	setToppingId := make(ds.SetOfString)
+	setSizeId := make(ds.SetOfString)
 
 	for _, v := range ord.OrderedFoods {
 		setSizeId.Add(v.Size)

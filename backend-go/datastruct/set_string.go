@@ -1,4 +1,4 @@
-package datastruct
+package ds
 
 type SetOfString map[string]struct{}
 
