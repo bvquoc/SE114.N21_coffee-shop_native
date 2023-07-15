@@ -4,7 +4,8 @@
 
 ### 1. Create employee account
 
-**Endpoint:** [103.166.182.58/users](103.166.182.58/users)
+**Endpoint:** [http://103.166.182.58/users](http://103.166.182.58/users)
+
 **METHOD:** `POST`
 
 #### a. Request example
@@ -55,6 +56,7 @@ Status `400`:
 ### 1. Create Order
 
 **Endpoint:** [http://103.166.182.58/orders](http://103.166.182.58/orders)
+
 **METHOD:** `POST`
 
 #### a. Pickup Order
@@ -155,6 +157,7 @@ Status `400`:
 ### 2. Update Order State
 
 **Endpoint:** [http://103.166.182.58/orders/:orderId](http://103.166.182.58/orders/:id)
+
 **METHOD:** `PUT`
 
 #### a. Request example
