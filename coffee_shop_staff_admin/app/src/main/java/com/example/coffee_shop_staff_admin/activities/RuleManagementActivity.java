@@ -1,9 +1,13 @@
 package com.example.coffee_shop_staff_admin.activities;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,6 +18,7 @@ import com.example.coffee_shop_staff_admin.R;
 import com.example.coffee_shop_staff_admin.databinding.ActivityRuleManagementBinding;
 import com.example.coffee_shop_staff_admin.models.User;
 import com.example.coffee_shop_staff_admin.repositories.UserRepository;
+import com.example.coffee_shop_staff_admin.viewmodels.ChooseStoreViewModel;
 import com.example.coffee_shop_staff_admin.viewmodels.RuleManagementViewModel;
 
 public class RuleManagementActivity extends AppCompatActivity {
@@ -25,7 +30,22 @@ public class RuleManagementActivity extends AppCompatActivity {
     private AsyncTask<Void, Void, Void> updateTask;
 
     private User selectedUser = null;
-
+    private final ActivityResultLauncher<Intent> activitychooseStoreResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    Intent data = result.getData();
+                    if (data != null) {
+                        if(updateTask!=null)
+                        {
+                            updateTask.cancel(true);
+                        }
+                        updateTask = new UpdateTask(UpdateUserType.staff, !ruleManagementViewModel.isStaff(), data.getStringExtra("storeId"));
+                        updateTask.execute();
+                    }
+                }
+            }
+    );
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,12 +84,20 @@ public class RuleManagementActivity extends AppCompatActivity {
         });
 
         activityRuleManagementBinding.staffButton.setOnClickListener(v -> {
-            if(updateTask!=null)
+            if(ruleManagementViewModel.isStaff())
             {
-                updateTask.cancel(true);
+                if(updateTask!=null)
+                {
+                    updateTask.cancel(true);
+                }
+                updateTask = new UpdateTask(UpdateUserType.staff, !ruleManagementViewModel.isStaff());
+                updateTask.execute();
             }
-            updateTask = new UpdateTask(UpdateUserType.staff, !ruleManagementViewModel.isStaff());
-            updateTask.execute();
+            else
+            {
+                Intent intent = new Intent(RuleManagementActivity.this, ChooseStoreActivity.class);
+                activitychooseStoreResultLauncher.launch(intent);
+            }
         });
 
         activityRuleManagementBinding.adminButton.setOnClickListener(v -> {
@@ -127,10 +155,17 @@ public class RuleManagementActivity extends AppCompatActivity {
     private final class UpdateTask extends AsyncTask<Void, Void, Void> {
         private final UpdateUserType type;
         private final boolean value;
+        private String store = "";
         public UpdateTask(UpdateUserType type, boolean value)
         {
             this.type = type;
             this.value = value;
+        }
+        public UpdateTask(UpdateUserType type, boolean value, String store)
+        {
+            this.type = type;
+            this.value = value;
+            this.store = store;
         }
         @Override
         protected void onPreExecute() {
@@ -166,7 +201,7 @@ public class RuleManagementActivity extends AppCompatActivity {
             }
             else if(type == UpdateUserType.staff)
             {
-                UserRepository.getInstance().updateUserStaffAccess(selectedUser.getId(), value, success -> {
+                UserRepository.getInstance().updateUserStaffAccess(selectedUser.getId(), value, store, success -> {
                     if(success)
                     {
                         Log.e(TAG, "set user's staff access success.");

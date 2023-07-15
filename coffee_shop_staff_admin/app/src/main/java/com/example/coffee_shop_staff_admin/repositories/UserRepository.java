@@ -53,11 +53,15 @@ public class UserRepository{
                 .addOnSuccessListener(aVoid -> listener.onUpdateData(true))
                 .addOnFailureListener(e -> listener.onUpdateData(false));
     }
-    public void updateUserStaffAccess(String userId, boolean isStaff, UpdateDataListener listener)
+    public void updateUserStaffAccess(String userId, boolean isStaff, String store, UpdateDataListener listener)
     {
         DocumentReference userRef = fireStore.collection("users").document(userId);
         Map<String, Object> newData = new HashMap<>();
         newData.put("isStaff", isStaff);
+        if(isStaff)
+        {
+            newData.put("store", store);
+        }
         userRef.update(newData)
                 .addOnSuccessListener(aVoid -> listener.onUpdateData(true))
                 .addOnFailureListener(e -> listener.onUpdateData(false));

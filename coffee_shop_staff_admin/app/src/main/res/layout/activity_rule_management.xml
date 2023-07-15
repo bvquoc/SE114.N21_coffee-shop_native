@@ -184,7 +184,7 @@
                                 android:textAllCaps="false"
                                 android:textAppearance="@style/regularWhite16"
                                 android:stateListAnimator="@null"
-                                android:backgroundTint="@{viewModel.active?@color/red:@color/blue}"
+                                android:backgroundTint="@{viewModel.active?@color/red:@color/green}"
                                 android:text="@{viewModel.normalUserText}"/>
                         </LinearLayout>
                         <View
@@ -209,7 +209,7 @@
                                 android:textAllCaps="false"
                                 android:textAppearance="@style/regularWhite16"
                                 android:stateListAnimator="@null"
-                                android:backgroundTint="@{viewModel.staff?@color/red:@color/blue}"
+                                android:backgroundTint="@{viewModel.staff?@color/red:@color/green}"
                                 android:text="@{viewModel.staffText}"/>
                         </LinearLayout>
                         <View
@@ -234,7 +234,7 @@
                                 android:textAllCaps="false"
                                 android:textAppearance="@style/regularWhite16"
                                 android:stateListAnimator="@null"
-                                android:backgroundTint="@{viewModel.admin?@color/red:@color/blue}"
+                                android:backgroundTint="@{viewModel.admin?@color/red:@color/green}"
                                 android:text="@{viewModel.adminText}"/>
                         </LinearLayout>
                     </LinearLayout>
