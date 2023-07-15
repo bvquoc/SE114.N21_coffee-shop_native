@@ -5,7 +5,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.Observer;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -15,24 +14,16 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.coffee_shop_staff_admin.R;
 import com.example.coffee_shop_staff_admin.databinding.ActivitySizeAdminEditBinding;
-import com.example.coffee_shop_staff_admin.databinding.ActivityToppingAdminEditBinding;
 import com.example.coffee_shop_staff_admin.models.Size;
-import com.example.coffee_shop_staff_admin.models.Topping;
 import com.example.coffee_shop_staff_admin.repositories.SizeRepository;
-import com.example.coffee_shop_staff_admin.repositories.ToppingRepository;
 import com.example.coffee_shop_staff_admin.utils.ValidateHelper;
-import com.example.coffee_shop_staff_admin.utils.interfaces.UpdateDataListener;
 import com.example.coffee_shop_staff_admin.utils.keyboard.KeyboardHelper;
-import com.example.coffee_shop_staff_admin.utils.keyboard.OnKeyboardVisibilityListener;
 import com.example.coffee_shop_staff_admin.viewmodels.SizeAdminEditViewModel;
-import com.example.coffee_shop_staff_admin.viewmodels.ToppingAdminEditViewModel;
 
 import java.io.IOException;
 
@@ -63,12 +54,7 @@ public class SizeAdminEditActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.my_toolbar);
         toolbar.setTitle("Tạo size");
         setSupportActionBar(toolbar);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
 
         Intent intent = getIntent();
         sizeId = intent.getStringExtra("sizeId");
@@ -89,83 +75,61 @@ public class SizeAdminEditActivity extends AppCompatActivity {
             sizeAdminEditViewModel.updateParameter(size);
             toolbar.setTitle("Thay đổi size");
         }
-        sizeAdminEditViewModel.getImageSource().observe(this, new Observer<Uri>() {
-            @Override
-            public void onChanged(Uri s) {
-                String scheme = s.getScheme();
-                if (scheme != null) {
-                    if (scheme.equals("https") || scheme.equals("gs")) {
-                        //The image is from FireBase
-                        try {
-                            Glide.with(getApplicationContext())
-                                    .load(s)
-                                    .into(activitySizeAdminEditBinding.imageView);
-                        }
-                        catch (Exception e)
-                        {
-                            Log.e(TAG, e.getMessage());
-                        }
-                    } else  {
-                        //The image is from phone
-                        Bitmap selectedImageBitmap;
-                        try {
-                            selectedImageBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), s);
-                            activitySizeAdminEditBinding.imageView.setImageBitmap(selectedImageBitmap);
-                        }
-                        catch (IOException e) {
-                            e.printStackTrace();
-                        }
+        sizeAdminEditViewModel.getImageSource().observe(this, s -> {
+            String scheme = s.getScheme();
+            if (scheme != null) {
+                if (scheme.equals("https") || scheme.equals("gs")) {
+                    //The image is from FireBase
+                    try {
+                        Glide.with(getApplicationContext())
+                                .load(s)
+                                .into(activitySizeAdminEditBinding.imageView);
                     }
-                    sizeAdminEditViewModel.setHasImage(true);
-                } else {
-                    Log.e(TAG, "The URI does not have a scheme or is invalid");
+                    catch (Exception e)
+                    {
+                        Log.e(TAG, e.getMessage());
+                    }
+                } else  {
+                    //The image is from phone
+                    Bitmap selectedImageBitmap;
+                    try {
+                        selectedImageBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), s);
+                        activitySizeAdminEditBinding.imageView.setImageBitmap(selectedImageBitmap);
+                    }
+                    catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
-
+                sizeAdminEditViewModel.setHasImage(true);
+            } else {
+                Log.e(TAG, "The URI does not have a scheme or is invalid");
             }
+
         });
         activitySizeAdminEditBinding.setViewModel(sizeAdminEditViewModel);
 
-        activitySizeAdminEditBinding.loading.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                //Prevent any action when loading is visible
-                return true;
-            }
+        activitySizeAdminEditBinding.loading.setOnTouchListener((v, event) -> {
+            //Prevent any action when loading is visible
+            return true;
         });
 
-        KeyboardHelper.setKeyboardVisibilityListener(this, new OnKeyboardVisibilityListener() {
-            @Override
-            public void onVisibilityChanged(boolean visible) {
-                if(visible){
-                    sizeAdminEditViewModel.setKeyBoardShow(true);
-                }
-                else {
-                    sizeAdminEditViewModel.setKeyBoardShow(false);
-                }
+        KeyboardHelper.setKeyboardVisibilityListener(this, sizeAdminEditViewModel::setKeyBoardShow);
+
+        activitySizeAdminEditBinding.button.setOnClickListener(v -> {
+            if(updateSizeTask!=null)
+            {
+                updateSizeTask.cancel(true);
             }
+            updateSizeTask = new UpdateSizeTask();
+            updateSizeTask.execute();
         });
 
-        activitySizeAdminEditBinding.button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(updateSizeTask!=null)
-                {
-                    updateSizeTask.cancel(true);
-                }
-                updateSizeTask = new UpdateSizeTask();
-                updateSizeTask.execute();
-            }
-        });
+        activitySizeAdminEditBinding.chooseImageButton.setOnClickListener(v -> {
+            Intent intent = new Intent();
+            intent.setType("image/*");
+            intent.setAction(Intent.ACTION_GET_CONTENT);
 
-        activitySizeAdminEditBinding.chooseImageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setType("image/*");
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-
-                chooseImageResultLauncher.launch(intent);
-            }
+            chooseImageResultLauncher.launch(intent);
         });
     }
     private final class UpdateSizeTask extends AsyncTask<Void, Void, Void> {
@@ -178,23 +142,19 @@ public class SizeAdminEditActivity extends AppCompatActivity {
             boolean isValid = true;
             if(!ValidateHelper.validateText(sizeAdminEditViewModel.getName()))
             {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        activitySizeAdminEditBinding.nameEditTextFrame.setError("Vui lòng nhập tên");
-                    }
-                });
+                runOnUiThread(() -> activitySizeAdminEditBinding.nameEditTextFrame.setError("Vui lòng nhập tên"));
                 isValid = false;
+            }else
+            {
+                runOnUiThread(() -> activitySizeAdminEditBinding.nameEditTextFrame.setError(null));
             }
             if(!ValidateHelper.validateDouble(sizeAdminEditViewModel.getPrice()))
             {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        activitySizeAdminEditBinding.priceEditTextFrame.setError("Vui lòng nhập số");
-                    }
-                });
+                runOnUiThread(() -> activitySizeAdminEditBinding.priceEditTextFrame.setError("Vui lòng nhập số"));
                 isValid = false;
+            }else
+            {
+                runOnUiThread(() -> activitySizeAdminEditBinding.priceEditTextFrame.setError(null));
             }
             if(!isValid)
             {
@@ -204,16 +164,11 @@ public class SizeAdminEditActivity extends AppCompatActivity {
             if(sizeAdminEditViewModel.getImageSource().getValue()==null)
             {
                 sizeAdminEditViewModel.setLoading(false);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(
-                                SizeAdminEditActivity.this,
-                                "Chưa chọn hình ảnh.",
-                                Toast.LENGTH_SHORT
-                        ).show();
-                    }
-                });
+                runOnUiThread(() -> Toast.makeText(
+                        SizeAdminEditActivity.this,
+                        "Chưa chọn hình ảnh.",
+                        Toast.LENGTH_SHORT
+                ).show());
                 return null;
             }
             if(sizeId != null)
@@ -224,42 +179,29 @@ public class SizeAdminEditActivity extends AppCompatActivity {
                         Double.parseDouble(sizeAdminEditViewModel.getPrice()),
                         sizeAdminEditViewModel.getImageSource().getValue().toString()
                 );
-                SizeRepository.getInstance().updateSize(size, new UpdateDataListener() {
-                    @Override
-                    public void onUpdateData(boolean success) {
-                        if(success)
-                        {
-                            Log.e(TAG, "update topping successfully.");
-                            sizeAdminEditViewModel.setLoading(false);
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(
-                                            SizeAdminEditActivity.this,
-                                            "Đã chỉnh size thành công.",
-                                            Toast.LENGTH_SHORT
-                                    ).show();
-                                }
-                            });
-                            Intent intent = new Intent();
-                            setResult(RESULT_OK, intent);
-                            finish();
-                        }
-                        else
-                        {
-                            Log.e(TAG, "update size failed.");
-                            sizeAdminEditViewModel.setLoading(false);
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(
-                                            SizeAdminEditActivity.this,
-                                            "Đã có lỗi xảy ra. Xin hãy thử lại sau.",
-                                            Toast.LENGTH_SHORT
-                                    ).show();
-                                }
-                            });
-                        }
+                SizeRepository.getInstance().updateSize(size, (success, message) -> {
+                    if(success)
+                    {
+                        Log.e(TAG, "update topping successfully.");
+                        sizeAdminEditViewModel.setLoading(false);
+                        runOnUiThread(() -> Toast.makeText(
+                                SizeAdminEditActivity.this,
+                                "Đã chỉnh size thành công.",
+                                Toast.LENGTH_SHORT
+                        ).show());
+                        Intent intent = new Intent();
+                        setResult(RESULT_OK, intent);
+                        finish();
+                    }
+                    else
+                    {
+                        Log.e(TAG, "update size failed.");
+                        sizeAdminEditViewModel.setLoading(false);
+                        runOnUiThread(() -> Toast.makeText(
+                                SizeAdminEditActivity.this,
+                                "Đã có lỗi xảy ra. Xin hãy thử lại sau.",
+                                Toast.LENGTH_SHORT
+                        ).show());
                     }
                 });
             }
@@ -271,40 +213,27 @@ public class SizeAdminEditActivity extends AppCompatActivity {
                         Double.parseDouble(sizeAdminEditViewModel.getPrice()),
                         sizeAdminEditViewModel.getImageSource().getValue().toString()
                 );
-                SizeRepository.getInstance().insertSize(size, new UpdateDataListener() {
-                    @Override
-                    public void onUpdateData(boolean success) {
-                        if(success)
-                        {
-                            Log.e(TAG, "insert size successfully.");
-                            sizeAdminEditViewModel.setLoading(false);
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(
-                                            SizeAdminEditActivity.this,
-                                            "Đã thêm size thành công.",
-                                            Toast.LENGTH_SHORT
-                                    ).show();
-                                }
-                            });
-                            finish();
-                        }
-                        else
-                        {
-                            Log.e(TAG, "insert size failed.");
-                            sizeAdminEditViewModel.setLoading(false);
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(
-                                            SizeAdminEditActivity.this,
-                                            "Đã có lỗi xảy ra. Xin hãy thử lại sau.",
-                                            Toast.LENGTH_SHORT
-                                    ).show();
-                                }
-                            });
-                        }
+                SizeRepository.getInstance().insertSize(size, (success, message) -> {
+                    if(success)
+                    {
+                        Log.e(TAG, "insert size successfully.");
+                        sizeAdminEditViewModel.setLoading(false);
+                        runOnUiThread(() -> Toast.makeText(
+                                SizeAdminEditActivity.this,
+                                "Đã thêm size thành công.",
+                                Toast.LENGTH_SHORT
+                        ).show());
+                        finish();
+                    }
+                    else
+                    {
+                        Log.e(TAG, "insert size failed.");
+                        sizeAdminEditViewModel.setLoading(false);
+                        runOnUiThread(() -> Toast.makeText(
+                                SizeAdminEditActivity.this,
+                                "Đã có lỗi xảy ra. Xin hãy thử lại sau.",
+                                Toast.LENGTH_SHORT
+                        ).show());
                     }
                 });
             }
