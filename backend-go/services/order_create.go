@@ -61,8 +61,8 @@ func OrderCreate(c *gin.Context) {
 
 		dataBytes, _ := json.Marshal(newOrder)
 		var data map[string]interface{}
+		json.Unmarshal(dataBytes, &data)
 		delete(data, "dateOrder")
-		delete(data, "address")
 		delete(data, "promo")
 		delete(data, "store")
 		delete(data, "user")
@@ -71,8 +71,6 @@ func OrderCreate(c *gin.Context) {
 		} else {
 			delete(data, "address")
 		}
-
-		json.Unmarshal(dataBytes, &data)
 
 		app_context.App.UpdateDocument(constants.CLT_ORDER, orderId, data)
 	}()
@@ -121,18 +119,19 @@ func calcPrice(ord *models.Order) {
 	}
 
 	for i, v := range ord.OrderedFoods {
-		sl := v.Quantity
+		unitPrice := 0
 		ord.OrderedFoods[i].Image = mapFood[v.ID].Images[0]
 		// size
 		sizePrice := mapSize[v.Size].Price
-		ord.PriceProducts += sizePrice * sl
+		unitPrice += sizePrice
 		ord.OrderedFoods[i].Size = mapSize[v.Size].Name
 		// food
 		foodPrice := mapFood[v.ID].Price
-		ord.PriceProducts += foodPrice * sl
+		unitPrice += foodPrice
+		ord.OrderedFoods[i].Name = mapFood[v.ID].Name
 		// topping
 		for _, t := range v.ToppingIds {
-			ord.PriceProducts += mapTopping[t].Price * sl
+			unitPrice += mapTopping[t].Price
 			str := ord.OrderedFoods[i].ToppingsStr
 			if str != "" {
 				str = str + ", "
@@ -140,6 +139,11 @@ func calcPrice(ord *models.Order) {
 			str = str + mapTopping[t].Name
 			ord.OrderedFoods[i].ToppingsStr = str
 		}
+
+		totalPrice := unitPrice * v.Quantity
+		ord.OrderedFoods[i].UnitPrice = unitPrice
+		ord.OrderedFoods[i].TotalPrice = totalPrice
+		ord.PriceProducts += totalPrice
 	}
 
 	if len(ord.IDPromo) > 0 {
