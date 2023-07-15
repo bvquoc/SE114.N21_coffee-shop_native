@@ -35,5 +35,5 @@ func main() {
 
 	g := gin.Default()
 	g = routes.Routes(g)
-	g.Run()
+	g.Run(":" + os.Getenv("PORT"))
 }
