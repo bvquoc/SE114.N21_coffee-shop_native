@@ -1,18 +1,11 @@
 package services
 
 import (
-	"coffee_shop_backend/models"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
-func UserCreateUser(c *gin.Context) {
-	var newUser models.User
-	if err := c.ShouldBindJSON(&newUser); err != nil {
-		c.JSON(400, gin.H{"message": "Invalid request body"})
-		return
-	}
-
-	// users = append(users, newUser)
-	// c.JSON(201)
+func UserGetAll(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{"users": make([]int, 0)})
 }

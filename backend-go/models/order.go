@@ -13,6 +13,7 @@ type Order struct {
 	Status        string      `json:"status"`
 	OrderedFoods  []FoodOrder `json:"orderedFoods"`
 	PickupTime    time.Time   `json:"pickupTime"`
+	Address       Address     `json:"address"`
 	PriceDiscount int         `json:"discountPrice"`
 	PriceTotal    int         `json:"totalPrice"`
 	PriceProducts int         `json:"totalProduct"`

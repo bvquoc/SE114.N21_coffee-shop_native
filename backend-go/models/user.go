@@ -12,6 +12,7 @@ type User struct {
 	IsAdmin      bool   `json:"isAdmin"`
 	IsStaff      bool   `json:"isStaff"`
 	StaffOf      string `json:"staffOf"`
+	Role         string `json:"role"`
 }
 
 func NewUser(userInfo map[string]interface{}) *User {

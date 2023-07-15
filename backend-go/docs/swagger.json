@@ -1,0 +1,20 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is a coffee shop server.",
+        "title": "Coffee Shop APIs",
+        "contact": {
+            "name": "Bui Vi Quoc",
+            "url": "https://www.facebook.com/bviquoc/",
+            "email": "21520095@gm.uit.edu.vn"
+        },
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/",
+    "paths": {}
+}
