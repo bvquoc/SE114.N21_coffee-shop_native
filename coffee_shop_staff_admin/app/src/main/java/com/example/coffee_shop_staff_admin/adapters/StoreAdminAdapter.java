@@ -1,12 +1,10 @@
 package com.example.coffee_shop_staff_admin.adapters;
 
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,9 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.coffee_shop_staff_admin.R;
 import com.example.coffee_shop_staff_admin.models.Store;
-import com.example.coffee_shop_staff_admin.models.Topping;
 import com.example.coffee_shop_staff_admin.utils.interfaces.OnStoreAdminClickListener;
-import com.example.coffee_shop_staff_admin.utils.interfaces.OnToppingAdminClickListener;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -25,8 +21,8 @@ import java.util.List;
 public class StoreAdminAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements Filterable {
     private static final int VIEW_TYPE_EMPTY_STATE = 0;
     private static final int VIEW_TYPE_ITEM = 1;
-    private List<Store> stores = new ArrayList<Store>();
-    private List<Store> storeFilter = new ArrayList<Store>();
+    private List<Store> stores = new ArrayList<>();
+    private List<Store> storeFilter = new ArrayList<>();
 
     private OnStoreAdminClickListener onStoreAdminClickListener;
 
@@ -100,12 +96,7 @@ public class StoreAdminAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
             if(onStoreAdminClickListener!=null)
             {
-                viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        onStoreAdminClickListener.onStoreAdminClick(store.getId());
-                    }
-                });
+                viewHolder.itemView.setOnClickListener(v -> onStoreAdminClickListener.onStoreAdminClick(store.getId()));
             }
         }
     }
@@ -124,17 +115,20 @@ public class StoreAdminAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     @Override
     public int getItemCount() {
-        return storeFilter.size();
+        if(storeFilter.size() == 0)
+        {
+            return 1;
+        }
+        else
+        {
+            return storeFilter.size();
+        }
     }
     public static class StoreAdapterViewHolder extends RecyclerView.ViewHolder{
-        private ImageView storeStatusImage;
-        private TextView storeName;
-        private TextView storeAddress;
-        private View itemView;
+        private final TextView storeName;
+        private final TextView storeAddress;
         public StoreAdapterViewHolder(@NonNull View itemView) {
             super(itemView);
-            this.itemView = itemView;
-            storeStatusImage = itemView.findViewById(R.id.image_status_store);
             storeName =  itemView.findViewById(R.id.name_text_view);
             storeAddress = itemView.findViewById(R.id.address_text_view);
         }

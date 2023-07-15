@@ -5,8 +5,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.Observer;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.app.Activity;
@@ -14,33 +12,18 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import com.example.coffee_shop_staff_admin.R;
-import com.example.coffee_shop_staff_admin.adapters.FoodAdminSizeAdapter;
-import com.example.coffee_shop_staff_admin.adapters.FoodAdminToppingAdapter;
 import com.example.coffee_shop_staff_admin.adapters.ImageViewPagerAdapter;
-import com.example.coffee_shop_staff_admin.databinding.ActivityFoodAdminDetailBinding;
 import com.example.coffee_shop_staff_admin.databinding.ActivityStoreAdminDetailBinding;
-import com.example.coffee_shop_staff_admin.models.Food;
-import com.example.coffee_shop_staff_admin.models.Size;
 import com.example.coffee_shop_staff_admin.models.Store;
-import com.example.coffee_shop_staff_admin.models.Topping;
-import com.example.coffee_shop_staff_admin.repositories.FoodRepository;
-import com.example.coffee_shop_staff_admin.repositories.SizeRepository;
 import com.example.coffee_shop_staff_admin.repositories.StoreRepository;
-import com.example.coffee_shop_staff_admin.repositories.ToppingRepository;
-import com.example.coffee_shop_staff_admin.utils.interfaces.UpdateDataListener;
-import com.example.coffee_shop_staff_admin.viewmodels.FoodAdminDetailViewModel;
 import com.example.coffee_shop_staff_admin.viewmodels.StoreAdminDetailViewModel;
 
-import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 public class StoreAdminDetailActivity extends AppCompatActivity {
     private final String TAG = "StoreAdminDetailActivity";
@@ -134,36 +117,33 @@ public class StoreAdminDetailActivity extends AppCompatActivity {
             }
         });
 
-        activityStoreAdminDetailBinding.editButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(selectedStore!=null)
-                {
-                    Intent intent = new Intent(StoreAdminDetailActivity.this, StoreAdminEditActivity.class);
-                    intent.putExtra("storeId", storeId);
-                    intent.putExtra("shortName", selectedStore.getShortName());
-                    intent.putExtra("formattedAddress", selectedStore.getAddress().getFormattedAddress());
-                    intent.putExtra("lat", selectedStore.getAddress().getLat());
-                    intent.putExtra("lng", selectedStore.getAddress().getLng());
-                    intent.putExtra("phone", selectedStore.getPhone());
-                    intent.putExtra("timeOpen", selectedStore.getTimeOpen());
-                    intent.putExtra("timeClose", selectedStore.getTimeClose());
-                    intent.putStringArrayListExtra("images",  new ArrayList<>(selectedStore.getImages()));
-                    activityEditStoreResultLauncher.launch(intent);
-                }
+        activityStoreAdminDetailBinding.manageButton.setOnClickListener(v -> Toast.makeText(StoreAdminDetailActivity.this, "Nav to manage store", Toast.LENGTH_SHORT).show());
+
+
+        activityStoreAdminDetailBinding.editButton.setOnClickListener(v -> {
+            if(selectedStore!=null)
+            {
+                Intent intent = new Intent(StoreAdminDetailActivity.this, StoreAdminEditActivity.class);
+                intent.putExtra("storeId", storeId);
+                intent.putExtra("shortName", selectedStore.getShortName());
+                intent.putExtra("formattedAddress", selectedStore.getAddress().getFormattedAddress());
+                intent.putExtra("lat", selectedStore.getAddress().getLat());
+                intent.putExtra("lng", selectedStore.getAddress().getLng());
+                intent.putExtra("phone", selectedStore.getPhone());
+                intent.putExtra("timeOpen", selectedStore.getTimeOpen());
+                intent.putExtra("timeClose", selectedStore.getTimeClose());
+                intent.putStringArrayListExtra("images",  new ArrayList<>(selectedStore.getImages()));
+                activityEditStoreResultLauncher.launch(intent);
             }
         });
 
-        activityStoreAdminDetailBinding.deleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(deleteStoreTask!=null)
-                {
-                    deleteStoreTask.cancel(true);
-                }
-                deleteStoreTask = new DeleteStoreTask();
-                deleteStoreTask.execute();
+        activityStoreAdminDetailBinding.deleteButton.setOnClickListener(v -> {
+            if(deleteStoreTask!=null)
+            {
+                deleteStoreTask.cancel(true);
             }
+            deleteStoreTask = new DeleteStoreTask();
+            deleteStoreTask.execute();
         });
     }
     private final class DeleteStoreTask extends AsyncTask<Void, Void, Void> {
@@ -173,40 +153,27 @@ public class StoreAdminDetailActivity extends AppCompatActivity {
         }
         @Override
         protected Void doInBackground(Void... params) {
-            StoreRepository.getInstance().deleteStore(storeId, new UpdateDataListener() {
-                @Override
-                public void onUpdateData(boolean success) {
-                    if(success)
-                    {
-                        storeAdminDetailViewModel.setUpdating(false);
-                        Log.e(TAG, "delete store successfully.");
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(
-                                        StoreAdminDetailActivity.this,
-                                        "Bạn đã xóa cửa hàng thành công",
-                                        Toast.LENGTH_SHORT
-                                ).show();
-                            }
-                        });
-                        finish();
-                    }
-                    else
-                    {
-                        storeAdminDetailViewModel.setUpdating(false);
-                        Log.e(TAG, "delete address failed.");
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(
-                                        StoreAdminDetailActivity.this,
-                                        "Đã có lỗi xảy ra. Xin hãy thử lại sau.",
-                                        Toast.LENGTH_SHORT
-                                ).show();
-                            }
-                        });
-                    }
+            StoreRepository.getInstance().deleteStore(storeId, success -> {
+                if(success)
+                {
+                    storeAdminDetailViewModel.setUpdating(false);
+                    Log.e(TAG, "delete store successfully.");
+                    runOnUiThread(() -> Toast.makeText(
+                            StoreAdminDetailActivity.this,
+                            "Bạn đã xóa cửa hàng thành công",
+                            Toast.LENGTH_SHORT
+                    ).show());
+                    finish();
+                }
+                else
+                {
+                    storeAdminDetailViewModel.setUpdating(false);
+                    Log.e(TAG, "delete address failed.");
+                    runOnUiThread(() -> Toast.makeText(
+                            StoreAdminDetailActivity.this,
+                            "Đã có lỗi xảy ra. Xin hãy thử lại sau.",
+                            Toast.LENGTH_SHORT
+                    ).show());
                 }
             });
             return null;
