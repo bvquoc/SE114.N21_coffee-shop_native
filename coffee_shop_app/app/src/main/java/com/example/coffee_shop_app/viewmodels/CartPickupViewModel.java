@@ -7,10 +7,15 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
+import com.example.coffee_shop_app.Data;
 import com.example.coffee_shop_app.models.AddressDelivery;
+import com.example.coffee_shop_app.models.CartFood;
 import com.example.coffee_shop_app.models.MLocation;
+import com.example.coffee_shop_app.models.OrderFood;
 import com.example.coffee_shop_app.models.Store;
 import com.example.coffee_shop_app.repository.StoreRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 
 import org.joda.time.DateTime;
 
@@ -20,7 +25,16 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 
 public class CartPickupViewModel extends ViewModel {
     private CartViewModel cartViewModel;
@@ -38,6 +52,9 @@ public class CartPickupViewModel extends ViewModel {
                 initDayTimeList();
             }
         });
+        if(storePickup.getValue()!=null){
+            initSelectedDate();
+        }
 //        initDayTimeList();
     }
 
@@ -71,14 +88,6 @@ public class CartPickupViewModel extends ViewModel {
     public MutableLiveData<List<Integer>> getHourStartTimeList() {
         return hourStartTimeList;
     }
-//    @Override
-//    public void placeOrder(Store store, AddressDelivery address, Date pickupTime, String status){
-//        super.placeOrder(
-//                this.storePickup.getValue(),
-//                null,
-//                this.timePickup.getValue(),
-//                "Đang xử lí");
-//    }
 
     // call only there is a store
     public void initDayTimeList(){
@@ -100,6 +109,7 @@ public class CartPickupViewModel extends ViewModel {
         c.setTime(date);
         for (int i = 0; i < 3; i++) {
             if(i==0 && !isToday){
+                c.add(Calendar.DATE, 1);
                 continue;
             }
             if(i==0){
@@ -107,13 +117,11 @@ public class CartPickupViewModel extends ViewModel {
             }else{
                 listHourStartTime.add(dateTimeToHour(storePickup.getValue().getTimeOpen()));
             }
-            c.add(Calendar.DATE, 1);
             listDay.add(c.getTime());
+            c.add(Calendar.DATE, 1);
         }
         this.dayList.setValue(listDay);
         this.hourStartTimeList.setValue(listHourStartTime);
-        initSelectedDate();
-
     }
     private void initSelectedDate(){
         Date date= getDayList().getValue().get(0);
@@ -145,22 +153,6 @@ public class CartPickupViewModel extends ViewModel {
         String minuteString=index % 2 * 30 == 0 ? "00" : String.valueOf(index % 2 * 30);
         return hourString+":" + minuteString;
     }
-
-    public String datetimeToString(int index) {
-        Date date = new Date() ;
-        Calendar c = Calendar.getInstance();
-        c.setTime(date);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy") ;
-        if(index==0){
-            return "Hôm nay";
-        }else if(index==1){
-            return "Ngày mai";
-        }else if(index==2){
-            c.add(Calendar.DATE, 2);
-            return dateFormat.format(c.getTime());
-        }
-        return "";
-    }
     public String[] dayListToArray(){
         String[] listString=new String[]{};
         Date date = new Date() ;
@@ -185,7 +177,7 @@ public class CartPickupViewModel extends ViewModel {
         }
         return listTime.toArray(new String[0]);
     }
-    public String datetimeToPickup(DateTime dateTime) {
+    public static String datetimeToPickup(DateTime dateTime) {
         DateTime now = DateTime.now();
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy") ;
         String day=dateFormat.format(dateTime.toDate());
@@ -201,7 +193,7 @@ public class CartPickupViewModel extends ViewModel {
 
         return hour+", "+day;
     }
-    public String datetimeToHour(DateTime dateTime) {
+    public static String datetimeToHour(DateTime dateTime) {
         int hour = dateTime.getHourOfDay();
         int minute=dateTime.getMinuteOfHour();
         String hourString= hour < 10 ? "0"+hour : hour+"";

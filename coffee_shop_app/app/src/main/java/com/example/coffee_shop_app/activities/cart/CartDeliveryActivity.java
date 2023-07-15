@@ -25,6 +25,7 @@ import com.example.coffee_shop_app.utils.SqliteHelper;
 import com.example.coffee_shop_app.viewmodels.CartDeliveryViewModel;
 import com.example.coffee_shop_app.viewmodels.CartViewModel;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,7 +41,7 @@ public class CartDeliveryActivity extends AppCompatActivity {
         activityCartDeliveryBinding = DataBindingUtil.setContentView(this, R.layout.activity_cart_delivery);
 
         Toolbar toolbar = findViewById(R.id.my_toolbar);
-        toolbar.setTitle("");
+        toolbar.setTitle("Giỏ hàng");
         setSupportActionBar(toolbar);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,7 +65,17 @@ public class CartDeliveryActivity extends AppCompatActivity {
                 DividerItemDecoration.VERTICAL));
 
         SqliteHelper repo = new SqliteHelper(CartDeliveryActivity.this);
-        cartFoods = repo.getCartFood(Data.instance.userId);
+        ProductRepository.getInstance().getProductListMutableLiveData().observe(this, new Observer<List<Product>>() {
+            @Override
+            public void onChanged(List<Product> products) {
+                cartFoods = repo.getCartFood(Data.instance.userId);
+                setUICartFood();
+            }
+        });
+
+    }
+
+    private void setUICartFood(){
         viewModel = new CartDeliveryViewModel();
         activityCartDeliveryBinding.setViewModel(viewModel);
         activityCartDeliveryBinding.btnPay.setOnClickListener(new View.OnClickListener() {
@@ -99,9 +110,10 @@ public class CartDeliveryActivity extends AppCompatActivity {
             @Override
             public void onChanged(List<CartFood> cartFoods) {
                 viewModel.calculateTotalPrice();
-                activityCartDeliveryBinding.btnPay.setText(viewModel.getTotal().getValue() + getString(R.string.vndUnit));
+                DecimalFormat formatter = new DecimalFormat("#,##0.##");
+                activityCartDeliveryBinding.btnPay.setText(formatter.format(viewModel.getTotal().getValue()) + getString(R.string.vndUnit));
                 activityCartDeliveryBinding.orderDetails
-                        .txtPrice.setText(viewModel.getCartViewModel().getTotalFood().getValue() + getString(R.string.vndUnit));
+                        .txtPrice.setText(formatter.format(viewModel.getCartViewModel().getTotalFood().getValue())  + getString(R.string.vndUnit));
 
                 if (viewModel.getDeliveryCost().getValue() == null) {
                     activityCartDeliveryBinding.orderDetails.txtShip.setVisibility(View.GONE);
@@ -109,7 +121,7 @@ public class CartDeliveryActivity extends AppCompatActivity {
 
                 } else {
                     activityCartDeliveryBinding.orderDetails
-                            .txtShip.setText(viewModel.getDeliveryCost().getValue() + getString(R.string.vndUnit));
+                            .txtShip.setText(formatter.format(viewModel.getDeliveryCost().getValue()) + getString(R.string.vndUnit));
                 }
                 adapter.setCartFoods(cartFoods);
                 adapter.notifyDataSetChanged();

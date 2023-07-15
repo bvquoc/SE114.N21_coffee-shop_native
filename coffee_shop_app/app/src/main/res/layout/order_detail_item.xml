@@ -57,17 +57,17 @@
                 android:text="@{@string/topping_text +' '+ cartFood.toppingName}"
                 style="@style/regularGrey12" />
             <TextView
+                android:id="@+id/txtPrice"
                 android:layout_marginTop="@dimen/_4sdp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{Double.toString(cartFood.totalPrice)+' '+ '₫'}"
                 style="@style/boldBlack14" />
 
             <TextView
                 android:visibility="@{cartFood.note.isEmpty() ? View.GONE:View.VISIBLE, default=gone}"
                 android:layout_marginTop="@dimen/_4sdp"
                 android:padding="@dimen/_8sdp"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/square_amount_box"
                 android:text="@{cartFood.note}"
