@@ -103,7 +103,7 @@
                                 style="@style/regularBlack14"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="(maximum 2)"
+                                android:text="(tối đa 2)"
                                 android:textColor="@color/grey_text" />
                         </LinearLayout>
 
@@ -141,7 +141,7 @@
                             android:autofillHints=""
                             android:background="@drawable/custom_edit_text"
                             android:gravity="top|start"
-                            android:hint="Your note to barista"
+                            android:hint="Ghi chú"
                             android:inputType="text"
                             android:maxLength="100"
                             android:paddingHorizontal="@dimen/_16sdp"
@@ -224,7 +224,7 @@
                     android:layout_marginTop="@dimen/_8sdp"
                     android:background="@drawable/rounded_button"
                     android:elevation="0dp"
-                    android:text="@{@string/add_to_cart+' '+viewModel.cartFood.totalPrice+' '+'₫'}"
+                    android:text="@{@string/add_to_cart+' '+@string/format(viewModel.cartFood.totalPrice)+' '+'₫'}"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_16sdp"

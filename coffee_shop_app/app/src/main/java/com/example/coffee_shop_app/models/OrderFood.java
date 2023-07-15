@@ -1,7 +1,12 @@
 package com.example.coffee_shop_app.models;
 
+import com.google.firebase.firestore.DocumentSnapshot;
+
+import java.util.Map;
+
 public class OrderFood {
     String id;
+    String idFood;
     String image;
     String name;
     int quantity;
@@ -24,6 +29,14 @@ public class OrderFood {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getIdFood() {
+        return idFood;
+    }
+
+    public void setIdFood(String idFood) {
+        this.idFood = idFood;
     }
 
     public String getImage() {
@@ -80,5 +93,31 @@ public class OrderFood {
 
     public void setUnitPrice(double unitPrice) {
         this.unitPrice = unitPrice;
+    }
+    public static OrderFood fromSnapshot(DocumentSnapshot json){
+        OrderFood orderFood=new OrderFood(
+                json.get("image").toString(),
+                json.get("name").toString(),
+                ((Number) json.get("quantity")).intValue(),
+                json.get("size").toString(),
+                ((Number) json.get("unitPrice")).doubleValue());
+        orderFood.setId(json.getId());
+        orderFood.setIdFood(json.get("idFood").toString());
+        orderFood.setTopping(json.contains("topping")? json.get("topping").toString() : null);
+        orderFood.setNote(json.contains("note")?json.get("note").toString():null);
+        return  orderFood;
+    }
+//    TODO: fix orderFood
+    public static OrderFood fromSnapshot(Map<String, Object> json){
+        OrderFood orderFood=new OrderFood(
+                json.get("image").toString(),
+                json.get("name").toString(),
+                ((Number) json.get("quantity")).intValue(),
+                json.get("size").toString(),
+                ((Number) json.get("unitPrice")).doubleValue());
+        orderFood.setIdFood(json.get("id").toString());
+        orderFood.setTopping(json.containsKey("topping")? json.get("topping").toString() : null);
+        orderFood.setNote(json.containsKey("note")?json.get("note").toString():null);
+        return  orderFood;
     }
 }

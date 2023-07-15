@@ -75,6 +75,7 @@ public class ProductDetailViewModel extends BaseObservable {
     }
 
     public void flipIsFavorite(){
+        //TODO: add to user favorite list
         boolean value=!this.favorite;
         setFavorite(value);
     }

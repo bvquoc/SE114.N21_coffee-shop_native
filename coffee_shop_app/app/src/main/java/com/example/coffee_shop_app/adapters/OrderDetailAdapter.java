@@ -15,6 +15,7 @@ import com.example.coffee_shop_app.fragments.ConfirmDialog;
 import com.example.coffee_shop_app.models.CartFood;
 import com.example.coffee_shop_app.utils.SqliteHelper;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailAdapter.ViewHolder> {
@@ -64,8 +65,10 @@ public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailAdapter.
         }
 
         public void bindCartFoodItem(CartFood cartFood) {
+            DecimalFormat formatter = new DecimalFormat("#,##0.##");
             orderDetailItemBinding.setCartFood(cartFood);
             orderDetailItemBinding.executePendingBindings();
+            orderDetailItemBinding.txtPrice.setText(formatter.format(cartFood.getTotalPrice()) + orderDetailItemBinding.getRoot().getContext().getString(R.string.vndUnit));
             orderDetailItemBinding.btnMinus.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

@@ -17,6 +17,7 @@ import com.example.coffee_shop_app.databinding.ToppingItemBinding;
 import com.example.coffee_shop_app.models.Topping;
 import com.example.coffee_shop_app.utils.ItemClickedListener;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,7 +65,9 @@ public class ToppingItemAdapter extends RecyclerView.Adapter<ToppingItemAdapter.
         }
 
         public void bindToppingItem(Topping topping){
+            DecimalFormat formatter = new DecimalFormat("#,##0.##");
             toppingItemBinding.setTopping(topping);
+            toppingItemBinding.txtPrice.setText(formatter.format(topping.getPrice()) + toppingItemBinding.getRoot().getContext().getString(R.string.vndUnit));
             toppingItemBinding.cbTopping.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {

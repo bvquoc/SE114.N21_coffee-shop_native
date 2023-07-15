@@ -1,7 +1,11 @@
 package com.example.coffee_shop_app.models;
 
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 public class Order {
@@ -9,6 +13,8 @@ public class Order {
     Store store;
     Double total;
     Double deliveryCost;
+    Double discount;
+
     Double totalProduct;
     Date dateOrder;
     List<OrderFood> products;
@@ -100,5 +106,13 @@ public class Order {
 
     public void setPickupTime(Date pickupTime) {
         this.pickupTime = pickupTime;
+    }
+
+    public Double getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(Double discount) {
+        this.discount = discount;
     }
 }
