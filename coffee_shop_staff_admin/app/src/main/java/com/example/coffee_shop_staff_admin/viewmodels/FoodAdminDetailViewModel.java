@@ -7,15 +7,39 @@ import com.example.coffee_shop_staff_admin.BR;
 
 public class FoodAdminDetailViewModel extends BaseObservable {
     @Bindable
-    private boolean loading = true;
+    private boolean loadingFood = true;
 
-    public boolean isLoading() {
-        return loading;
+    public boolean isLoadingFood() {
+        return loadingFood;
     }
 
-    public void setLoading(boolean loading) {
-        this.loading = loading;
-        notifyPropertyChanged(BR.loading);
+    public void setLoadingFood(boolean loadingFood) {
+        this.loadingFood = loadingFood;
+        notifyPropertyChanged(BR.loadingFood);
+    }
+
+    @Bindable
+    private boolean loadingSize = true;
+
+    public boolean isLoadingSize() {
+        return loadingSize;
+    }
+
+    public void setLoadingSize(boolean loadingSize) {
+        this.loadingSize = loadingSize;
+        notifyPropertyChanged(BR.loadingSize);
+    }
+
+    @Bindable
+    private boolean loadingTopping = true;
+
+    public boolean isLoadingTopping() {
+        return loadingTopping;
+    }
+
+    public void setLoadingTopping(boolean loadingTopping) {
+        this.loadingTopping = loadingTopping;
+        notifyPropertyChanged(BR.loadingTopping);
     }
 
     @Bindable

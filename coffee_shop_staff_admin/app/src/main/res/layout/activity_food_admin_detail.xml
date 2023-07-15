@@ -29,7 +29,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/my_toolbar"
-            android:visibility="@{viewModel.loading?View.GONE:View.VISIBLE}">
+            android:visibility="@{!(viewModel.loadingFood || viewModel.loadingSize || viewModel.loadingTopping)?View.VISIBLE:View.GONE}">
             <androidx.core.widget.NestedScrollView
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
@@ -146,7 +146,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="@dimen/_16sdp"
-                        android:layout_marginVertical="@dimen/_16sdp"
+                        android:layout_marginTop="@dimen/_16sdp"
                         app:cardCornerRadius="@dimen/_8sdp"
                         app:cardElevation="0dp">
 
@@ -168,6 +168,18 @@
                                 android:layout_height="wrap_content" />
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
+                    <Button
+                        android:id="@+id/save_button"
+                        style="@style/Widget.MaterialComponents.Button"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textAllCaps="false"
+                        android:textAppearance="@style/regularWhite16"
+                        app:shapeAppearanceOverlay="@style/roundButtonShape"
+                        android:stateListAnimator="@null"
+                        android:text="Lưu"
+                        android:layout_marginVertical="@dimen/_16sdp"
+                        android:layout_marginHorizontal="@dimen/_16sdp"/>
                 </LinearLayout>
             </androidx.core.widget.NestedScrollView>
             <LinearLayout
@@ -180,17 +192,36 @@
                 android:paddingHorizontal="@dimen/_16sdp"
                 android:paddingVertical="@dimen/_8sdp"
                 android:background="@color/white"
-                app:layout_constraintVertical_chainStyle="packed">
+                app:layout_constraintVertical_chainStyle="packed"
+                android:orientation="horizontal">
                 <Button
-                    android:id="@+id/save_button"
+                    android:id="@+id/edit_button"
                     style="@style/Widget.MaterialComponents.Button"
+                    android:layout_weight="1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textAllCaps="false"
                     android:textAppearance="@style/regularWhite16"
                     app:shapeAppearanceOverlay="@style/roundButtonShape"
+                    android:drawableLeft="@drawable/ic_edit_white_24"
                     android:stateListAnimator="@null"
-                    android:text="Lưu"/>
+                    android:text="Chỉnh"/>
+                <View
+                    android:layout_width="@dimen/_8sdp"
+                    android:layout_height="match_parent"/>
+                <Button
+                    android:id="@+id/delete_button"
+                    style="@style/Widget.MaterialComponents.Button"
+                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAllCaps="false"
+                    android:textAppearance="@style/regularWhite16"
+                    android:drawableLeft="@drawable/ic_clear_white_24"
+                    app:shapeAppearanceOverlay="@style/roundButtonShape"
+                    android:backgroundTint="@color/red"
+                    android:stateListAnimator="@null"
+                    android:text="Xóa"/>
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
         <com.facebook.shimmer.ShimmerFrameLayout
@@ -205,7 +236,7 @@
             app:duration="500"
             android:paddingHorizontal="@dimen/_16sdp"
             android:paddingVertical="@dimen/_8sdp"
-            android:visibility="@{viewModel.loading?View.VISIBLE:View.GONE}">
+            android:visibility="@{(viewModel.loadingFood || viewModel.loadingSize || viewModel.loadingTopping)?View.VISIBLE:View.GONE}">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
