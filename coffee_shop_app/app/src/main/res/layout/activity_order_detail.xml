@@ -1,0 +1,390 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:background="@color/background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".activities.order.OrderDetailActivity">
+
+        <include
+            android:id="@+id/my_toolbar"
+            layout="@layout/custom_toolbar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/my_toolbar">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/imgOrderStatus"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_200sdp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/img_preparing"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <View
+                        android:id="@+id/view"
+                        android:layout_below="@id/imgOrderStatus"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_8sdp" />
+
+                    <!--        status and contact-->
+                    <androidx.cardview.widget.CardView
+                        app:cardElevation="0dp"
+                        android:layout_alignBottom="@id/view"
+                        android:layout_marginHorizontal="@dimen/_16sdp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:cardCornerRadius="@dimen/_8sdp">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="@dimen/_8sdp">
+
+                            <TextView
+                                android:layout_centerVertical="true"
+                                android:id="@+id/txtStatusLabel"
+                                style="@style/boldBlack14"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Preparing" />
+
+                            <TextView
+                                android:id="@+id/txtContactBtn"
+                                android:paddingHorizontal="@dimen/_12sdp"
+                                android:paddingVertical="@dimen/_3sdp"
+                                android:layout_alignParentEnd="true"
+                                android:textColor="@color/white"
+                                style="@style/regularGrey12"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/lien_he_ho_tro"
+                                android:background="@drawable/rounded_button" />
+                        </RelativeLayout>
+                    </androidx.cardview.widget.CardView>
+                </RelativeLayout>
+
+                <TextView
+                    android:layout_marginTop="@dimen/_16sdp"
+                    android:layout_marginHorizontal="@dimen/_16sdp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/thong_tin_chung"
+                    style="@style/boldBlack16" />
+
+                <androidx.cardview.widget.CardView
+                    app:cardElevation="0dp"
+                    android:layout_marginTop="@dimen/_8sdp"
+                    android:layout_marginHorizontal="@dimen/_16sdp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="@dimen/_8sdp">
+
+                    <RelativeLayout
+                        android:paddingVertical="@dimen/_24sdp"
+                        android:paddingHorizontal="@dimen/_16sdp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            style="@style/regularBlack14"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/order_id"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:layout_alignParentEnd="true"
+                            android:layout_alignParentTop="true"
+                            android:id="@+id/txtOrderId"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="247-96024"
+                            style="@style/boldBlack14" />
+
+                        <View
+                            android:layout_marginVertical="@dimen/_8sdp"
+                            android:id="@+id/separator"
+                            android:layout_below="@id/txtOrderId"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/_1sdp"
+                            android:background="@color/divider"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:layout_below="@id/separator"
+                            style="@style/regularBlack14"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/ngay_dat_hang" />
+
+                        <TextView
+                            android:layout_alignParentEnd="true"
+                            android:layout_below="@id/separator"
+                            android:id="@+id/txtOrderTime"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="20/04/2020, 04:20"
+                            style="@style/boldBlack14" />
+                    </RelativeLayout>
+                </androidx.cardview.widget.CardView>
+
+                <TextView
+                    android:layout_marginTop="@dimen/_16sdp"
+                    android:layout_marginHorizontal="@dimen/_16sdp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/thong_tin_van_chuyen"
+                    style="@style/boldBlack16" />
+
+                <androidx.cardview.widget.CardView
+                    app:cardElevation="0dp"
+                    android:layout_marginTop="@dimen/_8sdp"
+                    android:layout_marginHorizontal="@dimen/_16sdp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="@dimen/_8sdp">
+
+                    <LinearLayout
+                        android:paddingVertical="@dimen/_24sdp"
+                        android:paddingHorizontal="@dimen/_16sdp"
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <RelativeLayout
+                            android:orientation="horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <ImageView
+                                android:layout_marginEnd="@dimen/_10sdp"
+                                android:id="@+id/icon_store"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/baseline_store_24" />
+
+                            <TextView
+                                style="@style/regularBlack14"
+                                android:id="@+id/fromTxt"
+                                android:layout_toEndOf="@id/icon_store"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/tu_cua_hang" />
+
+                            <TextView
+                                android:id="@+id/txtFromStore"
+                                android:layout_marginTop="@dimen/_4sdp"
+                                style="@style/boldBlack14"
+                                android:layout_below="@id/fromTxt"
+                                android:layout_toEndOf="@id/icon_store"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="13 Han Thuyen, D.1, HCM city" />
+                        </RelativeLayout>
+
+                        <View
+                            android:layout_marginVertical="@dimen/_8sdp"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/_1sdp"
+                            android:background="@color/divider" />
+
+                        <RelativeLayout
+                            android:orientation="horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <ImageView
+                                android:layout_marginEnd="@dimen/_10sdp"
+                                android:id="@+id/icon_location"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/baseline_location_on_24" />
+
+                            <TextView
+                                style="@style/regularBlack14"
+                                android:id="@+id/toTxt"
+                                android:layout_toEndOf="@id/icon_location"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/den" />
+
+                            <TextView
+                                android:layout_marginTop="@dimen/_4sdp"
+                                android:id="@+id/txtToAddress"
+                                style="@style/boldBlack14"
+                                android:layout_below="@id/toTxt"
+                                android:layout_toEndOf="@id/icon_location"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="285 CMT8, D.10, HCM city" />
+
+                            <TextView
+                                android:id="@+id/txtAddressName"
+                                android:layout_marginTop="@dimen/_4sdp"
+                                style="@style/regularGrey12"
+                                android:layout_toEndOf="@id/icon_location"
+                                android:layout_below="@id/txtToAddress"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Nick • 0969696969" />
+
+                        </RelativeLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <TextView
+                    android:layout_marginTop="@dimen/_16sdp"
+                    android:layout_marginHorizontal="@dimen/_16sdp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/thong_tin_san_pham"
+                    style="@style/boldBlack16" />
+
+                <androidx.cardview.widget.CardView
+                    app:cardElevation="0dp"
+                    android:layout_marginTop="@dimen/_8sdp"
+                    android:layout_marginHorizontal="@dimen/_16sdp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="@dimen/_8sdp">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:layout_marginVertical="@dimen/_24sdp"
+                        android:layout_marginHorizontal="@dimen/_16sdp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/recyclerProductInfo" />
+                </androidx.cardview.widget.CardView>
+
+                <TextView
+                    android:layout_marginTop="@dimen/_16sdp"
+                    android:layout_marginHorizontal="@dimen/_16sdp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/thanh_toan"
+                    style="@style/boldBlack16" />
+
+                <androidx.cardview.widget.CardView
+                    android:layout_marginBottom="@dimen/_50sdp"
+                    app:cardElevation="0dp"
+                    android:layout_marginTop="@dimen/_8sdp"
+                    android:layout_marginHorizontal="@dimen/_16sdp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="@dimen/_8sdp">
+
+                    <RelativeLayout
+                        android:paddingHorizontal="@dimen/_16sdp"
+                        android:paddingVertical="@dimen/_24sdp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/tong_tien"
+                            style="@style/regularBlack14" />
+
+                        <TextView
+                            android:id="@+id/txtPrice"
+                            android:layout_alignParentEnd="true"
+                            android:layout_alignParentTop="true"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="319.000 ₫"
+                            style="@style/boldBlack14" />
+
+                        <TextView
+                            android:visibility="gone"
+                            android:id="@+id/tempShip"
+                            android:layout_marginTop="@dimen/_16sdp"
+                            android:layout_below="@id/txtPrice"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/phi_van_chuyen"
+                            style="@style/regularBlack14" />
+
+                        <TextView
+                            android:visibility="gone"
+                            android:layout_marginTop="@dimen/_16sdp"
+                            android:id="@+id/txtShippingFee"
+                            android:layout_alignParentEnd="true"
+                            android:layout_below="@id/txtPrice"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="319.000 ₫"
+                            style="@style/boldBlack14" />
+
+                        <TextView
+                            android:visibility="gone"
+                            android:id="@+id/tempPromo"
+                            android:layout_marginTop="@dimen/_16sdp"
+                            android:layout_below="@id/txtShippingFee"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/giam_gia_tu_cua_hang"
+                            style="@style/regularBlack14" />
+
+                        <TextView
+                            android:visibility="gone"
+                            android:layout_marginTop="@dimen/_16sdp"
+                            android:id="@+id/txtPromotion"
+                            android:layout_alignParentEnd="true"
+                            android:layout_below="@id/txtShippingFee"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="-50.000 ₫"
+                            android:textColor="@color/green"
+                            style="@style/boldBlack14" />
+
+                        <TextView
+                            android:layout_marginTop="@dimen/_16sdp"
+                            android:layout_below="@id/txtPromotion"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/thanh_tien"
+                            style="@style/regularBlack14" />
+
+                        <TextView
+                            android:layout_marginTop="@dimen/_16sdp"
+                            android:id="@+id/txtTotal"
+                            android:layout_alignParentEnd="true"
+                            android:layout_below="@id/txtPromotion"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="284.000 ₫"
+                            style="@style/boldBlack14" />
+                    </RelativeLayout>
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
