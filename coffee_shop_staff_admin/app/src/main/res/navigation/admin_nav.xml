@@ -22,9 +22,9 @@
         tools:layout="@layout/fragment_promo_admin" />
     <fragment
         android:id="@+id/manageStoreAdminFragment"
-        android:name="com.example.coffee_shop_staff_admin.fragments.ManageStoreAdminFragment"
+        android:name="com.example.coffee_shop_staff_admin.fragments.ManageUserAdminFragment"
         android:label="fragment_manage_store_admin"
-        tools:layout="@layout/fragment_manage_store_admin" />
+        tools:layout="@layout/fragment_manage_user_admin" />
     <fragment
         android:id="@+id/usersAdminFragment"
         android:name="com.example.coffee_shop_staff_admin.fragments.UsersAdminFragment"
