@@ -64,6 +64,7 @@ public class PromoAdminAdapter extends RecyclerView.Adapter implements Filterabl
             DecimalFormat formatter = new DecimalFormat("#,##0.##");
             String minPrice = formatter.format(promo.getMinPrice());
             String maxPrice = formatter.format(promo.getMaxPrice());
+            promoViewHolder.promoCodeText.setText(promo.getPromoCode());
             promoViewHolder.titleText.setText(
                     "Giảm "
                     + formatter.format(promo.getPercent() * 100)
@@ -162,6 +163,7 @@ public class PromoAdminAdapter extends RecyclerView.Adapter implements Filterabl
     }
 
     public static class PromoViewHolder extends RecyclerView.ViewHolder{
+        private final TextView promoCodeText;
         private final TextView titleText;
         private final TextView startDateText;
         private final TextView endDateText;
@@ -175,6 +177,7 @@ public class PromoAdminAdapter extends RecyclerView.Adapter implements Filterabl
             endDateText = itemView.findViewById(R.id.end_date_text);
             statusCard = itemView.findViewById(R.id.status_card_view);
             statusText = itemView.findViewById(R.id.status_text_view);
+            promoCodeText = itemView.findViewById(R.id.promo_code);
         }
     }
     public static class EmptyPromoStateViewHolder extends RecyclerView.ViewHolder{
