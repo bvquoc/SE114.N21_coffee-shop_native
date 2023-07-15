@@ -66,6 +66,7 @@ func OrderCreate(c *gin.Context) {
 		delete(data, "promo")
 		delete(data, "store")
 		delete(data, "user")
+		delete(data, "toppingIdList")
 		if (newOrder.PickupTime == time.Time{}) {
 			delete(data, "pickupTime")
 		} else {
