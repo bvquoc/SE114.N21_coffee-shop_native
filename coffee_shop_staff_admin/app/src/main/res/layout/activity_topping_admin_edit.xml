@@ -103,7 +103,9 @@
                     app:boxCornerRadiusTopStart="4dp"
                     app:errorEnabled="true"
                     app:errorTextAppearance="@style/regularRed14"
-                    app:hintTextAppearance="@style/regularBlue14">
+                    app:hintTextAppearance="@style/regularBlue14"
+                    app:suffixText="VND"
+                    app:suffixTextAppearance="@style/regularGrey14">
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/price_edit_text"
                         android:layout_width="match_parent"
@@ -111,7 +113,7 @@
                         android:paddingHorizontal="0dp"
                         android:maxLines="1"
                         android:inputType="number"
-                        android:hint="Giá (VNĐ)"
+                        android:hint="Giá"
                         android:textAppearance="@style/regularBlack14"
                         android:text="@{viewModel.price}"
                         android:maxLength="20"
