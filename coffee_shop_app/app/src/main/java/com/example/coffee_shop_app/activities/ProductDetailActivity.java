@@ -34,6 +34,7 @@ import com.example.coffee_shop_app.viewmodels.CartButtonViewModel;
 import com.example.coffee_shop_app.viewmodels.CartViewModel;
 import com.example.coffee_shop_app.viewmodels.ProductDetailViewModel;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,6 +53,7 @@ public class ProductDetailActivity extends AppCompatActivity {
     private List<Topping> listProductTopping;
     private Store selectedStore;
     private ProductDetailViewModel viewModel;
+    DecimalFormat formatter = new DecimalFormat("#,##0.##");
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,6 +74,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         ProductRepository.getInstance().getProductListMutableLiveData().observe(this, new Observer<List<Product>>() {
             @Override
             public void onChanged(List<Product> products) {
+                activityProductDetailBinding.setIsLoading(true);
                 product = null;
                 for (Product prd: products
                 ) {
@@ -82,9 +85,10 @@ public class ProductDetailActivity extends AppCompatActivity {
                         break;
                     }
                 }
+                activityProductDetailBinding.setIsLoading(false);
+
             }
         });
-        init();
     }
     private void setProduct(){
         CartButtonViewModel.getInstance().getSelectedStore().observe(this, new Observer<Store>() {
@@ -99,9 +103,10 @@ public class ProductDetailActivity extends AppCompatActivity {
             }
         });
         viewModel=new ProductDetailViewModel(new CartFood(product, null, 0));
+        viewModel.setFavorite(product.isFavorite());
         activityProductDetailBinding.setViewModel(viewModel);
         setImageViewPager(product.getImages().toArray(new String[0]));
-
+        activityProductDetailBinding.productCard.txtPrice.setText(formatter.format(viewModel.getCartFood().getProduct().getPrice()) + getString(R.string.vndUnit));
         SizeRepository.getInstance().getSizeListMutableLiveData().observe(this, new Observer<List<Size>>() {
             @Override
             public void onChanged(List<Size> sizes) {
@@ -116,6 +121,7 @@ public class ProductDetailActivity extends AppCompatActivity {
                 setTopping();
             }
         });
+        init();
     }
     private void setSize(){
         if(listBannedSize==null){
@@ -202,7 +208,7 @@ public class ProductDetailActivity extends AppCompatActivity {
                 if(!isAdded) {
                     repo.createCartFood(viewModel.getCartFood());
                 }
-                CartViewModel.getInstance().getCartFoods().setValue(repo.getCartFood(Data.instance.userId));
+//                CartViewModel.getInstance().getCartFoods().setValue(repo.getCartFood(Data.instance.userId));
                 finish();
             }
         });
@@ -254,6 +260,10 @@ public class ProductDetailActivity extends AppCompatActivity {
                 activityProductDetailBinding.getViewModel().getCartFood().setTopping(joinedTopping);
             }
         });
+        String joinedTopping= toppingItemAdapter.getSelectedToppings().stream()
+                .map(Topping::getId)
+                .collect(Collectors.joining(", "));
+        activityProductDetailBinding.getViewModel().getCartFood().setTopping(joinedTopping);
         activityProductDetailBinding.recyclerTopping.setAdapter(toppingItemAdapter);
     }
 }

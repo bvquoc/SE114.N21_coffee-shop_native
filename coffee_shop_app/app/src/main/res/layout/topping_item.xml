@@ -37,19 +37,21 @@
         </androidx.cardview.widget.CardView>
 
         <TextView
+            android:gravity="center_vertical"
+            android:layout_gravity="center_vertical"
             android:layout_weight="1"
             android:text="@{topping.name}"
             style="@style/regularBlack14"
             android:maxLines="100"
             android:ellipsize="none"
             android:id="@+id/txtName"
-            android:layout_marginLeft="@dimen/_8sdp"
-            android:layout_width="match_parent"
+            android:layout_marginStart="@dimen/_8sdp"
+            android:layout_marginEnd="@dimen/_8sdp"
+            android:layout_width="0dp"
             android:layout_height="match_parent" />
 
         <TextView
             android:gravity="end"
-            android:text="@{Double.toString(topping.price)+' '+ '₫'}"
             android:id="@+id/txtPrice"
             android:maxLines="1"
             style="@style/boldBlack14"
