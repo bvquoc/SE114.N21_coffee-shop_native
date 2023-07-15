@@ -16,6 +16,23 @@ public class ValidateHelper {
         Matcher matcher = pattern.matcher(number);
         return matcher.matches();
     }
+    public static boolean validatePercent(String percent)
+    {
+        if (percent.isEmpty()) {
+            return false;
+        }
+
+        try {
+            int percentage = Integer.parseInt(percent);
+            if (percentage < 0 || percentage > 100) {
+                return false;
+            }
+        } catch (NumberFormatException e) {
+            return false;
+        }
+
+        return true;
+    }
     public static boolean validateText(String text) {
         return text != null && !text.isEmpty();
     }
