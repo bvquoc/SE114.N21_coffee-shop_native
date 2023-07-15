@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.example.coffee_shop_staff_admin.R;
@@ -22,6 +23,7 @@ import com.example.coffee_shop_staff_admin.adapters.FoodAdminSizeAdapter;
 import com.example.coffee_shop_staff_admin.adapters.FoodAdminToppingAdapter;
 import com.example.coffee_shop_staff_admin.adapters.ImageViewPagerAdapter;
 import com.example.coffee_shop_staff_admin.databinding.ActivityFoodAdminDetailBinding;
+import com.example.coffee_shop_staff_admin.fragments.ConfirmDialog;
 import com.example.coffee_shop_staff_admin.models.Food;
 import com.example.coffee_shop_staff_admin.models.Size;
 import com.example.coffee_shop_staff_admin.models.Topping;
@@ -210,12 +212,23 @@ public class FoodAdminDetailActivity extends AppCompatActivity {
         });
 
         activityFoodAdminDetailBinding.deleteButton.setOnClickListener(v -> {
-            if(deleteFoodTask!=null)
-            {
-                deleteFoodTask.cancel(true);
-            }
-            deleteFoodTask = new DeleteFoodTask();
-            deleteFoodTask.execute();
+            ConfirmDialog dialog = new ConfirmDialog(
+                    "Thông báo",
+                    "Bạn có chắc muốn xóa đồ uống này",
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if(deleteFoodTask!=null)
+                            {
+                                deleteFoodTask.cancel(true);
+                            }
+                            deleteFoodTask = new DeleteFoodTask();
+                            deleteFoodTask.execute();
+                        }
+                    },
+                    null
+            );
+            dialog.show(getSupportFragmentManager(), "confirmDialog");
         });
     }
     private final class DeleteFoodTask extends AsyncTask<Void, Void, Void> {

@@ -14,11 +14,13 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.example.coffee_shop_staff_admin.R;
 import com.example.coffee_shop_staff_admin.adapters.PromoAdminStoreAdapter;
 import com.example.coffee_shop_staff_admin.databinding.ActivityPromoAdminDetailBinding;
+import com.example.coffee_shop_staff_admin.fragments.ConfirmDialog;
 import com.example.coffee_shop_staff_admin.models.Promo;
 import com.example.coffee_shop_staff_admin.repositories.PromoRepository;
 import com.example.coffee_shop_staff_admin.repositories.StoreRepository;
@@ -164,12 +166,23 @@ public class PromoAdminDetailActivity extends AppCompatActivity {
 
         });
         activityPromoAdminDetailBinding.deleteButton.setOnClickListener(v -> {
-            if(deletePromoTask!=null)
-            {
-                deletePromoTask.cancel(true);
-            }
-            deletePromoTask = new DeletePromoTask();
-            deletePromoTask.execute();
+            ConfirmDialog dialog = new ConfirmDialog(
+                    "Thông báo",
+                    "Bạn có chắc muốn xóa mã giảm giá này",
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if(deletePromoTask!=null)
+                            {
+                                deletePromoTask.cancel(true);
+                            }
+                            deletePromoTask = new DeletePromoTask();
+                            deletePromoTask.execute();
+                        }
+                    },
+                    null
+            );
+            dialog.show(getSupportFragmentManager(), "confirmDialog");
         });
         activityPromoAdminDetailBinding.editButton.setOnClickListener(v -> {
             if(selectedPromo!=null)

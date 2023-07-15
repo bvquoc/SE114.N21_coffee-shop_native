@@ -12,11 +12,13 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.example.coffee_shop_staff_admin.R;
 import com.example.coffee_shop_staff_admin.adapters.ImageViewPagerAdapter;
 import com.example.coffee_shop_staff_admin.databinding.ActivityStoreAdminDetailBinding;
+import com.example.coffee_shop_staff_admin.fragments.ConfirmDialog;
 import com.example.coffee_shop_staff_admin.models.Store;
 import com.example.coffee_shop_staff_admin.repositories.StoreRepository;
 import com.example.coffee_shop_staff_admin.viewmodels.StoreAdminDetailViewModel;
@@ -138,12 +140,23 @@ public class StoreAdminDetailActivity extends AppCompatActivity {
         });
 
         activityStoreAdminDetailBinding.deleteButton.setOnClickListener(v -> {
-            if(deleteStoreTask!=null)
-            {
-                deleteStoreTask.cancel(true);
-            }
-            deleteStoreTask = new DeleteStoreTask();
-            deleteStoreTask.execute();
+            ConfirmDialog dialog = new ConfirmDialog(
+                    "Thông báo",
+                    "Bạn có chắc muốn xóa cửa hàng này",
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if(deleteStoreTask!=null)
+                            {
+                                deleteStoreTask.cancel(true);
+                            }
+                            deleteStoreTask = new DeleteStoreTask();
+                            deleteStoreTask.execute();
+                        }
+                    },
+                    null
+            );
+            dialog.show(getSupportFragmentManager(), "confirmDialog");
         });
     }
     private final class DeleteStoreTask extends AsyncTask<Void, Void, Void> {

@@ -86,7 +86,7 @@
                                     android:hint="Tên đồ uống"
                                     android:textAppearance="@style/regularBlack14"
                                     android:text="@{viewModel.name}"
-                                    android:maxLength="20"
+                                    android:maxLength="200"
                                     android:onTextChanged="@{viewModel::onNameChanged}"/>
                             </com.google.android.material.textfield.TextInputLayout>
 
