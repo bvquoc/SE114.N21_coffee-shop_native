@@ -24,7 +24,7 @@ import com.example.coffee_shop_staff_admin.viewmodels.ToppingAdminDetailViewMode
 
 import java.text.DecimalFormat;
 public class ToppingAdminDetailActivity extends AppCompatActivity {
-    private String TAG = "ToppingAdminDetailActivity";
+    private final String TAG = "ToppingAdminDetailActivity";
     private ActivityToppingAdminDetailBinding activityToppingAdminDetailBinding;
     private String toppingId;
     private Topping selectedTopping;
@@ -35,8 +35,6 @@ public class ToppingAdminDetailActivity extends AppCompatActivity {
             result -> {
                 if (result.getResultCode() == Activity.RESULT_OK) {
                     finish();
-                } else {
-                    //User do nothing
                 }
             }
     );
@@ -96,7 +94,7 @@ public class ToppingAdminDetailActivity extends AppCompatActivity {
         activityToppingAdminDetailBinding.editButton.setOnClickListener(v -> {
             Intent intent = new Intent(ToppingAdminDetailActivity.this, ToppingAdminEditActivity.class);
             intent.putExtra("toppingId", toppingId);
-            intent.putExtra("toppingImage", selectedTopping.getImage().toString());
+            intent.putExtra("toppingImage", selectedTopping.getImage());
             intent.putExtra("toppingName", selectedTopping.getName());
             intent.putExtra("toppingPrice", selectedTopping.getPrice());
             activityEditToppingResultLauncher.launch(intent);
@@ -126,7 +124,7 @@ public class ToppingAdminDetailActivity extends AppCompatActivity {
         }
         @Override
         protected Void doInBackground(Void... params) {
-            ToppingRepository.getInstance().deleteTopping(toppingId, success -> {
+            ToppingRepository.getInstance().deleteTopping(toppingId, (success, message) -> {
                 if(success)
                 {
                     toppingAdminDetailViewModel.setUpdating(false);

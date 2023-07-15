@@ -25,7 +25,7 @@ import com.example.coffee_shop_staff_admin.viewmodels.SizeAdminDetailViewModel;
 import java.text.DecimalFormat;
 
 public class SizeAdminDetailActivity extends AppCompatActivity {
-    private String TAG = "SizeAdminDetailActivity";
+    private final String TAG = "SizeAdminDetailActivity";
     private ActivitySizeAdminDetailBinding activitySizeAdminDetailBinding;
     private String sizeId;
     private Size selectedSize;
@@ -36,8 +36,6 @@ public class SizeAdminDetailActivity extends AppCompatActivity {
             result -> {
                 if (result.getResultCode() == Activity.RESULT_OK) {
                     finish();
-                } else {
-                    //User do nothing
                 }
             }
     );
@@ -127,7 +125,7 @@ public class SizeAdminDetailActivity extends AppCompatActivity {
         }
         @Override
         protected Void doInBackground(Void... params) {
-            SizeRepository.getInstance().deleteSize(sizeId, success -> {
+            SizeRepository.getInstance().deleteSize(sizeId, (success, message) -> {
                 if(success)
                 {
                     sizeAdminDetailViewModel.setUpdating(false);

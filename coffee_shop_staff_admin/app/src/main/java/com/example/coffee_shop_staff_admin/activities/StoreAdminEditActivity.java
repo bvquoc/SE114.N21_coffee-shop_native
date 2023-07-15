@@ -5,51 +5,30 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import android.app.Activity;
 import android.app.TimePickerDialog;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.text.InputType;
-import android.util.ArrayMap;
 import android.util.Log;
-import android.view.MotionEvent;
-import android.view.View;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.example.coffee_shop_staff_admin.R;
 import com.example.coffee_shop_staff_admin.adapters.ImageEditAdapter;
-import com.example.coffee_shop_staff_admin.databinding.ActivityStoreAdminDetailBinding;
 import com.example.coffee_shop_staff_admin.databinding.ActivityStoreAdminEditBinding;
-import com.example.coffee_shop_staff_admin.databinding.ActivityToppingAdminEditBinding;
 import com.example.coffee_shop_staff_admin.models.MLocation;
 import com.example.coffee_shop_staff_admin.models.Store;
-import com.example.coffee_shop_staff_admin.models.Topping;
 import com.example.coffee_shop_staff_admin.repositories.StoreRepository;
-import com.example.coffee_shop_staff_admin.repositories.ToppingRepository;
 import com.example.coffee_shop_staff_admin.utils.ValidateHelper;
-import com.example.coffee_shop_staff_admin.utils.interfaces.UpdateDataListener;
 import com.example.coffee_shop_staff_admin.utils.keyboard.KeyboardHelper;
-import com.example.coffee_shop_staff_admin.utils.keyboard.OnKeyboardVisibilityListener;
 import com.example.coffee_shop_staff_admin.viewmodels.StoreAdminEditViewModel;
-import com.example.coffee_shop_staff_admin.viewmodels.ToppingAdminEditViewModel;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.common.collect.Maps;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.IdentityHashMap;
 import java.util.List;
 
 public class StoreAdminEditActivity extends AppCompatActivity {
@@ -82,8 +61,6 @@ public class StoreAdminEditActivity extends AppCompatActivity {
                         MLocation mLocation = new MLocation(formattedAddress, lat, lng);
                         storeAdminEditViewModel.getSelectedLocation().postValue(mLocation);
                     }
-                } else {
-                    //User do nothing
                 }
             }
     );
@@ -95,12 +72,7 @@ public class StoreAdminEditActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.my_toolbar);
         toolbar.setTitle("Tạo cửa hàng");
         setSupportActionBar(toolbar);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
 
         Intent intent = getIntent();
         Store store = null;
@@ -150,108 +122,81 @@ public class StoreAdminEditActivity extends AppCompatActivity {
 
         activityStoreAdminEditBinding.setViewModel(storeAdminEditViewModel);
 
-        activityStoreAdminEditBinding.loading.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                //Prevent any action when loading is visible
-                return true;
+        activityStoreAdminEditBinding.loading.setOnTouchListener((v, event) -> {
+            //Prevent any action when loading is visible
+            return true;
+        });
+
+        KeyboardHelper.setKeyboardVisibilityListener(this, visible -> {
+            if(visible){
+                storeAdminEditViewModel.setKeyBoardShow(true);
+            }
+            else {
+                storeAdminEditViewModel.setKeyBoardShow(false);
             }
         });
 
-        KeyboardHelper.setKeyboardVisibilityListener(this, new OnKeyboardVisibilityListener() {
-            @Override
-            public void onVisibilityChanged(boolean visible) {
-                if(visible){
-                    storeAdminEditViewModel.setKeyBoardShow(true);
-                }
-                else {
-                    storeAdminEditViewModel.setKeyBoardShow(false);
-                }
-            }
+        activityStoreAdminEditBinding.openTimePickerButton.setOnClickListener(v -> {
+            // Get the current time
+            final Calendar c = Calendar.getInstance();
+            int hour = c.get(Calendar.HOUR_OF_DAY);
+            int minute = c.get(Calendar.MINUTE);
+
+            // Create a new instance of TimePickerDialog and show it
+            TimePickerDialog timePickerDialog = new TimePickerDialog(StoreAdminEditActivity.this,
+                    (view, hourOfDay, minute12) -> {
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.add(Calendar.DAY_OF_MONTH, -1);
+                        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                        calendar.set(Calendar.MINUTE, minute12);
+
+                        Date date = calendar.getTime();
+
+                        storeAdminEditViewModel.getOpenTime().postValue(date);
+                    }, hour, minute, true);
+            timePickerDialog.show();
         });
 
-        activityStoreAdminEditBinding.openTimePickerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Get the current time
-                final Calendar c = Calendar.getInstance();
-                int hour = c.get(Calendar.HOUR_OF_DAY);
-                int minute = c.get(Calendar.MINUTE);
+        activityStoreAdminEditBinding.closeTimePickerButton.setOnClickListener(v -> {
+            // Get the current time
+            final Calendar c = Calendar.getInstance();
+            int hour = c.get(Calendar.HOUR_OF_DAY);
+            int minute = c.get(Calendar.MINUTE);
 
-                // Create a new instance of TimePickerDialog and show it
-                TimePickerDialog timePickerDialog = new TimePickerDialog(StoreAdminEditActivity.this,
-                        new TimePickerDialog.OnTimeSetListener() {
-                            @Override
-                            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                                Calendar calendar = Calendar.getInstance();
-                                calendar.add(Calendar.DAY_OF_MONTH, -1);
-                                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                                calendar.set(Calendar.MINUTE, minute);
+            // Create a new instance of TimePickerDialog and show it
+            TimePickerDialog timePickerDialog = new TimePickerDialog(StoreAdminEditActivity.this,
+                    (view, hourOfDay, minute1) -> {
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.add(Calendar.DAY_OF_MONTH, -1);
+                        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                        calendar.set(Calendar.MINUTE, minute1);
 
-                                Date date = calendar.getTime();
+                        Date date = calendar.getTime();
 
-                                storeAdminEditViewModel.getOpenTime().postValue(date);
-                            }
-                        }, hour, minute, true);
-                timePickerDialog.show();
-            }
+                        storeAdminEditViewModel.getCloseTime().postValue(date);
+                    }, hour, minute, true);
+            timePickerDialog.show();
         });
 
-        activityStoreAdminEditBinding.closeTimePickerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Get the current time
-                final Calendar c = Calendar.getInstance();
-                int hour = c.get(Calendar.HOUR_OF_DAY);
-                int minute = c.get(Calendar.MINUTE);
+        activityStoreAdminEditBinding.addressLocationPickerButton.setOnClickListener(v -> {
+            Intent intent = new Intent(StoreAdminEditActivity.this, MapsActivity.class);
+            activityGoogleMapResultLauncher.launch(intent);
+        });
+        activityStoreAdminEditBinding.addImageButton.setOnClickListener(v -> {
+            Intent intent = new Intent();
+            intent.setType("image/*");
+            intent.setAction(Intent.ACTION_GET_CONTENT);
 
-                // Create a new instance of TimePickerDialog and show it
-                TimePickerDialog timePickerDialog = new TimePickerDialog(StoreAdminEditActivity.this,
-                        new TimePickerDialog.OnTimeSetListener() {
-                            @Override
-                            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                                Calendar calendar = Calendar.getInstance();
-                                calendar.add(Calendar.DAY_OF_MONTH, -1);
-                                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                                calendar.set(Calendar.MINUTE, minute);
-
-                                Date date = calendar.getTime();
-
-                                storeAdminEditViewModel.getCloseTime().postValue(date);
-                            }
-                        }, hour, minute, true);
-                timePickerDialog.show();
-            }
+            chooseImageResultLauncher.launch(intent);
         });
 
-        activityStoreAdminEditBinding.addressLocationPickerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(StoreAdminEditActivity.this, MapsActivity.class);
-                activityGoogleMapResultLauncher.launch(intent);
+        activityStoreAdminEditBinding.button.setOnClickListener(v -> {
+            if(updateStoreTask!=null)
+            {
+                updateStoreTask.cancel(true);
             }
-        });
-        activityStoreAdminEditBinding.addImageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setType("image/*");
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-
-                chooseImageResultLauncher.launch(intent);
-            }
-        });
-
-        activityStoreAdminEditBinding.button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(updateStoreTask!=null)
-                {
-                    updateStoreTask.cancel(true);
-                }
-                updateStoreTask = new UpdateStoreTask();
-                updateStoreTask.execute();
-            }
+            updateStoreTask = new UpdateStoreTask();
+            updateStoreTask.execute();
         });
     }
     private final class UpdateStoreTask extends AsyncTask<Void, Void, Void> {
@@ -264,117 +209,57 @@ public class StoreAdminEditActivity extends AppCompatActivity {
             boolean isValid = true;
             if(!ValidateHelper.validateText(storeAdminEditViewModel.getName()))
             {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        activityStoreAdminEditBinding.nameEditTextFrame.setError("Vui lòng nhập tên");
-                    }
-                });
+                runOnUiThread(() -> activityStoreAdminEditBinding.nameEditTextFrame.setError("Vui lòng nhập tên"));
                 isValid = false;
             }
             else
             {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        activityStoreAdminEditBinding.nameEditTextFrame.setError(null);
-                    }
-                });
+                runOnUiThread(() -> activityStoreAdminEditBinding.nameEditTextFrame.setError(null));
             }
             if(!ValidateHelper.validatePhone(storeAdminEditViewModel.getPhone()))
             {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        activityStoreAdminEditBinding.phoneEditTextFrame.setError("Vui lòng nhập sđt");
-                    }
-                });
+                runOnUiThread(() -> activityStoreAdminEditBinding.phoneEditTextFrame.setError("Vui lòng nhập sđt"));
                 isValid = false;
             }
             else
             {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        activityStoreAdminEditBinding.phoneEditTextFrame.setError(null);
-                    }
-                });
+                runOnUiThread(() -> activityStoreAdminEditBinding.phoneEditTextFrame.setError(null));
             }
             if(!ValidateHelper.validateText(storeAdminEditViewModel.getAddress()))
             {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        activityStoreAdminEditBinding.addressEditTextFrame.setError("Vui lòng chọn hoặc nhập địa chỉ");
-                    }
-                });
+                runOnUiThread(() -> activityStoreAdminEditBinding.addressEditTextFrame.setError("Vui lòng chọn hoặc nhập địa chỉ"));
                 isValid = false;
             }
             else
             {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        activityStoreAdminEditBinding.addressEditTextFrame.setError(null);
-                    }
-                });
+                runOnUiThread(() -> activityStoreAdminEditBinding.addressEditTextFrame.setError(null));
             }
             if(storeAdminEditViewModel.getSelectedLocation().getValue() == null)
             {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        activityStoreAdminEditBinding.addressLocationEditTextFrame.setError("Vui lòng chọn vị trí");
-                    }
-                });
+                runOnUiThread(() -> activityStoreAdminEditBinding.addressLocationEditTextFrame.setError("Vui lòng chọn vị trí"));
                 isValid = false;
             }
             else
             {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        activityStoreAdminEditBinding.addressLocationEditTextFrame.setError(null);
-                    }
-                });
+                runOnUiThread(() -> activityStoreAdminEditBinding.addressLocationEditTextFrame.setError(null));
             }
             if(storeAdminEditViewModel.getCloseTime().getValue() == null)
             {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        activityStoreAdminEditBinding.closeTimeEditTextFrame.setError("Vui lòng chọn giờ đóng cửa");
-                    }
-                });
+                runOnUiThread(() -> activityStoreAdminEditBinding.closeTimeEditTextFrame.setError("Vui lòng chọn giờ đóng cửa"));
                 isValid = false;
             }
             else
             {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        activityStoreAdminEditBinding.closeTimeEditTextFrame.setError(null);
-                    }
-                });
+                runOnUiThread(() -> activityStoreAdminEditBinding.closeTimeEditTextFrame.setError(null));
             }
             if(storeAdminEditViewModel.getOpenTime().getValue() == null)
             {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        activityStoreAdminEditBinding.openTimeEditTextFrame.setError("Vui lòng chọn giờ mở cửa");
-                    }
-                });
+                runOnUiThread(() -> activityStoreAdminEditBinding.openTimeEditTextFrame.setError("Vui lòng chọn giờ mở cửa"));
                 isValid = false;
             }
             else
             {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        activityStoreAdminEditBinding.openTimeEditTextFrame.setError(null);
-                    }
-                });
+                runOnUiThread(() -> activityStoreAdminEditBinding.openTimeEditTextFrame.setError(null));
             }
             if(!isValid)
             {
@@ -393,16 +278,11 @@ public class StoreAdminEditActivity extends AppCompatActivity {
                     >= closeTimeCalendar.get(Calendar.HOUR_OF_DAY) * 60 + closeTimeCalendar.get(Calendar.MINUTE))
             {
                 storeAdminEditViewModel.setLoading(false);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(
-                                StoreAdminEditActivity.this,
-                                "Chọn giờ mở cửa nhỏ hơn giờ đóng cửa.",
-                                Toast.LENGTH_SHORT
-                        ).show();
-                    }
-                });
+                runOnUiThread(() -> Toast.makeText(
+                        StoreAdminEditActivity.this,
+                        "Chọn giờ mở cửa nhỏ hơn giờ đóng cửa.",
+                        Toast.LENGTH_SHORT
+                ).show());
                 return null;
             }
 
@@ -410,16 +290,11 @@ public class StoreAdminEditActivity extends AppCompatActivity {
             if(imageEditAdapter.getImages().size() == 0)
             {
                 storeAdminEditViewModel.setLoading(false);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(
-                                StoreAdminEditActivity.this,
-                                "Chưa chọn hình ảnh.",
-                                Toast.LENGTH_SHORT
-                        ).show();
-                    }
-                });
+                runOnUiThread(() -> Toast.makeText(
+                        StoreAdminEditActivity.this,
+                        "Chưa chọn hình ảnh.",
+                        Toast.LENGTH_SHORT
+                ).show());
                 return null;
             }
             if(storeId != null)
@@ -438,42 +313,29 @@ public class StoreAdminEditActivity extends AppCompatActivity {
                         imageEditAdapter.getImages(),
                         new HashMap<>(),
                         new ArrayList<>());
-                StoreRepository.getInstance().updateStoreWithoutUpdatingState(store, new UpdateDataListener() {
-                    @Override
-                    public void onUpdateData(boolean success) {
-                        if(success)
-                        {
-                            Log.e(TAG, "update store successfully.");
-                            storeAdminEditViewModel.setLoading(false);
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(
-                                            StoreAdminEditActivity.this,
-                                            "Đã chỉnh cửa hàng thành công.",
-                                            Toast.LENGTH_SHORT
-                                    ).show();
-                                }
-                            });
-                            Intent intent = new Intent();
-                            setResult(RESULT_OK, intent);
-                            finish();
-                        }
-                        else
-                        {
-                            Log.e(TAG, "update store failed.");
-                            storeAdminEditViewModel.setLoading(false);
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(
-                                            StoreAdminEditActivity.this,
-                                            "Đã có lỗi xảy ra. Xin hãy thử lại sau.",
-                                            Toast.LENGTH_SHORT
-                                    ).show();
-                                }
-                            });
-                        }
+                StoreRepository.getInstance().updateStoreWithoutUpdatingState(store, (success, message) -> {
+                    if(success)
+                    {
+                        Log.e(TAG, "update store successfully.");
+                        storeAdminEditViewModel.setLoading(false);
+                        runOnUiThread(() -> Toast.makeText(
+                                StoreAdminEditActivity.this,
+                                "Đã chỉnh cửa hàng thành công.",
+                                Toast.LENGTH_SHORT
+                        ).show());
+                        Intent intent = new Intent();
+                        setResult(RESULT_OK, intent);
+                        finish();
+                    }
+                    else
+                    {
+                        Log.e(TAG, "update store failed.");
+                        storeAdminEditViewModel.setLoading(false);
+                        runOnUiThread(() -> Toast.makeText(
+                                StoreAdminEditActivity.this,
+                                "Đã có lỗi xảy ra. Xin hãy thử lại sau.",
+                                Toast.LENGTH_SHORT
+                        ).show());
                     }
                 });
             }
@@ -493,40 +355,27 @@ public class StoreAdminEditActivity extends AppCompatActivity {
                         imageEditAdapter.getImages(),
                         new HashMap<>(),
                         new ArrayList<>());
-                StoreRepository.getInstance().insertStore(store, new UpdateDataListener() {
-                    @Override
-                    public void onUpdateData(boolean success) {
-                        if(success)
-                        {
-                            Log.e(TAG, "insert store successfully.");
-                            storeAdminEditViewModel.setLoading(false);
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(
-                                            StoreAdminEditActivity.this,
-                                            "Đã thêm cửa hàng thành công.",
-                                            Toast.LENGTH_SHORT
-                                    ).show();
-                                }
-                            });
-                            finish();
-                        }
-                        else
-                        {
-                            Log.e(TAG, "insert store failed.");
-                            storeAdminEditViewModel.setLoading(false);
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(
-                                            StoreAdminEditActivity.this,
-                                            "Đã có lỗi xảy ra. Xin hãy thử lại sau.",
-                                            Toast.LENGTH_SHORT
-                                    ).show();
-                                }
-                            });
-                        }
+                StoreRepository.getInstance().insertStore(store, (success, message) -> {
+                    if(success)
+                    {
+                        Log.e(TAG, "insert store successfully.");
+                        storeAdminEditViewModel.setLoading(false);
+                        runOnUiThread(() -> Toast.makeText(
+                                StoreAdminEditActivity.this,
+                                "Đã thêm cửa hàng thành công.",
+                                Toast.LENGTH_SHORT
+                        ).show());
+                        finish();
+                    }
+                    else
+                    {
+                        Log.e(TAG, "insert store failed.");
+                        storeAdminEditViewModel.setLoading(false);
+                        runOnUiThread(() -> Toast.makeText(
+                                StoreAdminEditActivity.this,
+                                "Đã có lỗi xảy ra. Xin hãy thử lại sau.",
+                                Toast.LENGTH_SHORT
+                        ).show());
                     }
                 });
             }

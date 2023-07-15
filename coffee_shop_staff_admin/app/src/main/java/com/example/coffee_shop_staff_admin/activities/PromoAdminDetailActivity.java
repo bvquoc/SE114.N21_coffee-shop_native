@@ -14,7 +14,6 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import com.example.coffee_shop_staff_admin.R;
@@ -169,16 +168,13 @@ public class PromoAdminDetailActivity extends AppCompatActivity {
             ConfirmDialog dialog = new ConfirmDialog(
                     "Thông báo",
                     "Bạn có chắc muốn xóa mã giảm giá này",
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if(deletePromoTask!=null)
-                            {
-                                deletePromoTask.cancel(true);
-                            }
-                            deletePromoTask = new DeletePromoTask();
-                            deletePromoTask.execute();
+                    v1 -> {
+                        if(deletePromoTask!=null)
+                        {
+                            deletePromoTask.cancel(true);
                         }
+                        deletePromoTask = new DeletePromoTask();
+                        deletePromoTask.execute();
                     },
                     null
             );
@@ -208,7 +204,7 @@ public class PromoAdminDetailActivity extends AppCompatActivity {
         }
         @Override
         protected Void doInBackground(Void... params) {
-            PromoRepository.getInstance().deletePromo(promoId, success -> {
+            PromoRepository.getInstance().deletePromo(promoId, (success, message) -> {
                 if(success)
                 {
                     Log.e(TAG, "delete promo successfully.");

@@ -12,7 +12,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import com.example.coffee_shop_staff_admin.R;
@@ -40,8 +39,6 @@ public class StoreAdminDetailActivity extends AppCompatActivity {
             result -> {
                 if (result.getResultCode() == Activity.RESULT_OK) {
                     finish();
-                } else {
-                    //User do nothing
                 }
             }
     );
@@ -143,16 +140,13 @@ public class StoreAdminDetailActivity extends AppCompatActivity {
             ConfirmDialog dialog = new ConfirmDialog(
                     "Thông báo",
                     "Bạn có chắc muốn xóa cửa hàng này",
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if(deleteStoreTask!=null)
-                            {
-                                deleteStoreTask.cancel(true);
-                            }
-                            deleteStoreTask = new DeleteStoreTask();
-                            deleteStoreTask.execute();
+                    v1 -> {
+                        if(deleteStoreTask!=null)
+                        {
+                            deleteStoreTask.cancel(true);
                         }
+                        deleteStoreTask = new DeleteStoreTask();
+                        deleteStoreTask.execute();
                     },
                     null
             );
@@ -166,7 +160,7 @@ public class StoreAdminDetailActivity extends AppCompatActivity {
         }
         @Override
         protected Void doInBackground(Void... params) {
-            StoreRepository.getInstance().deleteStore(storeId, success -> {
+            StoreRepository.getInstance().deleteStore(storeId, (success, message) -> {
                 if(success)
                 {
                     storeAdminDetailViewModel.setUpdating(false);

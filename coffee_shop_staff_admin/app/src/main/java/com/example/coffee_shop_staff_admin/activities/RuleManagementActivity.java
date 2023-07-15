@@ -175,7 +175,7 @@ public class RuleManagementActivity extends AppCompatActivity {
         protected Void doInBackground(Void... params) {
             if(type == UpdateUserType.active)
             {
-                UserRepository.getInstance().updateUserActiveAccess(selectedUser.getId(), value, success -> {
+                UserRepository.getInstance().updateUserActiveAccess(selectedUser.getId(), value, (success, message) -> {
                     if(success)
                     {
                         Log.e(TAG, "set user's active access success.");
@@ -201,7 +201,7 @@ public class RuleManagementActivity extends AppCompatActivity {
             }
             else if(type == UpdateUserType.staff)
             {
-                UserRepository.getInstance().updateUserStaffAccess(selectedUser.getId(), value, store, success -> {
+                UserRepository.getInstance().updateUserStaffAccess(selectedUser.getId(), value, store, (success, message) -> {
                     if(success)
                     {
                         Log.e(TAG, "set user's staff access success.");
@@ -227,7 +227,7 @@ public class RuleManagementActivity extends AppCompatActivity {
             }
             else
             {
-                UserRepository.getInstance().updateUserAdminAccess(selectedUser.getId(), value, success -> {
+                UserRepository.getInstance().updateUserAdminAccess(selectedUser.getId(), value, (success, message) -> {
                     if(success)
                     {
                         Log.e(TAG, "set user's admin access success.");

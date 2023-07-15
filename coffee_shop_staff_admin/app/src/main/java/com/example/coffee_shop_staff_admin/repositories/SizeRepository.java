@@ -3,16 +3,13 @@ package com.example.coffee_shop_staff_admin.repositories;
 import android.net.Uri;
 import android.util.Log;
 
-import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.coffee_shop_staff_admin.models.Size;
 import com.example.coffee_shop_staff_admin.utils.interfaces.UpdateDataListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
@@ -60,16 +57,13 @@ public class SizeRepository {
     }
     void registerSnapshotListener()
     {
-        firestore.collection("Size").addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                Log.d(TAG, "get sizes started.");
-                if(value!=null)
-                {
-                    getSize(value);
-                }
-                Log.d(TAG, "get sizes finishes.");
+        firestore.collection("Size").addSnapshotListener((value, error) -> {
+            Log.d(TAG, "get sizes started.");
+            if(value!=null)
+            {
+                getSize(value);
             }
+            Log.d(TAG, "get sizes finishes.");
         });
     }
     void getSize(QuerySnapshot value)
@@ -80,20 +74,7 @@ public class SizeRepository {
                 sizeList.add(Size.fromFireBase(doc));
             }
         }
-        sizeList.sort(new Comparator<Size>() {
-            @Override
-            public int compare(Size o1, Size o2) {
-                if(o1.getPrice() < o2.getPrice())
-                {
-                    return -1;
-                }
-                if (o1.getPrice() == o2.getPrice())
-                {
-                    return  0;
-                }
-                return 1;
-            }
-        });
+        sizeList.sort(Comparator.comparingDouble(Size::getPrice));
         sizeListMutableLiveData.postValue(sizeList);
     }
     public void updateSize(Size size, UpdateDataListener listener)
@@ -107,46 +88,35 @@ public class SizeRepository {
                 //The image is still from firebase
                 newData.put("name", size.getName());
                 newData.put("price", size.getPrice());
-                newData.put("image", size.getImage().toString());
+                newData.put("image", size.getImage());
                 sizeRef.update(newData)
-                        .addOnSuccessListener(aVoid -> {
-                            listener.onUpdateData(true);
-                        })
-                        .addOnFailureListener(e -> {
-                            listener.onUpdateData(false);
-                        });
+                        .addOnSuccessListener(aVoid -> listener.onUpdateData(true, ""))
+                        .addOnFailureListener(e -> listener.onUpdateData(false, e.getMessage()));
             }else {
                 //The image is from phone
                 String imageId = UUID.randomUUID().toString().replace("-", "");
                 StorageReference imageRef = storageRef.child("size/" + imageId);
                 UploadTask uploadTask = imageRef.putFile(uriSize);
-                uploadTask.addOnSuccessListener(taskSnapshot -> {
-                    imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                        String downloadUrl = uri.toString();
-                        newData.put("name", size.getName());
-                        newData.put("price", size.getPrice());
-                        newData.put("image", downloadUrl);
-                        sizeRef.update(newData)
-                                .addOnSuccessListener(aVoid -> {
-                                    listener.onUpdateData(true);
-                                })
-                                .addOnFailureListener(e -> {
-                                    listener.onUpdateData(false);
-                                });
-
-                    }).addOnFailureListener(exception -> {
-                        Log.e(TAG, "Failed to get the download URL");
-                        listener.onUpdateData(false);
-                    });
+                uploadTask.addOnSuccessListener(taskSnapshot -> imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                    String downloadUrl = uri.toString();
+                    newData.put("name", size.getName());
+                    newData.put("price", size.getPrice());
+                    newData.put("image", downloadUrl);
+                    sizeRef.update(newData)
+                            .addOnSuccessListener(aVoid -> listener.onUpdateData(true, ""))
+                            .addOnFailureListener(e -> listener.onUpdateData(false, e.getMessage()));
 
                 }).addOnFailureListener(exception -> {
+                    Log.e(TAG, "Failed to get the download URL");
+                    listener.onUpdateData(false, exception.getMessage());
+                })).addOnFailureListener(exception -> {
                     Log.e(TAG, "Failed to upload the image");
-                    listener.onUpdateData(false);
+                    listener.onUpdateData(false, exception.getMessage());
                 });
             }
         } else {
             Log.e(TAG, "The URI does not have a scheme or is invalid");
-            listener.onUpdateData(false);
+            listener.onUpdateData(false, "The URI does not have a scheme or is invalid");
         }
     }
 
@@ -158,37 +128,29 @@ public class SizeRepository {
         StorageReference imageRef = storageRef.child("size/" + imageId);
         Uri uriSize = Uri.parse(size.getImage());
         UploadTask uploadTask = imageRef.putFile(uriSize);
-        uploadTask.addOnSuccessListener(taskSnapshot -> {
-            imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                String downloadUrl = uri.toString();
-                newData.put("name", size.getName());
-                newData.put("price", size.getPrice());
-                newData.put("image", downloadUrl);
-                collectionSizeRef.add(newData)
-                        .addOnSuccessListener(documentReference -> {
-                            listener.onUpdateData(true);
-                        })
-                        .addOnFailureListener(exception -> {
-                            listener.onUpdateData(false);
-                        });
+        uploadTask.addOnSuccessListener(taskSnapshot -> imageRef.getDownloadUrl()
+                .addOnSuccessListener(uri -> {
+                    String downloadUrl = uri.toString();
+                    newData.put("name", size.getName());
+                    newData.put("price", size.getPrice());
+                    newData.put("image", downloadUrl);
+                    collectionSizeRef.add(newData)
+                            .addOnSuccessListener(documentReference -> listener.onUpdateData(true, ""))
+                            .addOnFailureListener(exception -> listener.onUpdateData(false, exception.getMessage()));
 
-            }).addOnFailureListener(exception -> {
-                Log.e(TAG, "Failed to get the download URL");
-                listener.onUpdateData(false);
-            });
-
-        }).addOnFailureListener(exception -> {
-            Log.e(TAG, "Failed to upload the image");
-            listener.onUpdateData(false);
-        });
+                }).addOnFailureListener(exception -> {
+                    Log.e(TAG, "Failed to get the download URL");
+                    listener.onUpdateData(false, exception.getMessage());
+                })).addOnFailureListener(exception -> {
+                    Log.e(TAG, "Failed to upload the image");
+                    listener.onUpdateData(false, exception.getMessage());
+                });
     }
     public void deleteSize(String sizeId, UpdateDataListener listener)
     {
         DocumentReference sizeRef = firestore.collection("Size").document(sizeId);
-        sizeRef.delete().addOnSuccessListener(taskSnapshot -> {
-            listener.onUpdateData(true);
-        }).addOnFailureListener(exception -> {
-            listener.onUpdateData(false);
-        });
+        sizeRef.delete()
+                .addOnSuccessListener(taskSnapshot -> listener.onUpdateData(true, ""))
+                .addOnFailureListener(exception -> listener.onUpdateData(false, exception.getMessage()));
     }
 }

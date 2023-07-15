@@ -238,7 +238,7 @@ public class FoodAdminDetailActivity extends AppCompatActivity {
         }
         @Override
         protected Void doInBackground(Void... params) {
-            FoodRepository.getInstance().deleteFood(foodId, success -> {
+            FoodRepository.getInstance().deleteFood(foodId, (success, message) -> {
                 if(success)
                 {
                     Log.e(TAG, "delete food successfully.");
@@ -286,7 +286,7 @@ public class FoodAdminDetailActivity extends AppCompatActivity {
                 ).show());
                 return null;
             }
-            FoodRepository.getInstance().updateToppingSizeOfFood(foodId, toppingIds, sizeIds, success -> {
+            FoodRepository.getInstance().updateToppingSizeOfFood(foodId, toppingIds, sizeIds, (success, message) -> {
                 if(success)
                 {
                     Log.e(TAG, "update size, topping of food successfully.");

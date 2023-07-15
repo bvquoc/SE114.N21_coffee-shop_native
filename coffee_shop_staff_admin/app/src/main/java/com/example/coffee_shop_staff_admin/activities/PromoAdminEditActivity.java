@@ -364,7 +364,7 @@ public class PromoAdminEditActivity extends AppCompatActivity {
                         storeIds
                 );
 
-                PromoRepository.getInstance().updatePromo(promo, success -> {
+                PromoRepository.getInstance().updatePromo(promo, (success, message) -> {
                     if(success)
                     {
                         Log.e(TAG, "update promo successfully.");
@@ -403,7 +403,7 @@ public class PromoAdminEditActivity extends AppCompatActivity {
                         Double.parseDouble(promoAdminEditViewModel.getPercent()) / 100,
                         storeIds
                 );
-                PromoRepository.getInstance().insertPromo(promo, success -> {
+                PromoRepository.getInstance().insertPromo(promo, (success, message) -> {
                     if(success)
                     {
                         Log.e(TAG, "insert promo successfully.");
@@ -421,7 +421,7 @@ public class PromoAdminEditActivity extends AppCompatActivity {
                         promoAdminEditViewModel.setUpdating(false);
                         runOnUiThread(() -> Toast.makeText(
                                 PromoAdminEditActivity.this,
-                                "Đã có lỗi xảy ra. Xin hãy thử lại sau.",
+                                message,
                                 Toast.LENGTH_SHORT
                         ).show());
                     }
