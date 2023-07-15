@@ -2,6 +2,8 @@ package routes
 
 import (
 	"coffee_shop_backend/services"
+	"io/ioutil"
+	"net/http"
 
 	_ "coffee_shop_backend/docs"
 
@@ -15,6 +17,17 @@ func Routes(router *gin.Engine) *gin.Engine {
 		c.JSON(200, gin.H{
 			"message": "Coffee Shop Apis!",
 		})
+	})
+
+	// LOGGER
+	router.GET("/log", func(c *gin.Context) {
+		data, err := ioutil.ReadFile("./nohup.out")
+		if err != nil {
+			c.String(http.StatusInternalServerError, "Failed to read log file")
+			return
+		}
+
+		c.String(http.StatusOK, string(data))
 	})
 
 	// USER GROUP

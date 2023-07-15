@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"math"
 	"net/http"
+	"sync"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -61,18 +62,17 @@ func OrderCreate(c *gin.Context) {
 
 		dataBytes, _ := json.Marshal(newOrder)
 		var data map[string]interface{}
+		json.Unmarshal(dataBytes, &data)
 		delete(data, "dateOrder")
-		delete(data, "address")
 		delete(data, "promo")
 		delete(data, "store")
 		delete(data, "user")
+		delete(data, "toppingIdList")
 		if (newOrder.PickupTime == time.Time{}) {
 			delete(data, "pickupTime")
 		} else {
 			delete(data, "address")
 		}
-
-		json.Unmarshal(dataBytes, &data)
 
 		app_context.App.UpdateDocument(constants.CLT_ORDER, orderId, data)
 	}()
@@ -105,34 +105,48 @@ func calcPrice(ord *models.Order) {
 	}
 
 	mapSize := make(map[string]models.Size)
-	for sizeId := range setSizeId {
-		respMpSize, _ := app_context.App.GetDocumentMap(constants.CLT_SIZE, sizeId)
-		mapSize[sizeId] = helpers.ToSize(respMpSize)
-	}
 	mapTopping := make(map[string]models.Topping)
-	for toppingId := range setToppingId {
-		respMpTopping, _ := app_context.App.GetDocumentMap(constants.CLT_TOPPING, toppingId)
-		mapTopping[toppingId] = helpers.ToTopping(respMpTopping)
-	}
 	mapFood := make(map[string]models.Food)
-	for foodId := range setFoodId {
-		respMpFood, _ := app_context.App.GetDocumentMap(constants.CLT_FOOD, foodId)
-		mapFood[foodId] = helpers.ToFood(respMpFood)
-	}
+
+	var wg sync.WaitGroup
+	wg.Add(3)
+	go func() { // fetchSizes
+		defer wg.Done()
+		for sizeId := range setSizeId {
+			respMpSize, _ := app_context.App.GetDocumentMap(constants.CLT_SIZE, sizeId)
+			mapSize[sizeId] = helpers.ToSize(respMpSize)
+		}
+	}()
+	go func() { // fetchToppings
+		defer wg.Done()
+		for toppingId := range setToppingId {
+			respMpTopping, _ := app_context.App.GetDocumentMap(constants.CLT_TOPPING, toppingId)
+			mapTopping[toppingId] = helpers.ToTopping(respMpTopping)
+		}
+	}()
+	go func() { // fetchFoods
+		defer wg.Done()
+		for foodId := range setFoodId {
+			respMpFood, _ := app_context.App.GetDocumentMap(constants.CLT_FOOD, foodId)
+			mapFood[foodId] = helpers.ToFood(respMpFood)
+		}
+	}()
+	wg.Wait()
 
 	for i, v := range ord.OrderedFoods {
-		sl := v.Quantity
+		unitPrice := 0
 		ord.OrderedFoods[i].Image = mapFood[v.ID].Images[0]
 		// size
 		sizePrice := mapSize[v.Size].Price
-		ord.PriceProducts += sizePrice * sl
+		unitPrice += sizePrice
 		ord.OrderedFoods[i].Size = mapSize[v.Size].Name
 		// food
 		foodPrice := mapFood[v.ID].Price
-		ord.PriceProducts += foodPrice * sl
+		unitPrice += foodPrice
+		ord.OrderedFoods[i].Name = mapFood[v.ID].Name
 		// topping
 		for _, t := range v.ToppingIds {
-			ord.PriceProducts += mapTopping[t].Price * sl
+			unitPrice += mapTopping[t].Price
 			str := ord.OrderedFoods[i].ToppingsStr
 			if str != "" {
 				str = str + ", "
@@ -140,31 +154,38 @@ func calcPrice(ord *models.Order) {
 			str = str + mapTopping[t].Name
 			ord.OrderedFoods[i].ToppingsStr = str
 		}
+
+		totalPrice := unitPrice * v.Quantity
+		ord.OrderedFoods[i].UnitPrice = unitPrice
+		ord.OrderedFoods[i].TotalPrice = totalPrice
+		ord.PriceProducts += totalPrice
 	}
 
 	if len(ord.IDPromo) > 0 {
-		respPromo, _ := app_context.App.GetDocumentMap("Promo", ord.IDPromo)
+		respPromo, err := app_context.App.GetDocumentMap("Promo", ord.IDPromo)
+		if err != nil {
+			fmt.Println("Invalid promo code")
+		} else {
+			canUse := false
+			for _, v := range respPromo["stores"].([]interface{}) {
+				if s, ok := v.(string); ok {
+					if s == ord.IDStore {
+						canUse = true
+						break
+					}
+				}
+			}
 
-		canUse := false
-		for _, v := range respPromo["stores"].([]interface{}) {
-			if s, ok := v.(string); ok {
-				if s == ord.IDStore {
-					canUse = true
-					break
+			if canUse {
+				canUse = false
+				atLeastPrice := int(respPromo["minPrice"].(int64))
+				maxDiscount := int(respPromo["maxPrice"].(int64))
+
+				if ord.PriceProducts >= atLeastPrice {
+					ord.PriceDiscount = int(math.Min(float64(ord.PriceProducts)*respPromo["percent"].(float64), float64(maxDiscount)))
 				}
 			}
 		}
-
-		if canUse {
-			canUse = false
-			atLeastPrice := int(respPromo["minPrice"].(int64))
-			maxDiscount := int(respPromo["maxPrice"].(int64))
-
-			if ord.PriceProducts >= atLeastPrice {
-				ord.PriceDiscount = int(math.Min(float64(ord.PriceProducts)*respPromo["percent"].(float64), float64(maxDiscount)))
-			}
-		}
-
 	}
 
 	ord.PriceTotal = int(math.Max(0.0, float64(ord.PriceProducts-ord.PriceDiscount+ord.DeliveryCost)))
