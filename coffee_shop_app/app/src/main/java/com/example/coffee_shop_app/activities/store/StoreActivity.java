@@ -10,50 +10,40 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.example.coffee_shop_app.R;
 import com.example.coffee_shop_app.adapters.StoreAdapter;
 import com.example.coffee_shop_app.databinding.ActivityStoreBinding;
-import com.example.coffee_shop_app.databinding.FragmentStoresBinding;
-import com.example.coffee_shop_app.fragments.StoresFragment;
 import com.example.coffee_shop_app.models.Store;
 import com.example.coffee_shop_app.repository.StoreRepository;
 import com.example.coffee_shop_app.utils.interfaces.OnStoreClickListener;
 import com.example.coffee_shop_app.viewmodels.CartButtonViewModel;
 import com.example.coffee_shop_app.viewmodels.StoreViewModel;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class StoreActivity extends AppCompatActivity {
     private ActivityStoreBinding activityStoreBinding;
-    private StoreAdapter nearestStoreAdapter = new StoreAdapter(new ArrayList<Store>());
-    private StoreAdapter favoriteStoresAdapter = new StoreAdapter(new ArrayList<Store>());
-    private StoreAdapter otherStoresAdapter = new StoreAdapter(new ArrayList<Store>());
-    private int previousLocation;
-    private OnStoreClickListener listener = new OnStoreClickListener() {
-        @Override
-        public void onStoreClick(String storeId) {
-            List<Store> storeList = StoreRepository.getInstance().getStoreListMutableLiveData().getValue();
-            Store selectedStore = null;
-            for (Store store:
-                 storeList) {
-                if(store.getId().equals(storeId))
-                {
-                    selectedStore = store;
-                    break;
-                }
+    private final StoreAdapter nearestStoreAdapter = new StoreAdapter(new ArrayList<>());
+    private final StoreAdapter favoriteStoresAdapter = new StoreAdapter(new ArrayList<>());
+    private final StoreAdapter otherStoresAdapter = new StoreAdapter(new ArrayList<>());
+    private final OnStoreClickListener listener = storeId -> {
+        List<Store> storeList = StoreRepository.getInstance().getStoreListMutableLiveData().getValue();
+        Store selectedStore = null;
+        for (Store store:
+             storeList) {
+            if(store.getId().equals(storeId))
+            {
+                selectedStore = store;
+                break;
             }
-            CartButtonViewModel.getInstance().getSelectedStore().postValue(selectedStore);
-            finish();
         }
-    } ;
-    private ActivityResultLauncher<Intent> activityFindStoreResultLauncher = registerForActivityResult(
+        CartButtonViewModel.getInstance().getSelectedStore().postValue(selectedStore);
+        finish();
+    };
+    private final ActivityResultLauncher<Intent> activityFindStoreResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == Activity.RESULT_OK) {
@@ -73,8 +63,6 @@ public class StoreActivity extends AppCompatActivity {
                         CartButtonViewModel.getInstance().getSelectedStore().postValue(selectedStore);
                         finish();
                     }
-                } else {
-                    //User do nothing
                 }
             }
     );
@@ -92,12 +80,7 @@ public class StoreActivity extends AppCompatActivity {
     {
         Toolbar toolbar = findViewById(R.id.my_toolbar);
         toolbar.setTitle("Cửa hàng");
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
         nearestStoreAdapter.setOnClickListener(listener);
         favoriteStoresAdapter.setOnClickListener(listener);
         otherStoresAdapter.setOnClickListener(listener);
@@ -110,37 +93,33 @@ public class StoreActivity extends AppCompatActivity {
 
         activityStoreBinding.otherStores.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         activityStoreBinding.otherStores.setAdapter(otherStoresAdapter);
-        activityStoreBinding.findStoreFrame.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                previousLocation = activityStoreBinding.nestedScrollView.getScrollY();
-                Intent intent = new Intent(getApplicationContext(), StoreSearchActivity.class);
-                intent.putExtra("isPurposeForShowingDetail", false);
-                activityFindStoreResultLauncher.launch(intent);
-            }
+        activityStoreBinding.findStoreFrame.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplicationContext(), StoreSearchActivity.class);
+            intent.putExtra("isPurposeForShowingDetail", false);
+            activityFindStoreResultLauncher.launch(intent);
         });
         StoreViewModel storeViewModel = new StoreViewModel();
         storeViewModel.getNearestStoreMutableLiveData().observe(this, nearestStore ->{
             if(nearestStore == null)
             {
                 storeViewModel.setHasNearestStore(false);
-                nearestStoreAdapter.changeDataSet(new ArrayList<Store>());
+                nearestStoreAdapter.changeDataSet(new ArrayList<>());
             }
             else
             {
                 storeViewModel.setHasNearestStore(true);
 
-                List<Store> storeList = new ArrayList<Store>();
+                List<Store> storeList = new ArrayList<>();
                 storeList.add(nearestStore);
                 nearestStoreAdapter.changeDataSet(storeList);
             }
         });
         storeViewModel.getFavoriteStores().observe(this, favoriteStores ->{
-            if(favoriteStores.size() == 0)
+            if(favoriteStores==null || favoriteStores.size() == 0)
             {
                 storeViewModel.setHasFavoriteStores(false);
 
-                favoriteStoresAdapter.changeDataSet(new ArrayList<Store>());
+                favoriteStoresAdapter.changeDataSet(new ArrayList<>());
             }
             else
             {
@@ -151,7 +130,26 @@ public class StoreActivity extends AppCompatActivity {
 
         });
         storeViewModel.getOtherStores().observe(this, otherStores ->{
-            otherStoresAdapter.changeDataSet(otherStores);
+            if(otherStores!=null)
+            {
+                otherStoresAdapter.changeDataSet(otherStores);
+                if(otherStores.size() == 0)
+                {
+                    storeViewModel.setOtherText("");
+                }
+                else if(storeViewModel.isHasNearestStore() || storeViewModel.isHasFavoriteStores())
+                {
+                    storeViewModel.setOtherText("Khác");
+                }
+                else{
+                    storeViewModel.setOtherText("Tất cả");
+                }
+            }
+            else
+            {
+                otherStoresAdapter.changeDataSet(new ArrayList<>());
+                storeViewModel.setOtherText("");
+            }
         });
         storeViewModel.getIsLoading().observe(this, isLoading ->{
             if(isLoading)

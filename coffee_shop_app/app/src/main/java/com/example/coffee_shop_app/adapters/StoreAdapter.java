@@ -1,10 +1,6 @@
 package com.example.coffee_shop_app.adapters;
 
-import android.content.Intent;
-import android.os.Handler;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
@@ -16,14 +12,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.coffee_shop_app.R;
-import com.example.coffee_shop_app.fragments.StoresFragment;
-import com.example.coffee_shop_app.models.Product;
 import com.example.coffee_shop_app.models.Store;
 import com.example.coffee_shop_app.utils.LocationHelper;
 import com.example.coffee_shop_app.utils.interfaces.OnStoreClickListener;
 import com.google.android.gms.maps.model.LatLng;
-
-import org.w3c.dom.Text;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -33,13 +25,11 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private static final int VIEW_TYPE_EMPTY_STATE = 0;
     private static final int VIEW_TYPE_ITEM = 1;
     private  boolean isNeedSearch = false;
-    private List<Store> stores = new ArrayList<Store>();
-    private List<Store> storeFilter = new ArrayList<Store>();
+    private List<Store> stores;
+    private List<Store> storeFilter;
 
     //Properties handle touch
     private OnStoreClickListener onStoreClickListener;
-    private Handler handler = new Handler();
-    private boolean isLongPress = false;
 
     public void setOnClickListener(OnStoreClickListener onStoreClickListener) {
         this.onStoreClickListener = onStoreClickListener;
@@ -116,34 +106,10 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             }
             if(onStoreClickListener!=null)
             {
-                viewHolder.itemView.setOnTouchListener(new View.OnTouchListener() {
-                    @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        switch (event.getAction()) {
-                            case MotionEvent.ACTION_DOWN:
-                                isLongPress = false;
-                                handler.postDelayed(longPressRunnable, 1000);
-                                break;
-                            case MotionEvent.ACTION_UP:
-                                if (!isLongPress) {
-                                    onStoreClickListener.onStoreClick(store.getId());
-                                }
-                                handler.removeCallbacks(longPressRunnable);
-                                break;
-                        }
-                        return true;
-                    }
-                });
+                viewHolder.itemView.setOnClickListener(v -> onStoreClickListener.onStoreClick(store.getId()));
             }
         }
     }
-
-    private Runnable longPressRunnable = new Runnable() {
-        @Override
-        public void run() {
-            isLongPress = true;
-        }
-    };
 
     @Override
     public int getItemViewType(int position) {
@@ -199,14 +165,12 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     public static class StoreAdapterViewHolder extends RecyclerView.ViewHolder{
-        private ImageView storeStatusImage;
-        private TextView storeName;
-        private TextView storeAddress;
-        private TextView storeDistance;
-        private View itemView;
+        private final ImageView storeStatusImage;
+        private final TextView storeName;
+        private final TextView storeAddress;
+        private final TextView storeDistance;
         public StoreAdapterViewHolder(@NonNull View itemView) {
             super(itemView);
-            this.itemView = itemView;
             storeStatusImage = itemView.findViewById(R.id.image_status_store);
             storeName =  itemView.findViewById(R.id.name_text_view);
             storeAddress = itemView.findViewById(R.id.address_text_view);
