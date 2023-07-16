@@ -71,7 +71,7 @@ public class CartButtonViewModel extends BaseObservable {
 
     private final MutableLiveData<Store> selectedStore = new MutableLiveData<>();
     private final MutableLiveData<AddressDelivery> selectedAddressDelivery = new MutableLiveData<>();
-    private final MutableLiveData<OrderType> selectedOrderType = new MutableLiveData<>();
+    private final MutableLiveData<OrderType> selectedOrderType = new MutableLiveData<>(OrderType.Delivery);
 
     public MutableLiveData<Store> getSelectedStore() {
         return selectedStore;
