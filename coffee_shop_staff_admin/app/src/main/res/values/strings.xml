@@ -2,4 +2,15 @@
     <string name="app_name">coffee_shop_staff_admin</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="statusProcessing">Đang xử lí</string>
+    <string name="statusDelivering">Đang giao</string>
+    <string name="statusDelivered">Đã giao</string>
+    <string name="statusDeliveryFailed">Giao hàng thất bại</string>
+    <string name="statusReady">Đã chuẩn bị</string>
+    <string name="statusComplete">Hoàn thành</string>
+    <string name="statusCancelled">Đã huỷ</string>
+    <string name="statusAll">Tất cả</string>
+    <string name="vndUnit">\ ₫\</string>
+    <string name="size_text">Size: </string>
+    <string name="topping_text">Topping: </string>
 </resources>

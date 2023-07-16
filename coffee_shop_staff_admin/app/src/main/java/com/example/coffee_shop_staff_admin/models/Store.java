@@ -1,6 +1,7 @@
 package com.example.coffee_shop_staff_admin.models;
 
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
@@ -68,7 +69,7 @@ public class Store {
         return stateTopping;
     }
 
-    public static Store fromFireBase(QueryDocumentSnapshot doc)
+    public static Store fromFireBase(DocumentSnapshot doc)
     {
         String id = doc.getId();
 
