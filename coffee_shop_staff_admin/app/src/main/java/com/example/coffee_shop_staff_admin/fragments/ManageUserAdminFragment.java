@@ -44,7 +44,7 @@ public class ManageUserAdminFragment extends Fragment {
             startActivity(intent);
         });
 
-        fragmentManageUserAdminBinding.notificationCardView.setOnClickListener(v -> Toast.makeText(getContext(), "Nav to notification", Toast.LENGTH_SHORT).show());
+        //fragmentManageUserAdminBinding.notificationCardView.setOnClickListener(v -> Toast.makeText(getContext(), "Nav to notification", Toast.LENGTH_SHORT).show());
         return fragmentManageUserAdminBinding.getRoot();
     }
 }
