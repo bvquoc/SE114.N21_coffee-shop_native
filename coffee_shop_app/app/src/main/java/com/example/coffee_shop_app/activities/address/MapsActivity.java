@@ -10,14 +10,13 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.coffee_shop_app.R;
 import com.example.coffee_shop_app.adapters.SuggestLocationAdapter;
 import com.example.coffee_shop_app.databinding.ActivityMapsBinding;
-import com.example.coffee_shop_app.models.MLocation;
 import com.example.coffee_shop_app.utils.LocationHelper;
 import com.example.coffee_shop_app.utils.interfaces.OnSuggestLocationClickListener;
 import com.example.coffee_shop_app.viewmodels.MapViewModel;
@@ -28,30 +27,28 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
     private GoogleMap mMap;
     private ActivityMapsBinding activityMapsBinding;
-    private SuggestLocationAdapter suggestLocationAdapter = new SuggestLocationAdapter(new ArrayList<MLocation>());
+    private final SuggestLocationAdapter suggestLocationAdapter = new SuggestLocationAdapter(new ArrayList<>());
     MapViewModel mapViewModel = new MapViewModel();
-    private Handler handler = new Handler();
+    private final Handler handler = new Handler();
     private Runnable runnable;
     AsyncTask<Void, Void, Void> searchingByLocationTask;
-    private OnSuggestLocationClickListener onSuggestLocationClickListener = new OnSuggestLocationClickListener() {
-        @Override
-        public void onSuggestLocationClick(MLocation location) {
-            mapViewModel.setSearchText("");
-            animateCamera(new LatLng(location.getLat(), location.getLng()));
+    private final OnSuggestLocationClickListener onSuggestLocationClickListener = location -> {
+        mapViewModel.setSearchText("");
+        animateCamera(new LatLng(location.getLat(), location.getLng()));
 
-            // Get the input method manager
-            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        // Get the input method manager
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 
-            // Check if the keyboard is currently open
-            View view = getCurrentFocus();
-            if (view != null) {
-                // Close the keyboard
-                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-            }
+        // Check if the keyboard is currently open
+        View view = getCurrentFocus();
+        if (view != null) {
+            // Close the keyboard
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     };
     private void animateCamera(LatLng latLng){
@@ -65,79 +62,61 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         activityMapsBinding = ActivityMapsBinding.inflate(getLayoutInflater());
         setContentView(activityMapsBinding.getRoot());
 
-        activityMapsBinding.buttonBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        activityMapsBinding.buttonBack.setOnClickListener(v -> onBackPressed());
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        if(mapFragment!=null)
+        {
+            mapFragment.getMapAsync(this);
+        }
     }
     void init()
     {
-        activityMapsBinding.suggesstLocationRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        activityMapsBinding.suggestLocationRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         suggestLocationAdapter.setOnSuggestLocationTouchListener(onSuggestLocationClickListener);
-        activityMapsBinding.suggesstLocationRecyclerView.setAdapter(suggestLocationAdapter);
+        activityMapsBinding.suggestLocationRecyclerView.setAdapter(suggestLocationAdapter);
 
-        mapViewModel.getSelectedLatLng().observe(this, new Observer<LatLng>() {
-            @Override
-            public void onChanged(LatLng latLng) {
-                searchByLocation(latLng);
-            }
-        });
-        mapViewModel.getSuggestLocationList().observe(this, suggessLocation->{
-            suggestLocationAdapter.changeDataSet(suggessLocation);
-        });
+        mapViewModel.getSelectedLatLng().observe(this, this::searchByLocation);
+        mapViewModel.getSuggestLocationList().observe(this, suggestLocationAdapter::changeDataSet);
         activityMapsBinding.setViewModel(mapViewModel);
 
-        activityMapsBinding.saveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                LatLng latLng = mapViewModel.getSelectedLatLng().getValue();
-                if(latLng == null)
-                {
-                    Toast.makeText(
-                            getApplicationContext(),
-                            "Vị trí không hợp lệ",
-                            Toast.LENGTH_SHORT
-                    ).show();
-                    return;
-                }
-                Intent intent = new Intent();
-                intent.putExtra("formattedAddress", mapViewModel.getFormattedAddress());
-                intent.putExtra("lat", latLng.latitude);
-                intent.putExtra("lng", latLng.longitude);
-                setResult(RESULT_OK, intent);
-                finish();
+        activityMapsBinding.saveButton.setOnClickListener(v -> {
+            LatLng latLng = mapViewModel.getSelectedLatLng().getValue();
+            if(latLng == null)
+            {
+                Toast.makeText(
+                        getApplicationContext(),
+                        "Vị trí không hợp lệ",
+                        Toast.LENGTH_SHORT
+                ).show();
+                return;
             }
+            Intent intent = new Intent();
+            intent.putExtra("formattedAddress", mapViewModel.getFormattedAddress());
+            intent.putExtra("lat", latLng.latitude);
+            intent.putExtra("lng", latLng.longitude);
+            setResult(RESULT_OK, intent);
+            finish();
         });
     }
     @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
+    public void onMapReady(@NonNull GoogleMap googleMap) {
+        mMap = Objects.requireNonNull(googleMap);
         mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
         mMap.getUiSettings().setMyLocationButtonEnabled(false);
         mMap.getUiSettings().setZoomControlsEnabled(false);
 
-        mMap.setOnCameraMoveListener(new GoogleMap.OnCameraMoveListener() {
-            @Override
-            public void onCameraMove() {
-                mapViewModel.setIsLoading(true);
-                if(runnable!=null)
-                {
-                    handler.removeCallbacks(runnable);
-                }
-                runnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        LatLng currentLatLng = mMap.getCameraPosition().target;
-                        mapViewModel.getSelectedLatLng().postValue(currentLatLng);
-                    }
-                };
-                handler.postDelayed(runnable, 500);
+        mMap.setOnCameraMoveListener(() -> {
+            mapViewModel.setIsLoading(true);
+            if(runnable!=null)
+            {
+                handler.removeCallbacks(runnable);
             }
+            runnable = () -> {
+                LatLng currentLatLng = mMap.getCameraPosition().target;
+                mapViewModel.getSelectedLatLng().postValue(currentLatLng);
+            };
+            handler.postDelayed(runnable, 500);
         });
 
         if(LocationHelper.getInstance().getCurrentLocation() != null)
@@ -187,8 +166,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         1
                 );
                 Address address = addresses.get(0);
-                String formattedaddress = address.getAddressLine(0);
-                mapViewModel.setFormattedAddress(formattedaddress);
+                String formattedAddress = address.getAddressLine(0);
+                mapViewModel.setFormattedAddress(formattedAddress);
                 mapViewModel.setIsExistLocation(true);
             } catch (Exception e) {
                 mapViewModel.setFormattedAddress("Không thể tìm thấy địa chỉ");

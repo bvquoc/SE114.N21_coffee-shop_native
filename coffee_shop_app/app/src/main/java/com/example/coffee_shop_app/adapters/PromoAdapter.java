@@ -1,7 +1,6 @@
 package com.example.coffee_shop_app.adapters;
 
 import android.view.LayoutInflater;
-import android.view.PointerIcon;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -11,21 +10,16 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.coffee_shop_app.R;
-import com.example.coffee_shop_app.models.AddressDelivery;
 import com.example.coffee_shop_app.models.Promo;
-import com.example.coffee_shop_app.utils.interfaces.OnEditAddressClickListener;
 import com.example.coffee_shop_app.utils.interfaces.OnPromoClickListener;
-
-import org.w3c.dom.Text;
 
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 
 public class PromoAdapter extends RecyclerView.Adapter<PromoAdapter.PromoViewHolder>{
-    private List<Promo> promos = new ArrayList<Promo>();
+    private List<Promo> promos;
     private OnPromoClickListener onPromoClickListener;
     public PromoAdapter(List<Promo> promos)
     {
@@ -69,12 +63,10 @@ public class PromoAdapter extends RecyclerView.Adapter<PromoAdapter.PromoViewHol
         DateFormat dateFormat = new SimpleDateFormat("HH:mm dd/MM/yyyy");
         holder.dateText.setText("Hết hạn: " + dateFormat.format(promo.getDateEnd()));
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onPromoClickListener.onPromoClick(promo);
-            }
-        });
+        if(onPromoClickListener!=null)
+        {
+            holder.itemView.setOnClickListener(v -> onPromoClickListener.onPromoClick(promo));
+        }
     }
 
     @Override
@@ -83,11 +75,11 @@ public class PromoAdapter extends RecyclerView.Adapter<PromoAdapter.PromoViewHol
     }
 
     public static class PromoViewHolder extends RecyclerView.ViewHolder{
-        private ImageView promoImage;
-        private TextView percentText;
-        private TextView titleText;
-        private TextView dateText;
-        private View itemView;
+        private final ImageView promoImage;
+        private final TextView percentText;
+        private final TextView titleText;
+        private final TextView dateText;
+        private final View itemView;
 
         public PromoViewHolder(@NonNull View itemView) {
             super(itemView);

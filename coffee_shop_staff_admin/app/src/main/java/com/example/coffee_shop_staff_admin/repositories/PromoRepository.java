@@ -74,7 +74,12 @@ public class PromoRepository {
             }
             else
             {
-                return o1.getDateStart().compareTo(o2.getDateStart());
+                int resultDateStart = o1.getDateStart().compareTo(o2.getDateStart());
+                if(resultDateStart == 0)
+                {
+                    return Double.compare(o1.getPercent(), o2.getPercent());
+                }
+                return resultDateStart;
             }
         });
         promoListMutableLiveData.postValue(promoList);
@@ -92,30 +97,40 @@ public class PromoRepository {
         newData.put("percent", promo.getPercent());
         newData.put("stores", promo.getStores());
         promoRef.update(newData)
-                .addOnSuccessListener(aVoid -> listener.onUpdateData(true))
-                .addOnFailureListener(e -> listener.onUpdateData(false));
+                .addOnSuccessListener(aVoid -> listener.onUpdateData(true, ""))
+                .addOnFailureListener(e -> listener.onUpdateData(false, e.getMessage()));
     }
 
-    public void insertPromo(Promo promo, UpdateDataListener listener)
-    {
-        Map<String, Object> newData = new HashMap<>();
-        newData.put("dateEnd", promo.getDateEnd());
-        newData.put("dateStart", promo.getDateStart());
-        newData.put("description", promo.getDescription());
-        newData.put("forNewCustomer", promo.isForNewCustomer());
-        newData.put("maxPrice", promo.getMaxPrice());
-        newData.put("minPrice", promo.getMinPrice());
-        newData.put("percent", promo.getPercent());
-        newData.put("stores", promo.getStores());
-        fireStore.collection("Promo").document(promo.getPromoCode()).set(newData)
-                .addOnSuccessListener(aVoid -> listener.onUpdateData(true))
-                .addOnFailureListener(e -> listener.onUpdateData(false));
+    public void insertPromo(Promo promo, UpdateDataListener listener) {
+        DocumentReference promoRef = fireStore.collection("Promo").document(promo.getPromoCode());
+
+        promoRef.get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        listener.onUpdateData(false, "Mã giảm giá đã tồn tại.");
+                    } else {
+                        Map<String, Object> newData = new HashMap<>();
+                        newData.put("dateEnd", promo.getDateEnd());
+                        newData.put("dateStart", promo.getDateStart());
+                        newData.put("description", promo.getDescription());
+                        newData.put("forNewCustomer", promo.isForNewCustomer());
+                        newData.put("maxPrice", promo.getMaxPrice());
+                        newData.put("minPrice", promo.getMinPrice());
+                        newData.put("percent", promo.getPercent());
+                        newData.put("stores", promo.getStores());
+
+                        promoRef.set(newData)
+                                .addOnSuccessListener(aVoid -> listener.onUpdateData(true, "")) // Notify listener of success
+                                .addOnFailureListener(e -> listener.onUpdateData(false, "Đã có lõi xảy ra, xin hãy thử lại sau.")); // Notify listener of failure
+                    }
+                })
+                .addOnFailureListener(e -> listener.onUpdateData(false, "Đã có lõi xảy ra, xin hãy thử lại sau."));
     }
     public void deletePromo(String promoId, UpdateDataListener listener)
     {
         DocumentReference promoRef = fireStore.collection("Promo").document(promoId);
         promoRef.delete()
-                .addOnSuccessListener(taskSnapshot -> listener.onUpdateData(true))
-                .addOnFailureListener(exception -> listener.onUpdateData(false));
+                .addOnSuccessListener(taskSnapshot -> listener.onUpdateData(true, ""))
+                .addOnFailureListener(exception -> listener.onUpdateData(false, exception.getMessage()));
     }
 }

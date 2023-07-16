@@ -50,17 +50,21 @@ public class UserRepository{
         Map<String, Object> newData = new HashMap<>();
         newData.put("isActive", isActive);
         userRef.update(newData)
-                .addOnSuccessListener(aVoid -> listener.onUpdateData(true))
-                .addOnFailureListener(e -> listener.onUpdateData(false));
+                .addOnSuccessListener(aVoid -> listener.onUpdateData(true, ""))
+                .addOnFailureListener(e -> listener.onUpdateData(false, e.getMessage()));
     }
-    public void updateUserStaffAccess(String userId, boolean isStaff, UpdateDataListener listener)
+    public void updateUserStaffAccess(String userId, boolean isStaff, String store, UpdateDataListener listener)
     {
         DocumentReference userRef = fireStore.collection("users").document(userId);
         Map<String, Object> newData = new HashMap<>();
         newData.put("isStaff", isStaff);
+        if(isStaff)
+        {
+            newData.put("store", store);
+        }
         userRef.update(newData)
-                .addOnSuccessListener(aVoid -> listener.onUpdateData(true))
-                .addOnFailureListener(e -> listener.onUpdateData(false));
+                .addOnSuccessListener(aVoid -> listener.onUpdateData(true, ""))
+                .addOnFailureListener(e -> listener.onUpdateData(false, e.getMessage()));
     }
     public void updateUserAdminAccess(String userId, boolean isAdmin, UpdateDataListener listener)
     {
@@ -68,7 +72,7 @@ public class UserRepository{
         Map<String, Object> newData = new HashMap<>();
         newData.put("isAdmin", isAdmin);
         userRef.update(newData)
-                .addOnSuccessListener(aVoid -> listener.onUpdateData(true))
-                .addOnFailureListener(e -> listener.onUpdateData(false));
+                .addOnSuccessListener(aVoid -> listener.onUpdateData(true, ""))
+                .addOnFailureListener(e -> listener.onUpdateData(false, e.getMessage()));
     }
 }

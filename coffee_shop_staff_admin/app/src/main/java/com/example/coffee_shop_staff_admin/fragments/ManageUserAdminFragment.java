@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.coffee_shop_staff_admin.R;
+import com.example.coffee_shop_staff_admin.activities.AddNewUserActivity;
 import com.example.coffee_shop_staff_admin.activities.RuleManagementActivity;
 import com.example.coffee_shop_staff_admin.databinding.FragmentManageUserAdminBinding;
 
@@ -38,7 +39,10 @@ public class ManageUserAdminFragment extends Fragment {
             startActivity(intent);
         });
 
-        fragmentManageUserAdminBinding.addUserCardView.setOnClickListener(v -> Toast.makeText(getContext(), "Nav to add user", Toast.LENGTH_SHORT).show());
+        fragmentManageUserAdminBinding.addUserCardView.setOnClickListener(v -> {
+            Intent intent = new Intent(getContext(), AddNewUserActivity.class);
+            startActivity(intent);
+        });
 
         fragmentManageUserAdminBinding.notificationCardView.setOnClickListener(v -> Toast.makeText(getContext(), "Nav to notification", Toast.LENGTH_SHORT).show());
         return fragmentManageUserAdminBinding.getRoot();

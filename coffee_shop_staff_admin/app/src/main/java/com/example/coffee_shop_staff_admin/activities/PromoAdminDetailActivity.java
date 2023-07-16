@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.example.coffee_shop_staff_admin.R;
 import com.example.coffee_shop_staff_admin.adapters.PromoAdminStoreAdapter;
 import com.example.coffee_shop_staff_admin.databinding.ActivityPromoAdminDetailBinding;
+import com.example.coffee_shop_staff_admin.fragments.ConfirmDialog;
 import com.example.coffee_shop_staff_admin.models.Promo;
 import com.example.coffee_shop_staff_admin.repositories.PromoRepository;
 import com.example.coffee_shop_staff_admin.repositories.StoreRepository;
@@ -164,12 +165,20 @@ public class PromoAdminDetailActivity extends AppCompatActivity {
 
         });
         activityPromoAdminDetailBinding.deleteButton.setOnClickListener(v -> {
-            if(deletePromoTask!=null)
-            {
-                deletePromoTask.cancel(true);
-            }
-            deletePromoTask = new DeletePromoTask();
-            deletePromoTask.execute();
+            ConfirmDialog dialog = new ConfirmDialog(
+                    "Thông báo",
+                    "Bạn có chắc muốn xóa mã giảm giá này",
+                    v1 -> {
+                        if(deletePromoTask!=null)
+                        {
+                            deletePromoTask.cancel(true);
+                        }
+                        deletePromoTask = new DeletePromoTask();
+                        deletePromoTask.execute();
+                    },
+                    null
+            );
+            dialog.show(getSupportFragmentManager(), "confirmDialog");
         });
         activityPromoAdminDetailBinding.editButton.setOnClickListener(v -> {
             if(selectedPromo!=null)
@@ -195,7 +204,7 @@ public class PromoAdminDetailActivity extends AppCompatActivity {
         }
         @Override
         protected Void doInBackground(Void... params) {
-            PromoRepository.getInstance().deletePromo(promoId, success -> {
+            PromoRepository.getInstance().deletePromo(promoId, (success, message) -> {
                 if(success)
                 {
                     Log.e(TAG, "delete promo successfully.");

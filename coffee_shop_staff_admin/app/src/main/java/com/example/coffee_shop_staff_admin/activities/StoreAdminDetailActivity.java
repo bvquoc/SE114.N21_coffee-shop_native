@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.example.coffee_shop_staff_admin.R;
 import com.example.coffee_shop_staff_admin.adapters.ImageViewPagerAdapter;
 import com.example.coffee_shop_staff_admin.databinding.ActivityStoreAdminDetailBinding;
+import com.example.coffee_shop_staff_admin.fragments.ConfirmDialog;
 import com.example.coffee_shop_staff_admin.models.Store;
 import com.example.coffee_shop_staff_admin.repositories.StoreRepository;
 import com.example.coffee_shop_staff_admin.viewmodels.StoreAdminDetailViewModel;
@@ -38,8 +39,6 @@ public class StoreAdminDetailActivity extends AppCompatActivity {
             result -> {
                 if (result.getResultCode() == Activity.RESULT_OK) {
                     finish();
-                } else {
-                    //User do nothing
                 }
             }
     );
@@ -138,12 +137,20 @@ public class StoreAdminDetailActivity extends AppCompatActivity {
         });
 
         activityStoreAdminDetailBinding.deleteButton.setOnClickListener(v -> {
-            if(deleteStoreTask!=null)
-            {
-                deleteStoreTask.cancel(true);
-            }
-            deleteStoreTask = new DeleteStoreTask();
-            deleteStoreTask.execute();
+            ConfirmDialog dialog = new ConfirmDialog(
+                    "Thông báo",
+                    "Bạn có chắc muốn xóa cửa hàng này",
+                    v1 -> {
+                        if(deleteStoreTask!=null)
+                        {
+                            deleteStoreTask.cancel(true);
+                        }
+                        deleteStoreTask = new DeleteStoreTask();
+                        deleteStoreTask.execute();
+                    },
+                    null
+            );
+            dialog.show(getSupportFragmentManager(), "confirmDialog");
         });
     }
     private final class DeleteStoreTask extends AsyncTask<Void, Void, Void> {
@@ -153,7 +160,7 @@ public class StoreAdminDetailActivity extends AppCompatActivity {
         }
         @Override
         protected Void doInBackground(Void... params) {
-            StoreRepository.getInstance().deleteStore(storeId, success -> {
+            StoreRepository.getInstance().deleteStore(storeId, (success, message) -> {
                 if(success)
                 {
                     storeAdminDetailViewModel.setUpdating(false);

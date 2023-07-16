@@ -96,7 +96,7 @@ public class StoreAdminAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
             if(onStoreAdminClickListener!=null)
             {
-                viewHolder.itemView.setOnClickListener(v -> onStoreAdminClickListener.onStoreAdminClick(store.getId()));
+                viewHolder.itemView.setOnClickListener(v -> onStoreAdminClickListener.onStoreAdminClick(store.getId(), store.getShortName()));
             }
         }
     }

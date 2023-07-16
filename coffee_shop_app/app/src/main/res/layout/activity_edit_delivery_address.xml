@@ -40,125 +40,126 @@
                 android:layout_marginHorizontal="@dimen/_16sdp"
                 android:background="@drawable/border_ffffff_8"
                 android:orientation="vertical">
-                <Button
-                    android:id="@+id/temp_view"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"/>
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/_4sdp"
                     android:orientation="horizontal">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Địa chỉ"
-                        style="@style/boldBlack14"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text=" *"
-                        style="@style/regularRed14"/>
-                </LinearLayout>
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingHorizontal="@dimen/_16sdp"
-                    android:paddingVertical="@dimen/_8sdp"
-                    android:layout_marginBottom="@dimen/_16sdp"
-                    android:background="@drawable/border_dddde3_4_ebebf0">
-                    <TextView
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/address_edit_text_frame"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        app:boxCornerRadiusBottomEnd="4dp"
+                        app:boxCornerRadiusBottomStart="4dp"
+                        app:boxCornerRadiusTopEnd="4dp"
+                        app:boxCornerRadiusTopStart="4dp"
+                        app:errorEnabled="true"
+                        app:errorTextAppearance="@style/regularRed14"
+                        app:hintTextAppearance="@style/regularBlue14"
+                        android:layout_weight="1">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/address_edit_text"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingHorizontal="0dp"
+                            android:maxLines="1"
+                            android:inputType="text"
+                            android:hint="Địa chỉ"
+                            android:textAppearance="@style/regularBlack14"
+                            android:text="@{viewModel.formattedAddress}"
+                            android:enabled="false"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+                    <Button
+                        android:id="@+id/address_picker_button"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/edit_text_frame"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingHorizontal="@dimen/_16sdp"
+                        android:minWidth="0dp"
+                        style="@style/Widget.MaterialComponents.Button.TextButton"
+                        android:text="Chọn"
+                        android:textAppearance="@style/regularBlue14"/>
+                </LinearLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/name_edit_text_frame"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:boxCornerRadiusBottomEnd="4dp"
+                    app:boxCornerRadiusBottomStart="4dp"
+                    app:boxCornerRadiusTopEnd="4dp"
+                    app:boxCornerRadiusTopStart="4dp"
+                    app:errorEnabled="true"
+                    app:errorTextAppearance="@style/regularRed14"
+                    app:hintTextAppearance="@style/regularBlue14">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/name_edit_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingHorizontal="0dp"
                         android:maxLines="1"
-                        android:ellipsize="end"
-                        android:text="@{viewModel.formattedAddress}"
-                        style="@style/regularGrey14"/>
-                </RelativeLayout>
-                <TextView
+                        android:inputType="text"
+                        android:hint="Tên người nhận"
+                        android:textAppearance="@style/regularBlack14"
+                        android:text="@{viewModel.nameReceiver}"
+                        android:maxLength="200"
+                        android:onTextChanged="@{viewModel::onNameReceiverChanged}"/>
+                </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/phone_edit_text_frame"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Ghi chú"
-                    android:layout_marginBottom="@dimen/_4sdp"
-                    style="@style/boldBlack14"/>
-                <EditText
-                    android:id="@+id/address_note_edit_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/_50sdp"
-                    android:paddingHorizontal="@dimen/_16sdp"
-                    android:paddingVertical="@dimen/_8sdp"
-                    style="@style/regularBlack14"
-                    android:gravity="top"
-                    android:hint="Thông tin thêm về địa chỉ"
-                    android:textColorHint="@color/grey_text"
-                    android:inputType="textMultiLine"
-                    android:maxLines="2"
-                    android:background="@drawable/border_edit_text"
-                    android:layout_marginBottom="@dimen/_16sdp"
-                    android:textCursorDrawable="@color/blue"
-                    android:text="@{viewModel.addressNote}"
-                    android:onTextChanged="@{viewModel::onAddressNoteChanged}"/>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/_4sdp"
-                    android:orientation="horizontal">
-                    <TextView
-                        android:layout_width="wrap_content"
+                    app:boxCornerRadiusBottomEnd="4dp"
+                    app:boxCornerRadiusBottomStart="4dp"
+                    app:boxCornerRadiusTopEnd="4dp"
+                    app:boxCornerRadiusTopStart="4dp"
+                    app:errorEnabled="true"
+                    app:errorTextAppearance="@style/regularRed14"
+                    app:hintTextAppearance="@style/regularBlue14">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/phone_edit_text"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Người nhận"
-                        style="@style/boldBlack14"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text=" *"
-                        style="@style/regularRed14"/>
-                </LinearLayout>
-                <EditText
-                    android:id="@+id/name_edit_text"
+                        android:paddingHorizontal="0dp"
+                        android:maxLines="1"
+                        android:inputType="phone"
+                        android:hint="Số điện thoại"
+                        android:textAppearance="@style/regularBlack14"
+                        android:text="@{viewModel.phone}"
+                        android:maxLength="10"
+                        android:onTextChanged="@{viewModel::onPhoneChanged}"/>
+                </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/address_note_edit_text_frame"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingHorizontal="@dimen/_16sdp"
-                    android:paddingVertical="@dimen/_8sdp"
-                    style="@style/regularBlack14"
-                    android:hint="Nguyễn Văn A"
-                    android:inputType="textPersonName"
-                    android:background="@drawable/border_edit_text"
-                    android:layout_marginBottom="@dimen/_16sdp"
-                    android:textCursorDrawable="@color/blue"
-                    android:text="@{viewModel.nameReceiver}"
-                    android:onTextChanged="@{viewModel::onNameReceiverChanged}"/>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/_4sdp"
-                    android:orientation="horizontal">
-                    <TextView
-                        android:layout_width="wrap_content"
+                    app:boxCornerRadiusBottomEnd="4dp"
+                    app:boxCornerRadiusBottomStart="4dp"
+                    app:boxCornerRadiusTopEnd="4dp"
+                    app:boxCornerRadiusTopStart="4dp"
+                    app:errorEnabled="true"
+                    app:errorTextAppearance="@style/regularRed14"
+                    app:hintTextAppearance="@style/regularBlue14"
+                    app:counterMaxLength="200"
+                    app:counterEnabled="true"
+                    app:counterTextAppearance="@style/regularGrey14">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/address_note_edit_text"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Số điện thoại"
-                        style="@style/boldBlack14"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text=" *"
-                        style="@style/regularRed14"/>
-                </LinearLayout>
-                <EditText
-                    android:id="@+id/phone_edit_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingHorizontal="@dimen/_16sdp"
-                    android:paddingVertical="@dimen/_8sdp"
-                    style="@style/regularBlack14"
-                    android:hint="Số điện thoại 10 số"
-                    android:maxLength="10"
-                    android:inputType="phone"
-                    android:background="@drawable/border_edit_text"
-                    android:textCursorDrawable="@color/blue"
-                    android:text="@{viewModel.phone}"
-                    android:onTextChanged="@{viewModel::onPhoneChanged}"/>
+                        android:paddingHorizontal="0dp"
+                        android:inputType="textMultiLine"
+                        android:hint="Ghi chú"
+                        android:textAppearance="@style/regularBlack14"
+                        android:text="@{viewModel.addressNote}"
+                        android:maxLength="200"
+                        android:onTextChanged="@{viewModel::onAddressNoteChanged}"/>
+                </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
         <LinearLayout
@@ -184,13 +185,14 @@
                 android:background="@drawable/button_border_none_1a94ff"/>
         </LinearLayout>
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/loading"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/blackBlur10"
+            android:background="@color/blackBlur30"
             android:visibility="@{viewModel.updatingAddress?View.VISIBLE:View.GONE}">
             <androidx.cardview.widget.CardView
                 app:layout_constraintTop_toTopOf="parent"

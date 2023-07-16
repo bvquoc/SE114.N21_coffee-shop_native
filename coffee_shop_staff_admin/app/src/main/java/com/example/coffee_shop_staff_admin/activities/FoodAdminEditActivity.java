@@ -261,7 +261,7 @@ public class FoodAdminEditActivity extends AppCompatActivity {
                         sizeIds,
                         toppingIds
                 );
-                FoodRepository.getInstance().updateFood(food, success -> {
+                FoodRepository.getInstance().updateFood(food, (success, message) -> {
                     if(success)
                     {
                         Log.e(TAG, "update food successfully.");
@@ -298,7 +298,7 @@ public class FoodAdminEditActivity extends AppCompatActivity {
                         sizeIds,
                         toppingIds
                 );
-                FoodRepository.getInstance().insertFood(food, success -> {
+                FoodRepository.getInstance().insertFood(food, (success, message) -> {
                     if(success)
                     {
                         Log.e(TAG, "insert food successfully.");
