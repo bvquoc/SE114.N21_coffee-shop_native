@@ -6,22 +6,27 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.app.AlertDialog;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.coffee_shop_app.Data;
 import com.example.coffee_shop_app.R;
 import com.example.coffee_shop_app.adapters.PromoAdapter;
 import com.example.coffee_shop_app.databinding.ActivityPromoBinding;
 import com.example.coffee_shop_app.models.Promo;
+import com.example.coffee_shop_app.models.Store;
 import com.example.coffee_shop_app.repository.PromoRepository;
 import com.example.coffee_shop_app.utils.interfaces.OnPromoClickListener;
+import com.example.coffee_shop_app.viewmodels.CartButtonViewModel;
+import com.example.coffee_shop_app.viewmodels.CartViewModel;
 import com.example.coffee_shop_app.viewmodels.PromoViewModel;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -36,12 +41,16 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class PromoActivity extends AppCompatActivity {
     private ActivityPromoBinding activityPromoBinding;
     private BottomSheetDialog bottomSheetDialog;
     private final PromoAdapter promoAdapter = new PromoAdapter(new ArrayList<>());
+    private final PromoViewModel promoViewModel = new PromoViewModel();
+    private AsyncTask<Void, Void, String> checkPromoTask;
     private final OnPromoClickListener listener = new OnPromoClickListener() {
         @Override
         public void onPromoClick(Promo promo) {
@@ -52,23 +61,27 @@ public class PromoActivity extends AppCompatActivity {
 
             sheetView.findViewById(R.id.use_button).setOnClickListener(v -> {
                 bottomSheetDialog.dismiss();
-                choosePromo(promo);
+                if (checkPromoTask != null) {
+                    checkPromoTask.cancel(true);
+                }
+                checkPromoTask = new CheckPromoTask(activityPromoBinding.editText.getText() == null ? "" : activityPromoBinding.editText.getText().toString());
+                checkPromoTask.execute();
             });
             DecimalFormat formatter = new DecimalFormat("#,##0.##");
             String minPrice = formatter.format(promo.getMinPrice());
             String maxPrice = formatter.format(promo.getMaxPrice());
-            ((TextView)sheetView.findViewById(R.id.promo_title)).setText("Giảm " + formatter.format(promo.getPercent() * 100) + "% đơn " + minPrice);
+            ((TextView) sheetView.findViewById(R.id.promo_title)).setText("Giảm " + formatter.format(promo.getPercent() * 100) + "% đơn " + minPrice);
 
             DateFormat dateFormat = new SimpleDateFormat("HH:mm dd/MM/yyyy");
-            ((TextView)sheetView.findViewById(R.id.promo_date)).setText(dateFormat.format(promo.getDateEnd()));
+            ((TextView) sheetView.findViewById(R.id.promo_date)).setText(dateFormat.format(promo.getDateEnd()));
 
-            ((TextView)sheetView.findViewById(R.id.promo_min_price)).setText(minPrice+"đ");
+            ((TextView) sheetView.findViewById(R.id.promo_min_price)).setText(minPrice + "đ");
 
-            ((TextView)sheetView.findViewById(R.id.promo_max_price)).setText(maxPrice+"đ");
+            ((TextView) sheetView.findViewById(R.id.promo_max_price)).setText(maxPrice + "đ");
 
-            ((TextView)sheetView.findViewById(R.id.promo_description)).setText(promo.getDescription());
+            ((TextView) sheetView.findViewById(R.id.promo_description)).setText(promo.getDescription());
 
-            ((TextView)sheetView.findViewById(R.id.promo_code)).setText(promo.getPromoCode());
+            ((TextView) sheetView.findViewById(R.id.promo_code)).setText(promo.getPromoCode());
 
             int sdp108 = getResources().getDimensionPixelSize(com.intuit.sdp.R.dimen._108sdp);
             ImageView imageView = sheetView.findViewById(R.id.promo_qr);
@@ -78,8 +91,7 @@ public class PromoActivity extends AppCompatActivity {
             bottomSheetDialog.setContentView(sheetView);
             // Set the behavior to STATE_EXPANDED
             View bottomSheetInternal = bottomSheetDialog.findViewById(com.google.android.material.R.id.design_bottom_sheet);
-            if(bottomSheetInternal != null)
-            {
+            if (bottomSheetInternal != null) {
                 BottomSheetBehavior.from(bottomSheetInternal).setState(BottomSheetBehavior.STATE_EXPANDED);
                 bottomSheetDialog.show();
             }
@@ -89,7 +101,7 @@ public class PromoActivity extends AppCompatActivity {
     private final ActivityResultLauncher<ScanOptions> activityQRScanResultLauncher = registerForActivityResult(
             new ScanContract(),
             result -> {
-                if (result.getContents()!=null) {
+                if (result.getContents() != null) {
                     String promoCode = result.getContents();
                     activityPromoBinding.editText.setText(promoCode);
                 }
@@ -113,10 +125,11 @@ public class PromoActivity extends AppCompatActivity {
         return null;
     }
 
-    private void choosePromo(Promo promo)
-    {
+    private void choosePromo(Promo promo) {
+        //TODO: MAI - return promo
         Toast.makeText(getApplicationContext(), promo.getPromoCode(), Toast.LENGTH_SHORT).show();
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -127,8 +140,7 @@ public class PromoActivity extends AppCompatActivity {
         init();
     }
 
-    private void init()
-    {
+    private void init() {
         Toolbar toolbar = findViewById(R.id.my_toolbar);
         toolbar.setTitle("Mã khuyến mãi");
         toolbar.setNavigationOnClickListener(v -> onBackPressed());
@@ -137,7 +149,6 @@ public class PromoActivity extends AppCompatActivity {
         activityPromoBinding.findPromosRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         activityPromoBinding.findPromosRecyclerView.setAdapter(promoAdapter);
 
-        PromoViewModel promoViewModel = new PromoViewModel();
         activityPromoBinding.setViewModel(promoViewModel);
 
         PromoRepository.getInstance().getPromoListMutableLiveData().observe(this, promos -> {
@@ -149,26 +160,16 @@ public class PromoActivity extends AppCompatActivity {
         activityPromoBinding.loading.setOnTouchListener((v, event) -> true);
 
         activityPromoBinding.applyButton.setOnClickListener(v -> {
-            promoViewModel.setSearching(true);
-            List<Promo> promos = PromoRepository.getInstance().getPromoListMutableLiveData().getValue();
-            if(promos!=null)
-            {
-                String promoCode = activityPromoBinding.editText.getText() == null?"":activityPromoBinding.editText.getText().toString();
-                for (Promo promo: promos) {
-                    if(promo.getPromoCode().equals(promoCode))
-                    {
-                        promoViewModel.setSearching(false);
-                        choosePromo(promo);
-                        return;
-                    }
-                }
+            if (checkPromoTask != null) {
+                checkPromoTask.cancel(true);
             }
-            promoViewModel.setSearching(false);
-            Toast.makeText(getApplicationContext(), "Mã khuyến mãi không tồn tại hoặc đã hết hạn", Toast.LENGTH_SHORT).show();
+            checkPromoTask = new CheckPromoTask(activityPromoBinding.editText.getText() == null ? "" : activityPromoBinding.editText.getText().toString());
+            checkPromoTask.execute();
         });
 
         activityPromoBinding.editTextFindPromo.setStartIconOnClickListener(v -> startQRCodeScanner());
     }
+
     private void startQRCodeScanner() {
         ScanOptions options = new ScanOptions();
         options.setBeepEnabled(true);
@@ -176,5 +177,98 @@ public class PromoActivity extends AppCompatActivity {
         options.setCaptureActivity(QRScanActivity.class);
         options.setPrompt("");
         activityQRScanResultLauncher.launch(options);
+    }
+
+    private final class CheckPromoTask extends AsyncTask<Void, Void, String> {
+        private final String selectedPromoId;
+        private Promo selectedPromo;
+
+        public CheckPromoTask(String selectedPromoId) {
+            this.selectedPromoId = selectedPromoId;
+        }
+
+        public CheckPromoTask(Promo selectedPromo) {
+            this.selectedPromo = selectedPromo;
+            this.selectedPromoId = selectedPromo.getPromoCode();
+        }
+
+        @Override
+        protected void onPreExecute() {
+            promoViewModel.setSearching(true);
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            if(selectedPromo==null)
+            {
+                List<Promo> promos = PromoRepository.getInstance().getPromoListMutableLiveData().getValue();
+                if (promos != null) {
+                    for (Promo promo : promos) {
+                        if (promo.getPromoCode().equals(selectedPromoId)) {
+                            selectedPromo = promo;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (selectedPromo != null) {
+                Store selectedStore = CartButtonViewModel.getInstance().getSelectedStore().getValue();
+                String storeId = null;
+                if (selectedStore != null) {
+                    storeId = selectedStore.getId();
+                }
+                double totalPrice = 0;
+                Object totalPriceObject = CartViewModel.getInstance().getTotalFood().getValue();
+                if (totalPriceObject != null) {
+                    totalPrice = (double) totalPriceObject;
+                }
+                if (storeId == null) {
+                    return "Vui lòng chọn cửa hàng.";
+                } else if (selectedPromo.getStores().contains(storeId)) {
+                    return "Mã giảm giá không áp dụng cho cửa hàng này.";
+                } else if (selectedPromo.getMinPrice() > totalPrice) {
+                    return "Đơn hàng không đạt giá trị tối thiểu.";
+                } else {
+                    Date now = new Date();
+                    if (selectedPromo.getDateEnd().before(now) ||
+                            selectedPromo.getDateStart().after(now)) {
+                        return "Chưa đến thời điểm áp dụng được mã giảm giá";
+                    } else {
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTime(Data.instance.createAt);
+
+                        calendar.add(Calendar.DAY_OF_YEAR, 7);
+                        Date createAtAfter7Days = calendar.getTime();
+                        if (createAtAfter7Days.before(now) && selectedPromo.isForNewCustomer()) {
+                            return "Mã giảm giá chỉ dành cho khách hàng tạo tài khoản cách đây 7 ngày";
+                        } else {
+                            return "";
+                        }
+                    }
+                }
+            }
+            else
+            {
+                return "Mã khuyến mãi không tồn tại hoặc đã hết hạn";
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String v) {
+            if(v.equals(""))
+            {
+                promoViewModel.setLoading(false);
+                choosePromo(selectedPromo);
+            }
+            else
+            {
+                AlertDialog alertDialog = new AlertDialog.Builder(PromoActivity.this)
+                        .setTitle("Thông báo")
+                        .setMessage(v)
+                        .setPositiveButton("OK", (dialog, which) -> dialog.dismiss()).create();
+                promoViewModel.setLoading(false);
+                alertDialog.show();
+            }
+        }
     }
 }
