@@ -8,7 +8,10 @@ const ORDER_READY = "Đã chuẩn bị"
 const ORDER_COMPLETE = "Hoàn thành"
 const ORDER_CANCELLED = "Đã hủy"
 const ORDER_CREATED = "Đã tạo"
-const SHIPPING_FEE_PER_KM = 5000
+const SHIPPING_FEE_PER_KM = 3000
+const SHIPPING_FIRST_DISTANCE = 10
+const SHIPPING_FIRST_DISTANCE_FEE = 15000
+const SHIPPING_MAX_FEE = 50000
 
 func IsOrderStatus(value string) bool {
 	orderStatuses := []string{

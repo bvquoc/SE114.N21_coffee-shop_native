@@ -4,6 +4,7 @@ import (
 	app_context "coffee_shop_backend/context"
 	fireclient "coffee_shop_backend/firebase"
 	"coffee_shop_backend/routes"
+	"fmt"
 	"log"
 	"os"
 
@@ -25,6 +26,12 @@ import (
 // @BasePath /
 // @query.collection.format multi
 func main() {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Recovered from panic:", r)
+		}
+	}()
+
 	godotenv.Load(".env")
 
 	firestoreClient, err := fireclient.NewFirestoreClient(os.Getenv("PROJECT_ID"))

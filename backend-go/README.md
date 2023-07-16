@@ -15,7 +15,7 @@
   "email": "quoc.cantavil@coffee.shop",
   "name": "Quoc",
   "role": "staff",
-  "staffOf": "Cantavil"
+  "store": "Cantavil"
 }
 ```
 

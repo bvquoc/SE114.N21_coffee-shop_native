@@ -11,7 +11,7 @@ type User struct {
 	IsSuperAdmin bool   `json:"isSuperAdmin"`
 	IsAdmin      bool   `json:"isAdmin"`
 	IsStaff      bool   `json:"isStaff"`
-	StaffOf      string `json:"staffOf"`
+	StaffOf      string `json:"store"`
 	Role         string `json:"role"`
 }
 

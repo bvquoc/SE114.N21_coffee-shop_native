@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"cloud.google.com/go/firestore"
 	"github.com/gin-gonic/gin"
 )
 
@@ -25,7 +26,7 @@ func UserCreateUser(c *gin.Context) {
 	}
 
 	if newUser.Role == constants.ROLE_STAFF && newUser.StaffOf == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request body, missing staffOf field"})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request body, missing store field"})
 		return
 	}
 
@@ -65,7 +66,9 @@ func UserCreateUser(c *gin.Context) {
 		}
 		var data map[string]interface{}
 		json.Unmarshal(dataBytes, &data)
+		delete(data, "role")
+		delete(data, "id")
+		data["createAt"] = firestore.ServerTimestamp
 		app_context.App.CreateDocumentWithId(constants.CLT_USER, acc.UID, data)
 	}()
-
 }
