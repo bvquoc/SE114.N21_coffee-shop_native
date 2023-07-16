@@ -11,6 +11,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 import com.example.coffee_shop_app.R;
 import com.example.coffee_shop_app.adapters.StoreAdapter;
@@ -32,16 +33,22 @@ public class StoreActivity extends AppCompatActivity {
     private final OnStoreClickListener listener = storeId -> {
         List<Store> storeList = StoreRepository.getInstance().getStoreListMutableLiveData().getValue();
         Store selectedStore = null;
-        for (Store store:
-             storeList) {
-            if(store.getId().equals(storeId))
-            {
-                selectedStore = store;
-                break;
+        if(storeList!=null)
+        {
+            for (Store store: storeList) {
+                if(store.getId().equals(storeId))
+                {
+                    selectedStore = store;
+                    break;
+                }
             }
+            CartButtonViewModel.getInstance().getSelectedStore().postValue(selectedStore);
+            finish();
         }
-        CartButtonViewModel.getInstance().getSelectedStore().postValue(selectedStore);
-        finish();
+        else
+        {
+            Toast.makeText(StoreActivity.this, "Đã có lỗi xảy ra, xin hãy thử lại sau.", Toast.LENGTH_SHORT).show();
+        }
     };
     private final ActivityResultLauncher<Intent> activityFindStoreResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -52,16 +59,23 @@ public class StoreActivity extends AppCompatActivity {
                         String storeId = data.getStringExtra("storeId");
                         List<Store> storeList = StoreRepository.getInstance().getStoreListMutableLiveData().getValue();
                         Store selectedStore = null;
-                        for (Store store:
-                                storeList) {
-                            if(store.getId().equals(storeId))
-                            {
-                                selectedStore = store;
-                                break;
+                        if(storeList!=null)
+                        {
+                            for (Store store:
+                                    storeList) {
+                                if(store.getId().equals(storeId))
+                                {
+                                    selectedStore = store;
+                                    break;
+                                }
                             }
+                            CartButtonViewModel.getInstance().getSelectedStore().postValue(selectedStore);
+                            finish();
                         }
-                        CartButtonViewModel.getInstance().getSelectedStore().postValue(selectedStore);
-                        finish();
+                        else
+                        {
+                            Toast.makeText(StoreActivity.this, "Đã có lỗi xảy ra, xin hãy thử lại sau.", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 }
             }
