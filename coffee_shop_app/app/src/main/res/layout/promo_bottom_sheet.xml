@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:background="@drawable/bottom_sheet_design">
     <LinearLayout
@@ -44,7 +45,23 @@
         android:layout_marginTop="@dimen/_8sdp"
         android:text="PROMOCODE"
         android:textAlignment="center"
+        android:layout_marginBottom="@dimen/_4sdp"
         style="@style/regularBlack16"/>
+    <androidx.cardview.widget.CardView
+        android:id="@+id/status_card_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="@dimen/_8sdp"
+        app:cardElevation="0dp"
+        android:layout_gravity="center">
+        <TextView
+            android:id="@+id/status_text_view"
+            style="@style/regularGrey12"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_8sdp"
+            android:layout_marginVertical="@dimen/_4sdp"/>
+    </androidx.cardview.widget.CardView>
     <Button
         android:id="@+id/use_button"
         android:layout_width="match_parent"

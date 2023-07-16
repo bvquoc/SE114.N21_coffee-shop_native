@@ -3,6 +3,8 @@ package com.example.coffee_shop_app.activities.promo;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -64,7 +66,7 @@ public class PromoActivity extends AppCompatActivity {
                 if (checkPromoTask != null) {
                     checkPromoTask.cancel(true);
                 }
-                checkPromoTask = new CheckPromoTask(activityPromoBinding.editText.getText() == null ? "" : activityPromoBinding.editText.getText().toString());
+                checkPromoTask = new CheckPromoTask(promo);
                 checkPromoTask.execute();
             });
             DecimalFormat formatter = new DecimalFormat("#,##0.##");
@@ -82,6 +84,19 @@ public class PromoActivity extends AppCompatActivity {
             ((TextView) sheetView.findViewById(R.id.promo_description)).setText(promo.getDescription());
 
             ((TextView) sheetView.findViewById(R.id.promo_code)).setText(promo.getPromoCode());
+
+            if(promo.isForNewCustomer())
+            {
+                ((TextView)sheetView.findViewById(R.id.status_text_view)).setText("Khách hàng mới");
+                ((TextView)sheetView.findViewById(R.id.status_text_view)).setTextColor(ContextCompat.getColor(PromoActivity.this, R.color.blue));
+                ((CardView)sheetView.findViewById(R.id.status_card_view)).setCardBackgroundColor(ContextCompat.getColor(PromoActivity.this, R.color.blueBackground));
+            }
+            else
+            {
+                ((TextView)sheetView.findViewById(R.id.status_text_view)).setText("Tất cả khách hàng");
+                ((TextView)sheetView.findViewById(R.id.status_text_view)).setTextColor(ContextCompat.getColor(PromoActivity.this, R.color.grey_text));
+                ((CardView)sheetView.findViewById(R.id.status_card_view)).setCardBackgroundColor(ContextCompat.getColor(PromoActivity.this, R.color.grey_border));
+            }
 
             int sdp108 = getResources().getDimensionPixelSize(com.intuit.sdp.R.dimen._108sdp);
             ImageView imageView = sheetView.findViewById(R.id.promo_qr);
@@ -224,7 +239,7 @@ public class PromoActivity extends AppCompatActivity {
                 }
                 if (storeId == null) {
                     return "Vui lòng chọn cửa hàng.";
-                } else if (selectedPromo.getStores().contains(storeId)) {
+                } else if (!selectedPromo.getStores().contains(storeId)) {
                     return "Mã giảm giá không áp dụng cho cửa hàng này.";
                 } else if (selectedPromo.getMinPrice() > totalPrice) {
                     return "Đơn hàng không đạt giá trị tối thiểu.";
@@ -257,7 +272,7 @@ public class PromoActivity extends AppCompatActivity {
         protected void onPostExecute(String v) {
             if(v.equals(""))
             {
-                promoViewModel.setLoading(false);
+                promoViewModel.setSearching(false);
                 choosePromo(selectedPromo);
             }
             else
@@ -266,7 +281,7 @@ public class PromoActivity extends AppCompatActivity {
                         .setTitle("Thông báo")
                         .setMessage(v)
                         .setPositiveButton("OK", (dialog, which) -> dialog.dismiss()).create();
-                promoViewModel.setLoading(false);
+                promoViewModel.setSearching(false);
                 alertDialog.show();
             }
         }
