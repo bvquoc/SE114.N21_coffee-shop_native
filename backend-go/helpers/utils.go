@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"coffee_shop_backend/constants"
 	"math"
 	"math/rand"
 	"strings"
@@ -72,4 +73,12 @@ func CalculateDistance(lat1, lng1, lat2, lng2 float64) float64 {
 
 func degToRad(deg float64) float64 {
 	return deg * (math.Pi / 180)
+}
+
+func CalcShippingFee(km int) int {
+	if km <= constants.SHIPPING_FIRST_DISTANCE {
+		return constants.SHIPPING_FIRST_DISTANCE_FEE
+	}
+	price := int(constants.SHIPPING_FIRST_DISTANCE_FEE + math.Max(0.0, float64(km-constants.SHIPPING_FIRST_DISTANCE))*constants.SHIPPING_FEE_PER_KM)
+	return int(math.Min(float64(price), float64(constants.SHIPPING_MAX_FEE)))
 }

@@ -85,8 +85,8 @@ func calcPrice(ord *models.Order) {
 		fmt.Println("[ORDER_CREATE] Delivery")
 		respMpStore, _ := app_context.App.GetDocumentMap(constants.CLT_STORE, ord.IDStore)
 		store := helpers.ToStore(respMpStore)
-		distanceInKm := helpers.CalculateDistance(store.Address.Lat, store.Address.Lng, ord.Address.Lat, ord.Address.Lng)
-		ord.DeliveryCost = int(math.Ceil(float64(constants.SHIPPING_FEE_PER_KM) * distanceInKm))
+		distanceInKm := int(math.Floor(helpers.CalculateDistance(store.Address.Lat, store.Address.Lng, ord.Address.Lat, ord.Address.Lng)))
+		ord.DeliveryCost = helpers.CalcShippingFee(distanceInKm)
 	} else {
 		fmt.Println("[ORDER_CREATE] Pickup")
 	}
@@ -178,8 +178,8 @@ func calcPrice(ord *models.Order) {
 
 			if canUse {
 				canUse = false
-				atLeastPrice := int(respPromo["minPrice"].(int64))
-				maxDiscount := int(respPromo["maxPrice"].(int64))
+				atLeastPrice := int(respPromo["minPrice"].(float64))
+				maxDiscount := int(respPromo["maxPrice"].(float64))
 
 				if ord.PriceProducts >= atLeastPrice {
 					ord.PriceDiscount = int(math.Min(float64(ord.PriceProducts)*respPromo["percent"].(float64), float64(maxDiscount)))
