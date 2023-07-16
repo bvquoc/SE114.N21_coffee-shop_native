@@ -80,7 +80,7 @@
                         android:maxLines="1"
                         android:ellipsize="end"
                         style="@style/regularBlack14"
-                        android:layout_marginRight="@dimen/_2sdp"/>
+                        android:layout_marginRight="@dimen/_4sdp"/>
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -145,7 +145,8 @@
                    android:text="@{viewModel.distanceString}"
                    android:maxLines="1"
                    android:ellipsize="end"
-                   style="@style/regularBlack14"/>
+                   style="@style/regularBlack14"
+                   android:visibility="@{viewModel.distance==-1?View.GONE:View.VISIBLE}"/>
             </LinearLayout>
             <Button
                 android:id="@+id/pick_up_edit_button"
