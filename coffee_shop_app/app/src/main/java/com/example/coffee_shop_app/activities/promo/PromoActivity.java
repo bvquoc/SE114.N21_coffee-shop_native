@@ -1,44 +1,34 @@
 package com.example.coffee_shop_app.activities.promo;
 
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.view.LayoutInflater;
-import android.view.PointerIcon;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.coffee_shop_app.R;
-import com.example.coffee_shop_app.activities.store.StoreSearchActivity;
 import com.example.coffee_shop_app.adapters.PromoAdapter;
 import com.example.coffee_shop_app.databinding.ActivityPromoBinding;
 import com.example.coffee_shop_app.models.Promo;
-import com.example.coffee_shop_app.models.Store;
 import com.example.coffee_shop_app.repository.PromoRepository;
 import com.example.coffee_shop_app.utils.interfaces.OnPromoClickListener;
 import com.example.coffee_shop_app.viewmodels.PromoViewModel;
-import com.example.coffee_shop_app.viewmodels.StoreViewModel;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
-import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.qrcode.QRCodeWriter;
-import com.google.zxing.qrcode.encoder.QRCode;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
 
@@ -51,26 +41,18 @@ import java.util.List;
 public class PromoActivity extends AppCompatActivity {
     private ActivityPromoBinding activityPromoBinding;
     private BottomSheetDialog bottomSheetDialog;
-    private PromoAdapter promoAdapter = new PromoAdapter(new ArrayList<>());
-    private OnPromoClickListener listener = new OnPromoClickListener() {
+    private final PromoAdapter promoAdapter = new PromoAdapter(new ArrayList<>());
+    private final OnPromoClickListener listener = new OnPromoClickListener() {
         @Override
         public void onPromoClick(Promo promo) {
             bottomSheetDialog = new BottomSheetDialog(PromoActivity.this, R.style.BottomSheetTheme);
             View sheetView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.promo_bottom_sheet, null);
 
-            sheetView.findViewById(R.id.close_button).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    bottomSheetDialog.dismiss();
-                }
-            });
+            sheetView.findViewById(R.id.close_button).setOnClickListener(v -> bottomSheetDialog.dismiss());
 
-            sheetView.findViewById(R.id.use_button).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    bottomSheetDialog.dismiss();
-                    choosePromo(promo);
-                }
+            sheetView.findViewById(R.id.use_button).setOnClickListener(v -> {
+                bottomSheetDialog.dismiss();
+                choosePromo(promo);
             });
             DecimalFormat formatter = new DecimalFormat("#,##0.##");
             String minPrice = formatter.format(promo.getMinPrice());
@@ -96,19 +78,20 @@ public class PromoActivity extends AppCompatActivity {
             bottomSheetDialog.setContentView(sheetView);
             // Set the behavior to STATE_EXPANDED
             View bottomSheetInternal = bottomSheetDialog.findViewById(com.google.android.material.R.id.design_bottom_sheet);
-            BottomSheetBehavior.from(bottomSheetInternal).setState(BottomSheetBehavior.STATE_EXPANDED);
-            bottomSheetDialog.show();
+            if(bottomSheetInternal != null)
+            {
+                BottomSheetBehavior.from(bottomSheetInternal).setState(BottomSheetBehavior.STATE_EXPANDED);
+                bottomSheetDialog.show();
+            }
         }
     };
 
-    private ActivityResultLauncher<ScanOptions> activityQRScanResultLauncher = registerForActivityResult(
+    private final ActivityResultLauncher<ScanOptions> activityQRScanResultLauncher = registerForActivityResult(
             new ScanContract(),
             result -> {
                 if (result.getContents()!=null) {
-                    String promoCode = result.getContents().toString();
+                    String promoCode = result.getContents();
                     activityPromoBinding.editText.setText(promoCode);
-                } else {
-                    //User do nothing
                 }
             }
     );
@@ -148,12 +131,7 @@ public class PromoActivity extends AppCompatActivity {
     {
         Toolbar toolbar = findViewById(R.id.my_toolbar);
         toolbar.setTitle("Mã khuyến mãi");
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
         promoAdapter.setOnPromoClickListener(listener);
 
         activityPromoBinding.findPromosRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -162,40 +140,34 @@ public class PromoActivity extends AppCompatActivity {
         PromoViewModel promoViewModel = new PromoViewModel();
         activityPromoBinding.setViewModel(promoViewModel);
 
-        PromoRepository.getInstance().getPromoListMutableLiveData().observe(this, new Observer<List<Promo>>() {
-            @Override
-            public void onChanged(List<Promo> promos) {
-                promoViewModel.setLoading(true);
-                promoAdapter.changeDataSet(promos);
-                promoViewModel.setLoading(false);
-            }
+        PromoRepository.getInstance().getPromoListMutableLiveData().observe(this, promos -> {
+            promoViewModel.setLoading(true);
+            promoAdapter.changeDataSet(promos);
+            promoViewModel.setLoading(false);
         });
 
-        activityPromoBinding.applyButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                promoViewModel.setSearching(true);
-                List<Promo> promos = PromoRepository.getInstance().getPromoListMutableLiveData().getValue();
-                for (Promo promo:
-                        promos) {
-                    if(promo.getPromoCode().equals(activityPromoBinding.editText.getText().toString()))
+        activityPromoBinding.loading.setOnTouchListener((v, event) -> true);
+
+        activityPromoBinding.applyButton.setOnClickListener(v -> {
+            promoViewModel.setSearching(true);
+            List<Promo> promos = PromoRepository.getInstance().getPromoListMutableLiveData().getValue();
+            if(promos!=null)
+            {
+                String promoCode = activityPromoBinding.editText.getText() == null?"":activityPromoBinding.editText.getText().toString();
+                for (Promo promo: promos) {
+                    if(promo.getPromoCode().equals(promoCode))
                     {
                         promoViewModel.setSearching(false);
                         choosePromo(promo);
                         return;
                     }
                 }
-                promoViewModel.setSearching(false);
-                Toast.makeText(getApplicationContext(), "Mã khuyến mãi không tồn tại hoặc đã hết hạn", Toast.LENGTH_SHORT).show();
             }
+            promoViewModel.setSearching(false);
+            Toast.makeText(getApplicationContext(), "Mã khuyến mãi không tồn tại hoặc đã hết hạn", Toast.LENGTH_SHORT).show();
         });
 
-        activityPromoBinding.editTextFindPromo.setStartIconOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startQRCodeScanner();
-            }
-        });
+        activityPromoBinding.editTextFindPromo.setStartIconOnClickListener(v -> startQRCodeScanner());
     }
     private void startQRCodeScanner() {
         ScanOptions options = new ScanOptions();

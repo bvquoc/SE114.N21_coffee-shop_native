@@ -100,10 +100,13 @@ public class SqliteHelper extends SQLiteOpenHelper {
                     .orElse(null);
             CartFood cartFood = new CartFood(prd, item.get("size").toString(), 0);
             cartFood.setId(Integer.valueOf((String) item.get("id")));
+            cartFood.setQuantity((int) item.get("quantity"));
             if (item.get("topping") != null) {
                 cartFood.setTopping(item.get("topping").toString());
             }
-            cartFood.setQuantity((int) item.get("quantity"));
+            if(item.get("note") !=null){
+                cartFood.setNote(item.get("note").toString());
+            }
             cartFoods.add(cartFood);
         }
         return cartFoods;

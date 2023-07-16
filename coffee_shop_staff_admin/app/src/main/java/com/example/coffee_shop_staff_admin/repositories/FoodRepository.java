@@ -84,12 +84,12 @@ public class FoodRepository {
             updates.put("toppings", toppingIds);
             updates.put("sizes", sizeIds);
             foodRef.update(updates)
-                    .addOnSuccessListener(unused -> listener.onUpdateData(true))
-                    .addOnFailureListener(e -> listener.onUpdateData(false));
+                    .addOnSuccessListener(unused -> listener.onUpdateData(true, ""))
+                    .addOnFailureListener(e -> listener.onUpdateData(false, e.getMessage()));
         }
         catch (Exception e)
         {
-            listener.onUpdateData(false);
+            listener.onUpdateData(false, e.getMessage());
         }
     }
     public void updateFood(Food food, UpdateDataListener listener)
@@ -114,8 +114,8 @@ public class FoodRepository {
                     if (images.size() == amountImage) {
                         newData.put("images", images);
                         foodRef.update(newData)
-                                .addOnSuccessListener(unused -> listener.onUpdateData(true))
-                                .addOnFailureListener(e -> listener.onUpdateData(false));
+                                .addOnSuccessListener(unused -> listener.onUpdateData(true, ""))
+                                .addOnFailureListener(e -> listener.onUpdateData(false, e.getMessage()));
                     }
                 } else {
                     //The image is from phone
@@ -130,21 +130,21 @@ public class FoodRepository {
                                             newData.put("images", images);
                                             foodRef.update(newData)
                                                     .addOnSuccessListener(
-                                                            unused -> listener.onUpdateData(true))
+                                                            unused -> listener.onUpdateData(true, ""))
                                                     .addOnFailureListener(
-                                                            e -> listener.onUpdateData(false));
+                                                            e -> listener.onUpdateData(false, e.getMessage()));
                                         }
                                     }).addOnFailureListener(exception -> {
                                         Log.e(TAG, "Failed to get the download URL");
-                                        listener.onUpdateData(false);
+                                        listener.onUpdateData(false, exception.getMessage());
                                     })).addOnFailureListener(exception -> {
                                         Log.e(TAG, "Failed to upload the image");
-                                        listener.onUpdateData(false);
+                                        listener.onUpdateData(false, exception.getMessage());
                                     });
                 }
             } else {
                 Log.e(TAG, "The URI does not have a scheme or is invalid");
-                listener.onUpdateData(false);
+                listener.onUpdateData(false, "The URI does not have a scheme or is invalid");
             }
         }
     }
@@ -174,15 +174,15 @@ public class FoodRepository {
                             newData.put("images", images);
                             newData.put("createAt", new Date());
                             collectionFoodRef.add(newData)
-                                    .addOnSuccessListener(unused -> listener.onUpdateData(true))
-                                    .addOnFailureListener(e -> listener.onUpdateData(false));
+                                    .addOnSuccessListener(unused -> listener.onUpdateData(true, ""))
+                                    .addOnFailureListener(e -> listener.onUpdateData(false, e.getMessage()));
                         }
                     }).addOnFailureListener(exception -> {
                         Log.e(TAG, "Failed to get the download URL");
-                        listener.onUpdateData(false);
+                        listener.onUpdateData(false, exception.getMessage());
                     })).addOnFailureListener(exception -> {
                 Log.e(TAG, "Failed to upload the image");
-                listener.onUpdateData(false);
+                listener.onUpdateData(false, exception.getMessage());
             });
         }
     }
@@ -190,8 +190,8 @@ public class FoodRepository {
         DocumentReference foodRef = fireStore.collection("Food").document(foodId);
         foodRef.delete()
                 .addOnSuccessListener(
-                    taskSnapshot -> listener.onUpdateData(true))
+                    taskSnapshot -> listener.onUpdateData(true, ""))
                 .addOnFailureListener(
-                        exception -> listener.onUpdateData(false));
+                        exception -> listener.onUpdateData(false, exception.getMessage()));
     }
 }

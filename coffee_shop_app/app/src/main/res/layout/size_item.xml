@@ -52,7 +52,6 @@
             android:layout_weight="1" />
 
         <TextView
-            android:text="@{Double.toString(size.price)+' '+ '₫'}"
             android:id="@+id/txtPrice"
             style="@style/boldBlack14"
             android:layout_width="wrap_content"

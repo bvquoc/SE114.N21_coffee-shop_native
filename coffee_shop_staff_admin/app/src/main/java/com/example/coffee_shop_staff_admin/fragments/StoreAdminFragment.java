@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -22,18 +23,11 @@ import android.view.ViewGroup;
 import com.example.coffee_shop_staff_admin.R;
 import com.example.coffee_shop_staff_admin.activities.StoreAdminDetailActivity;
 import com.example.coffee_shop_staff_admin.activities.StoreAdminEditActivity;
-import com.example.coffee_shop_staff_admin.activities.ToppingAdminDetailActivity;
-import com.example.coffee_shop_staff_admin.activities.ToppingAdminEditActivity;
 import com.example.coffee_shop_staff_admin.adapters.StoreAdminAdapter;
-import com.example.coffee_shop_staff_admin.adapters.ToppingAdminAdapter;
 import com.example.coffee_shop_staff_admin.databinding.FragmentStoreAdminBinding;
-import com.example.coffee_shop_staff_admin.databinding.FragmentToppingAdminBinding;
 import com.example.coffee_shop_staff_admin.models.Store;
-import com.example.coffee_shop_staff_admin.models.Topping;
 import com.example.coffee_shop_staff_admin.repositories.StoreRepository;
-import com.example.coffee_shop_staff_admin.repositories.ToppingRepository;
 import com.example.coffee_shop_staff_admin.utils.interfaces.OnStoreAdminClickListener;
-import com.example.coffee_shop_staff_admin.utils.interfaces.OnToppingAdminClickListener;
 import com.example.coffee_shop_staff_admin.viewmodels.StoreAdminViewModel;
 
 import java.util.List;
@@ -45,7 +39,7 @@ public class StoreAdminFragment extends Fragment {
     private final int MILLISECOND_DELAY_SEARCH  = 300;
     private  final OnStoreAdminClickListener listener = new OnStoreAdminClickListener() {
         @Override
-        public void onStoreAdminClick(String storeId) {
+        public void onStoreAdminClick(String storeId, String storeName) {
             Intent intent = new Intent(getContext(), StoreAdminDetailActivity.class);
             intent.putExtra("storeId", storeId);
             activitySeeStoreDetailResultLauncher.launch(intent);
@@ -81,17 +75,13 @@ public class StoreAdminFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static StoreAdminFragment newInstance(String param1, String param2) {
-        return new StoreAdminFragment();
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Toolbar toolbar = ((AppCompatActivity)requireActivity()).findViewById(R.id.my_toolbar);
         toolbar.setTitle("Cửa hàng");
@@ -103,25 +93,19 @@ public class StoreAdminFragment extends Fragment {
         fragmentStoreAdminBinding.recyclerView.setAdapter(storeAdminAdapter);
 
         StoreAdminViewModel storeAdminViewModel = new StoreAdminViewModel();
-        StoreRepository.getInstance().getStoreListMutableLiveData().observe(this, new Observer<List<Store>>() {
-            @Override
-            public void onChanged(List<Store> stores) {
-                storeAdminViewModel.setLoading(true);
-                if (stores != null) {
-                    storeAdminAdapter.changeDataSet(stores);
-                    storeAdminViewModel.setLoading(false);
-                }
+        StoreRepository.getInstance().getStoreListMutableLiveData().observe(this, stores -> {
+            storeAdminViewModel.setLoading(true);
+            if (stores != null) {
+                storeAdminAdapter.changeDataSet(stores);
+                storeAdminViewModel.setLoading(false);
             }
         });
 
         fragmentStoreAdminBinding.setViewModel(storeAdminViewModel);
 
-        fragmentStoreAdminBinding.addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getContext(), StoreAdminEditActivity.class);
-                activityAddNewStoreResultLauncher.launch(intent);
-            }
+        fragmentStoreAdminBinding.addButton.setOnClickListener(v -> {
+            Intent intent = new Intent(getContext(), StoreAdminEditActivity.class);
+            activityAddNewStoreResultLauncher.launch(intent);
         });
 
         fragmentStoreAdminBinding.editText.addTextChangedListener(new TextWatcher() {
@@ -133,13 +117,7 @@ public class StoreAdminFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 handler.removeCallbacks(searchRunnable);
-                searchRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        storeAdminAdapter.getFilter().filter(s);
-                    }
-
-                };
+                searchRunnable = () -> storeAdminAdapter.getFilter().filter(s);
                 handler.postDelayed(searchRunnable, MILLISECOND_DELAY_SEARCH);
             }
 

@@ -91,8 +91,8 @@ public class ToppingRepository {
                 newData.put("price", (int)topping.getPrice());
                 newData.put("image", topping.getImage());
                 toppingRef.update(newData)
-                        .addOnSuccessListener(aVoid -> listener.onUpdateData(true))
-                        .addOnFailureListener(e -> listener.onUpdateData(false));
+                        .addOnSuccessListener(aVoid -> listener.onUpdateData(true, ""))
+                        .addOnFailureListener(e -> listener.onUpdateData(false, e.getMessage()));
             }else {
                 //The image is from phone
                 String imageId = UUID.randomUUID().toString().replace("-", "");
@@ -107,21 +107,21 @@ public class ToppingRepository {
                                     newData.put("image", downloadUrl);
                                     toppingRef.update(newData)
                                             .addOnSuccessListener(
-                                                    aVoid -> listener.onUpdateData(true))
+                                                    aVoid -> listener.onUpdateData(true, ""))
                                             .addOnFailureListener(
-                                                    e -> listener.onUpdateData(false));
+                                                    e -> listener.onUpdateData(false, e.getMessage()));
 
                                 }).addOnFailureListener(exception -> {
                                     Log.e(TAG, "Failed to get the download URL");
-                                    listener.onUpdateData(false);
+                                    listener.onUpdateData(false, exception.getMessage());
                                 })).addOnFailureListener(exception -> {
                                     Log.e(TAG, "Failed to upload the image");
-                                    listener.onUpdateData(false);
+                                    listener.onUpdateData(false, exception.getMessage());
                                 });
             }
         } else {
             Log.e(TAG, "The URI does not have a scheme or is invalid");
-            listener.onUpdateData(false);
+            listener.onUpdateData(false, "The URI does not have a scheme or is invalid");
         }
     }
 
@@ -142,23 +142,23 @@ public class ToppingRepository {
                             newData.put("image", downloadUrl);
                             collectionToppingRef.add(newData)
                                     .addOnSuccessListener(
-                                            documentReference -> listener.onUpdateData(true))
+                                            documentReference -> listener.onUpdateData(true, ""))
                                     .addOnFailureListener(
-                                            exception -> listener.onUpdateData(false));
+                                            exception -> listener.onUpdateData(false, exception.getMessage()));
 
                         }).addOnFailureListener(exception -> {
                             Log.e(TAG, "Failed to get the download URL");
-                            listener.onUpdateData(false);
+                            listener.onUpdateData(false, exception.getMessage());
                         })).addOnFailureListener(exception -> {
                             Log.e(TAG, "Failed to upload the image");
-                            listener.onUpdateData(false);
+                            listener.onUpdateData(false, exception.getMessage());
                         });
     }
     public void deleteTopping(String toppingId, UpdateDataListener listener)
     {
         DocumentReference toppingRef = fireStore.collection("Topping").document(toppingId);
         toppingRef.delete()
-                .addOnSuccessListener(taskSnapshot -> listener.onUpdateData(true))
-                .addOnFailureListener(exception -> listener.onUpdateData(false));
+                .addOnSuccessListener(taskSnapshot -> listener.onUpdateData(true, ""))
+                .addOnFailureListener(exception -> listener.onUpdateData(false, exception.getMessage()));
     }
 }

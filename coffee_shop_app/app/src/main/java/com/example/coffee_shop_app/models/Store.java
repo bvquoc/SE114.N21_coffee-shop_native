@@ -85,7 +85,7 @@ public class Store {
         isFavorite = favorite;
     }
 
-    public static Store fromFireBase(QueryDocumentSnapshot doc, boolean isFavorite)
+    public static Store fromFireBase(DocumentSnapshot doc, boolean isFavorite)
     {
         String id = doc.getId();
 

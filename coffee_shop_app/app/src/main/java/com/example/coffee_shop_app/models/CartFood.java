@@ -10,9 +10,11 @@ import com.example.coffee_shop_app.BR;
 import com.example.coffee_shop_app.Data;
 import com.example.coffee_shop_app.repository.SizeRepository;
 import com.example.coffee_shop_app.repository.ToppingRepository;
+import com.example.coffee_shop_app.viewmodels.CartViewModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 public class CartFood extends BaseObservable {
@@ -177,5 +179,19 @@ public class CartFood extends BaseObservable {
         setUnitPrice(unitPrice);
 
         Log.d("UNIT PRICE", "countUnitPrice: "+unitPrice);
+    }
+
+    public static HashMap<String, Object> toMap(CartFood cartFood){
+        HashMap<String, Object> map=new HashMap<>();
+        map.put("id", cartFood.getProduct().getId());
+        if(cartFood.getNote()!=null && !cartFood.getNote().isEmpty()){
+            map.put("note", cartFood.getNote());
+        }
+        map.put("quantity", cartFood.getQuantity());
+        if(cartFood.getTopping()!=null && !cartFood.getTopping().isEmpty()){
+            map.put("toppingIdList", cartFood.getTopping().split(", "));
+        }
+        map.put("size", cartFood.getSize());
+        return map;
     }
 }

@@ -42,7 +42,7 @@
                         android:layout_toEndOf="@id/icon_store"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Pick up location" />
+                        android:text="Cửa hàng mang đi" />
 
                     <TextView
                         android:id="@+id/txtPickupStore"
@@ -79,7 +79,7 @@
                         android:layout_toEndOf="@id/icon_location"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Pick up time" />
+                        android:text="Thời gian mang đi" />
 
                     <TextView
                         android:layout_marginTop="4dp"

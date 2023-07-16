@@ -15,6 +15,7 @@ import com.example.coffee_shop_app.databinding.SizeItemBinding;
 import com.example.coffee_shop_app.models.Size;
 import com.example.coffee_shop_app.utils.ItemClickedListener;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 public class SizeItemAdapter extends RecyclerView.Adapter<SizeItemAdapter.ViewHolder> {
@@ -59,8 +60,10 @@ public class SizeItemAdapter extends RecyclerView.Adapter<SizeItemAdapter.ViewHo
         }
 
         public void bindSizeItem(Size size){
+            DecimalFormat formatter = new DecimalFormat("#,##0.##");
             sizeItemBinding.setSize(size);
             sizeItemBinding.executePendingBindings();
+            sizeItemBinding.txtPrice.setText(formatter.format(size.getPrice()) + sizeItemBinding.getRoot().getContext().getString(R.string.vndUnit));
 
             sizeItemBinding.rdBtnSize.setChecked(getAdapterPosition()
                     == selectedPosition);

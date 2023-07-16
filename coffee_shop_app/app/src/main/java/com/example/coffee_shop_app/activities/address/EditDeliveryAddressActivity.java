@@ -15,7 +15,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 
 import com.example.coffee_shop_app.databinding.ActivityEditDeliveryAddressBinding;
@@ -25,10 +24,10 @@ import com.example.coffee_shop_app.models.AddressDelivery;
 import com.example.coffee_shop_app.models.MLocation;
 import com.example.coffee_shop_app.repository.AddressRepository;
 import com.example.coffee_shop_app.utils.ValidateHelper;
-import com.example.coffee_shop_app.utils.interfaces.UpdateDataListener;
 import com.example.coffee_shop_app.utils.keyboard.KeyboardHelper;
-import com.example.coffee_shop_app.utils.keyboard.OnKeyboardVisibilityListener;
 import com.example.coffee_shop_app.viewmodels.EditDeliveryAddressViewModel;
+
+import java.util.Objects;
 
 public class EditDeliveryAddressActivity extends AppCompatActivity{
     enum EditAddressResult{
@@ -40,7 +39,7 @@ public class EditDeliveryAddressActivity extends AppCompatActivity{
     private ActivityEditDeliveryAddressBinding activityEditDeliveryAddressBinding;
     int index = -1;
     final EditDeliveryAddressViewModel editDeliveryAddressViewModel = new EditDeliveryAddressViewModel();
-    private ActivityResultLauncher<Intent> activityGoogleMapResultLauncher = registerForActivityResult(
+    private final ActivityResultLauncher<Intent> activityGoogleMapResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == Activity.RESULT_OK) {
@@ -51,8 +50,6 @@ public class EditDeliveryAddressActivity extends AppCompatActivity{
                         double lng = intent.getDoubleExtra("lng",  0);
                         editDeliveryAddressViewModel.setAddress(new MLocation(formattedAddress, lat, lng));
                     }
-                } else {
-                    //User do nothing
                 }
             }
     );
@@ -68,29 +65,22 @@ public class EditDeliveryAddressActivity extends AppCompatActivity{
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId())
-        {
-            case R.id.action_delete:
-                ConfirmDialog dialog = new ConfirmDialog(
-                        "Thông báo",
-                        "Bạn có chắc muốn xóa địa chỉ này",
-                        new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                if(updateAddressTask!=null)
-                                {
-                                    updateAddressTask.cancel(true);
-                                }
-                                updateAddressTask = new UpdateAddressTask(true);
-                                updateAddressTask.execute();
-                            }
-                        },
-                        null
-                );
-                dialog.show(getSupportFragmentManager(), "confirmDialog");
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == R.id.action_delete) {
+            ConfirmDialog dialog = new ConfirmDialog(
+                    "Thông báo",
+                    "Bạn có chắc muốn xóa địa chỉ này",
+                    v -> {
+                        if (updateAddressTask != null) {
+                            updateAddressTask.cancel(true);
+                        }
+                        updateAddressTask = new UpdateAddressTask(true);
+                        updateAddressTask.execute();
+                    },
+                    null
+            );
+            dialog.show(getSupportFragmentManager(), "confirmDialog");
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -101,12 +91,7 @@ public class EditDeliveryAddressActivity extends AppCompatActivity{
         Toolbar toolbar = findViewById(R.id.my_toolbar);
         toolbar.setTitle("Thay đổi địa chỉ");
         setSupportActionBar(toolbar);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
         init(index);
     }
     @SuppressLint("ClickableViewAccessibility")
@@ -134,46 +119,32 @@ public class EditDeliveryAddressActivity extends AppCompatActivity{
             activityEditDeliveryAddressBinding.setViewModel(editDeliveryAddressViewModel);
 
             //change title of toolbar
-            getSupportActionBar().setTitle("Thêm địa chỉ mới");
+            Objects.requireNonNull(getSupportActionBar()).setTitle("Thêm địa chỉ mới");
         }
-        KeyboardHelper.setKeyboardVisibilityListener(this, new OnKeyboardVisibilityListener() {
-            @Override
-            public void onVisibilityChanged(boolean visible) {
-                if(visible){
-                    editDeliveryAddressViewModel.setKeyBoardShow(true);
-                }
-                else {
-                    editDeliveryAddressViewModel.setKeyBoardShow(false);
-                }
+        KeyboardHelper.setKeyboardVisibilityListener(this, editDeliveryAddressViewModel::setKeyBoardShow);
+        activityEditDeliveryAddressBinding.addressDeliveryFrame.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
+            if(editDeliveryAddressViewModel.getAddress() != null)
+            {
+                MLocation location = editDeliveryAddressViewModel.getAddress();
+                intent.putExtra("lat", location.getLat());
+                intent.putExtra("lng", location.getLng());
             }
+            activityGoogleMapResultLauncher.launch(intent);
         });
-        activityEditDeliveryAddressBinding.addressDeliveryFrame.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
-                if(editDeliveryAddressViewModel.getAddress() != null)
-                {
-                    MLocation location = editDeliveryAddressViewModel.getAddress();
-                    intent.putExtra("lat", location.getLat());
-                    intent.putExtra("lng", location.getLng());
-                }
-                activityGoogleMapResultLauncher.launch(intent);
+
+        activityEditDeliveryAddressBinding.loading.setOnTouchListener((v, event) -> true);
+        activityEditDeliveryAddressBinding.saveButton.setOnClickListener(v -> {
+            if(updateAddressTask!=null)
+            {
+                updateAddressTask.cancel(true);
             }
-        });
-        activityEditDeliveryAddressBinding.saveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(updateAddressTask!=null)
-                {
-                    updateAddressTask.cancel(true);
-                }
-                updateAddressTask = new UpdateAddressTask();
-                updateAddressTask.execute();
-            }
+            updateAddressTask = new UpdateAddressTask();
+            updateAddressTask.execute();
         });
     }
     private final class UpdateAddressTask extends AsyncTask<Void, Void, Void> {
-        private boolean isForDeleteAddress;
+        private final boolean isForDeleteAddress;
         public UpdateAddressTask(boolean isForDeleteAddress)
         {
             this.isForDeleteAddress = isForDeleteAddress;
@@ -190,33 +161,25 @@ public class EditDeliveryAddressActivity extends AppCompatActivity{
         protected Void doInBackground(Void... params) {
             if(isForDeleteAddress)
             {
-                AddressRepository.getInstance().deleteAddress(index, new UpdateDataListener() {
-                    @Override
-                    public void onUpdateData(boolean success) {
-                        if(success)
-                        {
-                            Log.e(TAG, "delete address successfully.");
-                            Intent intent = new Intent();
-                            intent.putExtra("resultType", EditAddressResult.Delete);
-                            editDeliveryAddressViewModel.setUpdatingAddress(false);
-                            setResult(RESULT_OK, intent);
-                            finish();
-                        }
-                        else
-                        {
-                            Log.e(TAG, "delete address failed.");
-                            editDeliveryAddressViewModel.setUpdatingAddress(false);
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Toast.makeText(
-                                            EditDeliveryAddressActivity.this,
-                                            "Đã có lỗi xảy ra. Xin hãy thử lại sau.",
-                                            Toast.LENGTH_SHORT
-                                    ).show();
-                                }
-                            });
-                        }
+                AddressRepository.getInstance().deleteAddress(index, success -> {
+                    if(success)
+                    {
+                        Log.e(TAG, "delete address successfully.");
+                        Intent intent = new Intent();
+                        intent.putExtra("resultType", EditAddressResult.Delete);
+                        editDeliveryAddressViewModel.setUpdatingAddress(false);
+                        setResult(RESULT_OK, intent);
+                        finish();
+                    }
+                    else
+                    {
+                        Log.e(TAG, "delete address failed.");
+                        editDeliveryAddressViewModel.setUpdatingAddress(false);
+                        runOnUiThread(() -> Toast.makeText(
+                                EditDeliveryAddressActivity.this,
+                                "Đã có lỗi xảy ra. Xin hãy thử lại sau.",
+                                Toast.LENGTH_SHORT
+                        ).show());
                     }
                 });
             }
@@ -225,129 +188,101 @@ public class EditDeliveryAddressActivity extends AppCompatActivity{
                 boolean isValid = true;
                 if(!ValidateHelper.validateText(editDeliveryAddressViewModel.getNameReceiver()))
                 {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            activityEditDeliveryAddressBinding.nameEditText.setError("Vui lòng nhập tên");
-                        }
-                    });
+                    runOnUiThread(() -> activityEditDeliveryAddressBinding.nameEditTextFrame.setError("Vui lòng nhập tên"));
                     isValid = false;
+                }
+                else
+                {
+                    runOnUiThread(() -> activityEditDeliveryAddressBinding.nameEditTextFrame.setError(null));
                 }
                 if(!ValidateHelper.validatePhone(editDeliveryAddressViewModel.getPhone()))
                 {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            activityEditDeliveryAddressBinding.phoneEditText.setError("Vui lòng nhập số điện thoại 10 số");
-                        }
-                    });
+                    runOnUiThread(() -> activityEditDeliveryAddressBinding.phoneEditTextFrame.setError("Vui lòng nhập số điện thoại 10 số"));
                     isValid = false;
+                }
+                else
+                {
+                    runOnUiThread(() -> activityEditDeliveryAddressBinding.phoneEditTextFrame.setError(null));
                 }
                 if(editDeliveryAddressViewModel.getAddress() == null)
                 {
+                    runOnUiThread(() -> activityEditDeliveryAddressBinding.addressEditTextFrame.setError("Vui lòng nhập tên"));
                     isValid = false;
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(
-                                    EditDeliveryAddressActivity.this,
-                                    "Vui lòng chọn địa chỉ",
-                                    Toast.LENGTH_SHORT
-                            ).show();
-                        }
-                    });
+                }
+                else
+                {
+                    runOnUiThread(() -> activityEditDeliveryAddressBinding.addressEditTextFrame.setError(null));
                 }
                 if(!isValid)
                 {
+                    editDeliveryAddressViewModel.setUpdatingAddress(false);
                     return null;
                 }
+                AddressDelivery addressDelivery = new AddressDelivery(
+                        editDeliveryAddressViewModel.getAddress(),
+                        editDeliveryAddressViewModel.getNameReceiver(),
+                        editDeliveryAddressViewModel.getPhone(),
+                        editDeliveryAddressViewModel.getAddressNote()
+                );
                 if(index == -1)
                 {
-                    AddressDelivery addressDelivery = new AddressDelivery(
-                            editDeliveryAddressViewModel.getAddress(),
-                            editDeliveryAddressViewModel.getNameReceiver(),
-                            editDeliveryAddressViewModel.getPhone(),
-                            editDeliveryAddressViewModel.getAddressNote()
-                    );
-                    AddressRepository.getInstance().insertAddress(addressDelivery, new UpdateDataListener() {
-                        @Override
-                        public void onUpdateData(boolean success) {
-                            if(success)
-                            {
-                                Log.e(TAG, "insert address successfully.");
-                                Intent intent = new Intent();
-                                intent.putExtra("resultType", EditAddressResult.Insert);
-                                intent.putExtra("index", index);
-                                intent.putExtra("formattedAddress", addressDelivery.getAddress().getFormattedAddress());
-                                intent.putExtra("lat", addressDelivery.getAddress().getLat());
-                                intent.putExtra("lng", addressDelivery.getAddress().getLng());
-                                intent.putExtra("addressNote", addressDelivery.getAddressNote());
-                                intent.putExtra("nameReceiver", addressDelivery.getNameReceiver());
-                                intent.putExtra("phone", addressDelivery.getPhone());
-                                editDeliveryAddressViewModel.setUpdatingAddress(false);
-                                setResult(RESULT_OK, intent);
-                                finish();
-                            }
-                            else
-                            {
-                                Log.e(TAG, "insert address failed.");
-                                editDeliveryAddressViewModel.setUpdatingAddress(false);
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Toast.makeText(
-                                                EditDeliveryAddressActivity.this,
-                                                "Đã có lỗi xảy ra. Xin hãy thử lại sau.",
-                                                Toast.LENGTH_SHORT
-                                        ).show();
-                                    }
-                                });
-                            }
+                    AddressRepository.getInstance().insertAddress(addressDelivery, success -> {
+                        if(success)
+                        {
+                            Log.e(TAG, "insert address successfully.");
+                            Intent intent = new Intent();
+                            intent.putExtra("resultType", EditAddressResult.Insert);
+                            intent.putExtra("index", index);
+                            intent.putExtra("formattedAddress", addressDelivery.getAddress().getFormattedAddress());
+                            intent.putExtra("lat", addressDelivery.getAddress().getLat());
+                            intent.putExtra("lng", addressDelivery.getAddress().getLng());
+                            intent.putExtra("addressNote", addressDelivery.getAddressNote());
+                            intent.putExtra("nameReceiver", addressDelivery.getNameReceiver());
+                            intent.putExtra("phone", addressDelivery.getPhone());
+                            editDeliveryAddressViewModel.setUpdatingAddress(false);
+                            setResult(RESULT_OK, intent);
+                            finish();
+                        }
+                        else
+                        {
+                            Log.e(TAG, "insert address failed.");
+                            editDeliveryAddressViewModel.setUpdatingAddress(false);
+                            runOnUiThread(() -> Toast.makeText(
+                                    EditDeliveryAddressActivity.this,
+                                    "Đã có lỗi xảy ra. Xin hãy thử lại sau.",
+                                    Toast.LENGTH_SHORT
+                            ).show());
                         }
                     });
                 }
                 else
                 {
-                    AddressDelivery addressDelivery = new AddressDelivery(
-                            editDeliveryAddressViewModel.getAddress(),
-                            editDeliveryAddressViewModel.getNameReceiver(),
-                            editDeliveryAddressViewModel.getPhone(),
-                            editDeliveryAddressViewModel.getAddressNote()
-                    );
-                    AddressRepository.getInstance().updateAddress(addressDelivery, index, new UpdateDataListener() {
-                        @Override
-                        public void onUpdateData(boolean success) {
-                            if(success)
-                            {
-                                Log.e(TAG, "update address successfully.");
-                                Intent intent = new Intent();
-                                intent.putExtra("resultType", EditAddressResult.Update);
-                                intent.putExtra("index", index);
-                                intent.putExtra("formattedAddress", addressDelivery.getAddress().getFormattedAddress());
-                                intent.putExtra("lat", addressDelivery.getAddress().getLat());
-                                intent.putExtra("lng", addressDelivery.getAddress().getLng());
-                                intent.putExtra("addressNote", addressDelivery.getAddressNote());
-                                intent.putExtra("nameReceiver", addressDelivery.getNameReceiver());
-                                intent.putExtra("phone", addressDelivery.getPhone());
-                                editDeliveryAddressViewModel.setUpdatingAddress(false);
-                                setResult(RESULT_OK, intent);
-                                finish();
-                            }
-                            else
-                            {
-                                Log.e(TAG, "update address failed.");
-                                editDeliveryAddressViewModel.setUpdatingAddress(false);
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Toast.makeText(
-                                                EditDeliveryAddressActivity.this,
-                                                "Đã có lỗi xảy ra. Xin hãy thử lại sau.",
-                                                Toast.LENGTH_SHORT
-                                        ).show();
-                                    }
-                                });
-                            }
+                    AddressRepository.getInstance().updateAddress(addressDelivery, index, success -> {
+                        if(success)
+                        {
+                            Log.e(TAG, "update address successfully.");
+                            Intent intent = new Intent();
+                            intent.putExtra("resultType", EditAddressResult.Update);
+                            intent.putExtra("index", index);
+                            intent.putExtra("formattedAddress", addressDelivery.getAddress().getFormattedAddress());
+                            intent.putExtra("lat", addressDelivery.getAddress().getLat());
+                            intent.putExtra("lng", addressDelivery.getAddress().getLng());
+                            intent.putExtra("addressNote", addressDelivery.getAddressNote());
+                            intent.putExtra("nameReceiver", addressDelivery.getNameReceiver());
+                            intent.putExtra("phone", addressDelivery.getPhone());
+                            editDeliveryAddressViewModel.setUpdatingAddress(false);
+                            setResult(RESULT_OK, intent);
+                            finish();
+                        }
+                        else
+                        {
+                            Log.e(TAG, "update address failed.");
+                            editDeliveryAddressViewModel.setUpdatingAddress(false);
+                            runOnUiThread(() -> Toast.makeText(
+                                    EditDeliveryAddressActivity.this,
+                                    "Đã có lỗi xảy ra. Xin hãy thử lại sau.",
+                                    Toast.LENGTH_SHORT
+                            ).show());
                         }
                     });
                 }
@@ -357,7 +292,6 @@ public class EditDeliveryAddressActivity extends AppCompatActivity{
 
         @Override
         protected void onPostExecute(Void v) {
-            editDeliveryAddressViewModel.setUpdatingAddress(false);
         }
     }
 }

@@ -1,13 +1,36 @@
 <resources>
     <string name="app_name">coffee_shop_app</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="add_to_cart">Add to cart -</string>
+    <string name="add_to_cart">Thêm vào giỏ -</string>
     <string name="size_text">Size: </string>
     <string name="topping_text">Topping: </string>
     <string name="vndUnit">\ ₫\</string>
+    <string name="format">%,.0f</string>
 
     <string name="pick_up_from">Đến lấy tại</string>
     <string name="delivery_to">Giao hàng đến</string>
     <string name="statusProcessing">Đang xử lí</string>
-
+    <string name="statusDelivering">Đang giao</string>
+    <string name="statusDelivered">Đã giao</string>
+    <string name="statusDeliveryFailed">Giao hàng thất bại</string>
+    <string name="statusReady">Đã chuẩn bị</string>
+    <string name="statusComplete">Hoàn thành</string>
+    <string name="statusCancelled">Đã huỷ</string>
+    <string name="chi_tiet_don_hang">Chi tiết đơn hàng</string>
+    <string name="su_dung_mgg">Sử dụng mã giảm giá</string>
+    <string name="lien_he_ho_tro">Liên hệ hỗ trợ</string>
+    <string name="order_id">Order ID</string>
+    <string name="thong_tin_chung">Thông tin chung</string>
+    <string name="ngay_dat_hang">Ngày đặt hàng</string>
+    <string name="thong_tin_van_chuyen">Thông tin vận chuyển</string>
+    <string name="tu_cua_hang">Từ cửa hàng</string>
+    <string name="den">Đến</string>
+    <string name="thong_tin_san_pham">Thông tin sản phẩm</string>
+    <string name="thanh_toan">Thanh toán</string>
+    <string name="tong_tien">Tổng tiền</string>
+    <string name="phi_van_chuyen">Phí vận chuyển</string>
+    <string name="giam_gia_tu_cua_hang">Giảm giá từ cửa hàng</string>
+    <string name="thanh_tien">Thành tiền</string>
+    <string name="dia_chi">Địa chỉ</string>
+    <string name="so_dien_thoai">Số điện thoại</string>
 </resources>

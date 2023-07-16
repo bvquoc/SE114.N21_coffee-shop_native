@@ -39,7 +39,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_toRightOf="@id/icon_store"
-                    android:text="From store" />
+                    android:text="Từ cửa hàng" />
 
                 <TextView
                     android:id="@+id/txtFromStore"
@@ -76,7 +76,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_toRightOf="@id/icon_location"
-                    android:text="To" />
+                    android:text="Đến" />
 
                 <TextView
                     android:id="@+id/txtToAddress"
