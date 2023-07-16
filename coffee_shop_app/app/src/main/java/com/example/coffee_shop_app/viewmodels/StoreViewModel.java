@@ -3,7 +3,6 @@ package com.example.coffee_shop_app.viewmodels;
 import androidx.databinding.BaseObservable;
 import androidx.databinding.Bindable;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
 
 import com.example.coffee_shop_app.BR;
 import com.example.coffee_shop_app.models.MLocation;
@@ -17,76 +16,73 @@ import java.util.List;
 
 public class StoreViewModel extends BaseObservable {
     public StoreViewModel(){
-        nearestStoreMutableLiveData = new MutableLiveData<Store>();
-        favoriteStoresListMutableLiveData = new MutableLiveData<List<Store>>();
-        otherStoresListMutableLiveData = new MutableLiveData<List<Store>>();
+        nearestStoreMutableLiveData = new MutableLiveData<>();
+        favoriteStoresListMutableLiveData = new MutableLiveData<>();
+        otherStoresListMutableLiveData = new MutableLiveData<>();
 
         allStores = StoreRepository.getInstance().getStoreListMutableLiveData();
-        allStores.observeForever(new Observer<List<Store>>() {
-            @Override
-            public void onChanged(List<Store> stores) {
-                if(stores == null)
-                {
-                    isLoading.setValue(true);
-                    return;
-                }
+        allStores.observeForever(stores -> {
+            if(stores == null)
+            {
                 isLoading.setValue(true);
-                List<Store> favoriteStores = new ArrayList<>();
-                List<Store> otherStores = new ArrayList<>();
-
-                if(stores.size() > 1)
-                {
-                    int index = 0;
-                    if(LocationHelper.getInstance().getCurrentLocation() != null)
-                    {
-                        LatLng currentLocation = LocationHelper.getInstance().getCurrentLocation();
-                        MLocation storeLocation = stores.get(0).getAddress();
-                        if(LocationHelper.calculateDistance(
-                                storeLocation.getLat(),
-                                storeLocation.getLng(),
-                                currentLocation.latitude,
-                                currentLocation.longitude) < 15)
-                        {
-                            nearestStoreMutableLiveData.postValue(stores.get(0));
-                            index++;
-                        }
-                    }
-                    for(; index < stores.size(); index++)
-                    {
-                        Store store = stores.get(index);
-                        if (store.isFavorite()) {
-                            favoriteStores.add(store);
-                        } else {
-                            otherStores.add(store);
-                        }
-                    }
-                }
-                else
-                {
-                    nearestStoreMutableLiveData.postValue(null);
-                }
-                favoriteStoresListMutableLiveData.postValue(favoriteStores);
-                otherStoresListMutableLiveData.postValue(otherStores);
-                isLoading.postValue(false);
+                return;
             }
+            isLoading.setValue(true);
+            List<Store> favoriteStores = new ArrayList<>();
+            List<Store> otherStores = new ArrayList<>();
+
+            if(stores.size() > 1)
+            {
+                int index = 0;
+                if(LocationHelper.getInstance().getCurrentLocation() != null)
+                {
+                    LatLng currentLocation = LocationHelper.getInstance().getCurrentLocation();
+                    MLocation storeLocation = stores.get(0).getAddress();
+                    if(LocationHelper.calculateDistance(
+                            storeLocation.getLat(),
+                            storeLocation.getLng(),
+                            currentLocation.latitude,
+                            currentLocation.longitude) < 15)
+                    {
+                        nearestStoreMutableLiveData.postValue(stores.get(0));
+                        index++;
+                    }
+                }
+                for(; index < stores.size(); index++)
+                {
+                    Store store = stores.get(index);
+                    if (store.isFavorite()) {
+                        favoriteStores.add(store);
+                    } else {
+                        otherStores.add(store);
+                    }
+                }
+            }
+            else
+            {
+                nearestStoreMutableLiveData.postValue(null);
+            }
+            favoriteStoresListMutableLiveData.postValue(favoriteStores);
+            otherStoresListMutableLiveData.postValue(otherStores);
+            isLoading.postValue(false);
         });
     }
     @Bindable
-    private MutableLiveData<List<Store>> allStores;
+    private final MutableLiveData<List<Store>> allStores;
     @Bindable
-    private MutableLiveData<Store> nearestStoreMutableLiveData;
+    private final MutableLiveData<Store> nearestStoreMutableLiveData;
     public MutableLiveData<Store> getNearestStoreMutableLiveData() {
         return nearestStoreMutableLiveData;
     }
 
     @Bindable
-    private MutableLiveData<List<Store>> otherStoresListMutableLiveData;
+    private final MutableLiveData<List<Store>> otherStoresListMutableLiveData;
     public MutableLiveData<List<Store>> getOtherStores() {
         return otherStoresListMutableLiveData;
     }
 
     @Bindable
-    private MutableLiveData<List<Store>> favoriteStoresListMutableLiveData;
+    private final MutableLiveData<List<Store>> favoriteStoresListMutableLiveData;
     public MutableLiveData<List<Store>> getFavoriteStores() {
         return favoriteStoresListMutableLiveData;
     }
@@ -100,6 +96,17 @@ public class StoreViewModel extends BaseObservable {
     public void setHasNearestStore(boolean hasNearestStore) {
         this.hasNearestStore = hasNearestStore;
         notifyPropertyChanged(BR.hasNearestStore);
+        if(otherStoresListMutableLiveData.getValue()==null || otherStoresListMutableLiveData.getValue().size() == 0)
+        {
+            setOtherText("");
+        }
+        else if(hasNearestStore || hasFavoriteStores)
+        {
+            setOtherText("Khác");
+        }
+        else{
+            setOtherText("Tất cả");
+        }
     }
 
     @Bindable
@@ -110,10 +117,32 @@ public class StoreViewModel extends BaseObservable {
     public void setHasFavoriteStores(boolean hasFavoriteStores) {
         this.hasFavoriteStores = hasFavoriteStores;
         notifyPropertyChanged(BR.hasFavoriteStores);
+        if(otherStoresListMutableLiveData.getValue()==null || otherStoresListMutableLiveData.getValue().size() == 0)
+        {
+            setOtherText("");
+        }
+        else if(hasNearestStore || hasFavoriteStores)
+        {
+            setOtherText("Khác");
+        }
+        else{
+            setOtherText("Tất cả");
+        }
+    }
+    @Bindable
+    private String otherText = "Tất cả";
+
+    public String getOtherText() {
+        return otherText;
+    }
+
+    public void setOtherText(String otherText) {
+        this.otherText = otherText;
+        notifyPropertyChanged(BR.otherText);
     }
 
     @Bindable
-    private MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
+    private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
 
     public MutableLiveData<Boolean> getIsLoading() {
         return isLoading;

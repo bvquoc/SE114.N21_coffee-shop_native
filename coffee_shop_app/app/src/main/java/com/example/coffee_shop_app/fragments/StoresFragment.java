@@ -6,7 +6,7 @@ import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -33,13 +33,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StoresFragment extends Fragment {
-    private static final String TAG = "StoreFragment";
     private FragmentStoresBinding fragmentStoresBinding;
-    private StoreAdapter nearestStoreAdapter = new StoreAdapter(new ArrayList<Store>());
-    private StoreAdapter favoriteStoresAdapter = new StoreAdapter(new ArrayList<Store>());
-    private StoreAdapter otherStoresAdapter = new StoreAdapter(new ArrayList<Store>());
-    private int previousLocation;
-    private OnStoreClickListener listener = new OnStoreClickListener() {
+    private final StoreAdapter nearestStoreAdapter = new StoreAdapter(new ArrayList<>());
+    private final StoreAdapter favoriteStoresAdapter = new StoreAdapter(new ArrayList<>());
+    private final StoreAdapter otherStoresAdapter = new StoreAdapter(new ArrayList<>());
+    private final OnStoreClickListener listener = new OnStoreClickListener() {
         @Override
         public void onStoreClick(String storeId) {
             Intent intent = new Intent(getContext(), StoreDetailActivity.class);
@@ -48,7 +46,7 @@ public class StoresFragment extends Fragment {
             activitySeeStoreDetailResultLauncher.launch(intent);
         }
     } ;
-    private ActivityResultLauncher<Intent> activityFindStoreResultLauncher = registerForActivityResult(
+    private final ActivityResultLauncher<Intent> activityFindStoreResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == Activity.RESULT_OK) {
@@ -61,30 +59,34 @@ public class StoresFragment extends Fragment {
                             CartButtonViewModel.getInstance().getSelectedOrderType().postValue(orderType);
                         }
                         List<Store> storeList = StoreRepository.getInstance().getStoreListMutableLiveData().getValue();
-                        Store selectedStore = null;
-                        for (Store store:
-                                storeList) {
-                            if(store.getId().equals(storeId))
-                            {
-                                selectedStore = store;
-                                break;
+                        if(storeList!=null)
+                        {
+                            Store selectedStore = null;
+                            for (Store store:
+                                    storeList) {
+                                if(store.getId().equals(storeId))
+                                {
+                                    selectedStore = store;
+                                    break;
+                                }
                             }
+                            CartButtonViewModel.getInstance().getSelectedStore().postValue(selectedStore);
+                            BottomNavigationView bottomNavigationView = requireActivity().findViewById(R.id.bottomNavView);
+                            bottomNavigationView.setSelectedItemId(R.id.menuFragment);
                         }
-                        CartButtonViewModel.getInstance().getSelectedStore().postValue(selectedStore);
-                        BottomNavigationView bottomNavigationView = getActivity().findViewById(R.id.bottomNavView);
-                        bottomNavigationView.setSelectedItemId(R.id.menuFragment);
+                        else
+                        {
+                            Toast.makeText(
+                                    getContext(),
+                                    "Đã có lỗi xảy ra. Xin hãy thử lại sau.",
+                                    Toast.LENGTH_SHORT
+                            ).show();
+                        }
                     }
-                } else {
-                    //User do nothing
                 }
-                fragmentStoresBinding.nearestStore.clearFocus();
-                fragmentStoresBinding.favoriteStores.clearFocus();
-                fragmentStoresBinding.otherStores.clearFocus();
-                fragmentStoresBinding.nestedScrollView.requestFocus();
-                fragmentStoresBinding.nestedScrollView.scrollTo(0, previousLocation);
             }
     );
-    private ActivityResultLauncher<Intent> activitySeeStoreDetailResultLauncher = registerForActivityResult(
+    private final ActivityResultLauncher<Intent> activitySeeStoreDetailResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == Activity.RESULT_OK) {
@@ -99,20 +101,26 @@ public class StoresFragment extends Fragment {
                         }
                         List<Store> storeList = StoreRepository.getInstance().getStoreListMutableLiveData().getValue();
                         Store selectedStore = null;
-                        for (Store store:
-                                storeList) {
-                            if(store.getId().equals(storeId))
-                            {
-                                selectedStore = store;
-                                break;
+                        if(storeList!=null)
+                        {
+                            for (Store store:
+                                    storeList) {
+                                if(store.getId().equals(storeId))
+                                {
+                                    selectedStore = store;
+                                    break;
+                                }
                             }
+                            CartButtonViewModel.getInstance().getSelectedStore().postValue(selectedStore);
+                            BottomNavigationView bottomNavigationView = requireActivity().findViewById(R.id.bottomNavView);
+                            bottomNavigationView.setSelectedItemId(R.id.menuFragment);
                         }
-                        CartButtonViewModel.getInstance().getSelectedStore().postValue(selectedStore);
-                        BottomNavigationView bottomNavigationView = getActivity().findViewById(R.id.bottomNavView);
-                        bottomNavigationView.setSelectedItemId(R.id.menuFragment);
+                        Toast.makeText(
+                                getContext(),
+                                "Đã có lỗi xảy ra. Xin hãy thử lại sau.",
+                                Toast.LENGTH_SHORT
+                        ).show();
                     }
-                } else {
-                    //User don't choose "Mang đi" or "Giao hàng"
                 }
             }
     );
@@ -121,28 +129,23 @@ public class StoresFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static StoresFragment newInstance() {
-        StoresFragment fragment = new StoresFragment();
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
     void setToolBarTittle()
     {
-        Toolbar toolbar = ((AppCompatActivity)requireActivity()).findViewById(R.id.my_toolbar);
+        Toolbar toolbar = requireActivity().findViewById(R.id.my_toolbar);
         toolbar.setTitle("Cửa hàng");
     }
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         setToolBarTittle();
         nearestStoreAdapter.setOnClickListener(listener);
         favoriteStoresAdapter.setOnClickListener(listener);
         otherStoresAdapter.setOnClickListener(listener);
-        //set databinding
+
         fragmentStoresBinding = FragmentStoresBinding.inflate(inflater, container, false);
 
         fragmentStoresBinding.nearestStore.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -153,36 +156,33 @@ public class StoresFragment extends Fragment {
 
         fragmentStoresBinding.otherStores.setLayoutManager(new LinearLayoutManager(getContext()));
         fragmentStoresBinding.otherStores.setAdapter(otherStoresAdapter);
-        fragmentStoresBinding.findStoreFrame.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                previousLocation = fragmentStoresBinding.nestedScrollView.getScrollY();
-                Intent intent = new Intent(getActivity(), StoreSearchActivity.class);
-                activityFindStoreResultLauncher.launch(intent);
-            }
+
+        fragmentStoresBinding.findStoreFrame.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), StoreSearchActivity.class);
+            activityFindStoreResultLauncher.launch(intent);
         });
         StoreViewModel storeViewModel = new StoreViewModel();
         storeViewModel.getNearestStoreMutableLiveData().observe(getViewLifecycleOwner(), nearestStore ->{
             if(nearestStore == null)
             {
                 storeViewModel.setHasNearestStore(false);
-                nearestStoreAdapter.changeDataSet(new ArrayList<Store>());
+                nearestStoreAdapter.changeDataSet(new ArrayList<>());
             }
             else
             {
                 storeViewModel.setHasNearestStore(true);
 
-                List<Store> storeList = new ArrayList<Store>();
+                List<Store> storeList = new ArrayList<>();
                 storeList.add(nearestStore);
                 nearestStoreAdapter.changeDataSet(storeList);
             }
         });
         storeViewModel.getFavoriteStores().observe(getViewLifecycleOwner(), favoriteStores ->{
-            if(favoriteStores.size() == 0)
+            if(favoriteStores == null || favoriteStores.size() == 0)
             {
                 storeViewModel.setHasFavoriteStores(false);
 
-                favoriteStoresAdapter.changeDataSet(new ArrayList<Store>());
+                favoriteStoresAdapter.changeDataSet(new ArrayList<>());
             }
             else
             {
@@ -193,7 +193,25 @@ public class StoresFragment extends Fragment {
 
         });
         storeViewModel.getOtherStores().observe(getViewLifecycleOwner(), otherStores ->{
-            otherStoresAdapter.changeDataSet(otherStores);
+            if(otherStores!=null)
+            {
+                otherStoresAdapter.changeDataSet(otherStores);
+                if(otherStores.size() == 0)
+                {
+                    storeViewModel.setOtherText("");
+                }
+                else if(storeViewModel.isHasNearestStore() || storeViewModel.isHasFavoriteStores())
+                {
+                    storeViewModel.setOtherText("Khác");
+                }
+                else{
+                    storeViewModel.setOtherText("Tất cả");
+                }
+            }
+            else
+            {
+                otherStoresAdapter.changeDataSet(new ArrayList<>());
+            }
         });
         storeViewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading ->{
             if(isLoading)
