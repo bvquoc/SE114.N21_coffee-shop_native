@@ -99,14 +99,12 @@ public class FoodAdminAdapter extends RecyclerView.Adapter implements Filterable
 
             Glide.with(holder.itemView.getContext())
                     .load(Uri.parse(food.getImages().get(0)))
+                    .placeholder(R.drawable.img_placeholder)
+                    .error(R.drawable.img_placeholder)
                     .into(foodItemViewHolder.productImageView);
 
-            foodItemViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onFoodAdminClickListener.onFoodAdminClick(food.getId());
-                }
-            });
+            foodItemViewHolder.itemView.setOnClickListener(
+                    v -> onFoodAdminClickListener.onFoodAdminClick(food.getId()));
         }
     }
 
@@ -134,17 +132,14 @@ public class FoodAdminAdapter extends RecyclerView.Adapter implements Filterable
     }
 
     public static class FoodItemViewHolder extends RecyclerView.ViewHolder{
-        private TextView nameTextView;
-        private TextView priceTextView;
-        private ImageView productImageView;
-
-        private View itemView;
+        private final TextView nameTextView;
+        private final TextView priceTextView;
+        private final ImageView productImageView;
         public FoodItemViewHolder(@NonNull View itemView) {
             super(itemView);
             nameTextView = itemView.findViewById(R.id.name_text_view);
             priceTextView = itemView.findViewById(R.id.price_text_view);
             productImageView = itemView.findViewById(R.id.product_image);
-            this.itemView = itemView;
         }
     }
     public static class EmptyProductStateViewHolder extends RecyclerView.ViewHolder{

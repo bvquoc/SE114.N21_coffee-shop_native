@@ -61,6 +61,8 @@ public class ImageEditAdapter extends RecyclerView.Adapter<ImageEditAdapter.Imag
                 try {
                     Glide.with(holder.itemView.getContext())
                             .load(imageUri)
+                            .placeholder(R.drawable.img_placeholder)
+                            .error(R.drawable.img_placeholder)
                             .into(holder.imageView);
                 }
                 catch (Exception e)
@@ -83,12 +85,7 @@ public class ImageEditAdapter extends RecyclerView.Adapter<ImageEditAdapter.Imag
         }
 
 
-        holder.deleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                delete(holder.getAdapterPosition());
-            }
-        });
+        holder.deleteButton.setOnClickListener(v -> delete(holder.getAdapterPosition()));
     }
 
     @Override
