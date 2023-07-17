@@ -140,7 +140,7 @@ public class CartButtonViewModel extends BaseObservable {
         return delivering;
     }
 
-    public void setDelivering(boolean delivering) {
+    private void setDelivering(boolean delivering) {
         this.delivering = delivering;
         notifyPropertyChanged(BR.delivering);
     }

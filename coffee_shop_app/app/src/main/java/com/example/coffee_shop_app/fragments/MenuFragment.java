@@ -25,6 +25,7 @@ import com.example.coffee_shop_app.activities.store.StoreActivity;
 import com.example.coffee_shop_app.adapters.ProductAdapter;
 import com.example.coffee_shop_app.databinding.FragmentMenuBinding;
 import com.example.coffee_shop_app.databinding.OrderTypeBottomSheetBinding;
+import com.example.coffee_shop_app.repository.ProductRepository;
 import com.example.coffee_shop_app.utils.interfaces.OnProductClickListener;
 import com.example.coffee_shop_app.viewmodels.CartButtonViewModel;
 import com.example.coffee_shop_app.viewmodels.MenuViewModel;
@@ -36,7 +37,9 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MenuFragment extends Fragment {
     private FragmentMenuBinding fragmentMenuBinding;
@@ -125,12 +128,9 @@ public class MenuFragment extends Fragment {
         fragmentMenuBinding.deliveryProductItemRecyclerView.setAdapter(otherProductAdapter);
 
         CartButtonViewModel.getInstance().getSelectedOrderType().observe(getViewLifecycleOwner(), orderType -> {
-            if(orderType == OrderType.Delivery)
-            {
+            if (orderType == OrderType.Delivery) {
                 setToolBarTitle("Giao hàng");
-            }
-            else
-            {
+            } else {
                 setToolBarTitle("Mang đi");
             }
         });
@@ -142,17 +142,14 @@ public class MenuFragment extends Fragment {
         fragmentMenuBinding.setMenuViewModel(menuViewModel);
         fragmentMenuBinding.deliveryNestedScrollView.setOnScrollChangeListener((View.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
 
-            if(Math.abs(scrollY - oldScrollY)> 5)
-            {
+            if (Math.abs(scrollY - oldScrollY) > 5) {
                 if (scrollY > oldScrollY) {
-                    if(!isExecutingCartButtonAnimation1 && !isExecutingCartButtonAnimation2)
-                    {
+                    if (!isExecutingCartButtonAnimation1 && !isExecutingCartButtonAnimation2) {
                         fragmentMenuBinding.addressInfoMotionLayout.transitionToEnd();
                         fragmentMenuBinding.cartButtonPriceAndAmountMotionLayout.transitionToEnd();
                     }
                 } else {
-                    if(!isExecutingCartButtonAnimation1 && !isExecutingCartButtonAnimation2)
-                    {
+                    if (!isExecutingCartButtonAnimation1 && !isExecutingCartButtonAnimation2) {
                         fragmentMenuBinding.addressInfoMotionLayout.transitionToStart();
                         fragmentMenuBinding.cartButtonPriceAndAmountMotionLayout.transitionToEnd();
                     }
@@ -161,17 +158,14 @@ public class MenuFragment extends Fragment {
         });
         fragmentMenuBinding.pickUpNestedScrollView.setOnScrollChangeListener((View.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
 
-            if(Math.abs(scrollY - oldScrollY)> 5)
-            {
+            if (Math.abs(scrollY - oldScrollY) > 5) {
                 if (scrollY > oldScrollY) {
-                    if(!isExecutingCartButtonAnimation1 && !isExecutingCartButtonAnimation2)
-                    {
+                    if (!isExecutingCartButtonAnimation1 && !isExecutingCartButtonAnimation2) {
                         fragmentMenuBinding.addressInfoMotionLayout.transitionToEnd();
                         fragmentMenuBinding.cartButtonPriceAndAmountMotionLayout.transitionToEnd();
                     }
                 } else {
-                    if(!isExecutingCartButtonAnimation1 && !isExecutingCartButtonAnimation2)
-                    {
+                    if (!isExecutingCartButtonAnimation1 && !isExecutingCartButtonAnimation2) {
                         fragmentMenuBinding.addressInfoMotionLayout.transitionToStart();
                         fragmentMenuBinding.cartButtonPriceAndAmountMotionLayout.transitionToEnd();
                     }
@@ -223,13 +217,10 @@ public class MenuFragment extends Fragment {
         });
 
         fragmentMenuBinding.cartButtonPriceAndAmountLinear.setOnClickListener(v -> {
-            if(CartButtonViewModel.getInstance().getSelectedOrderType().getValue() == OrderType.Delivery)
-            {
+            if (CartButtonViewModel.getInstance().getSelectedOrderType().getValue() == OrderType.Delivery) {
                 Intent intent = new Intent(getContext(), CartDeliveryActivity.class);
                 startActivity(intent);
-            }
-            else
-            {
+            } else {
                 Intent intent = new Intent(getContext(), CartPickupActivity.class);
                 startActivity(intent);
             }
@@ -247,6 +238,15 @@ public class MenuFragment extends Fragment {
             startActivity(intent);
         });
 
+        fragmentMenuBinding.refreshLayout.setOnRefreshListener(() -> {
+            Map<String, List<String>> stateFood = new HashMap<>();
+            if (CartButtonViewModel.getInstance().getSelectedStore().getValue() != null) {
+                stateFood = CartButtonViewModel.getInstance().getSelectedStore().getValue().getStateFood();
+            }
+            ProductRepository.getInstance().registerSnapshotListener(stateFood);
+            fragmentMenuBinding.refreshLayout.setRefreshing(false);
+        });
+
         fragmentMenuBinding.cartButton.setOnClickListener(view -> {
             bottomSheetDialog = new BottomSheetDialog(requireContext(), R.style.BottomSheetTheme);
             OrderTypeBottomSheetBinding orderTypeBottomSheetBinding = OrderTypeBottomSheetBinding.inflate(LayoutInflater.from(getContext()), container, false);
@@ -255,23 +255,30 @@ public class MenuFragment extends Fragment {
             orderTypeBottomSheetBinding.closeButton.setOnClickListener(view1 -> bottomSheetDialog.dismiss());
 
             orderTypeBottomSheetBinding.pickUpEditButton.setOnClickListener(view12 -> {
+                bottomSheetDialog.dismiss();
                 Intent intent = new Intent(getContext(), StoreActivity.class);
                 startActivity(intent);
             });
 
             orderTypeBottomSheetBinding.deliveryEditButton.setOnClickListener(view13 -> {
+                bottomSheetDialog.dismiss();
                 Intent intent = new Intent(getContext(), AddressListingActivity.class);
                 startActivity(intent);
             });
 
-            orderTypeBottomSheetBinding.deliveryLayout.setOnClickListener(view14 -> CartButtonViewModel.getInstance().setDelivering(true));
-            orderTypeBottomSheetBinding.pickUpEditButton.setOnClickListener(view15 -> CartButtonViewModel.getInstance().setDelivering(false));
+            orderTypeBottomSheetBinding.deliveryLayout.setOnClickListener(view14 -> {
+                CartButtonViewModel.getInstance().getSelectedOrderType().postValue(OrderType.Delivery);
+                bottomSheetDialog.dismiss();
+            });
+            orderTypeBottomSheetBinding.pickUpLayout.setOnClickListener(view15 -> {
+                CartButtonViewModel.getInstance().getSelectedOrderType().postValue(OrderType.StorePickUp);
+                bottomSheetDialog.dismiss();
+            });
 
             bottomSheetDialog.setContentView(orderTypeBottomSheetBinding.getRoot());
             // Set the behavior to STATE_EXPANDED
             View bottomSheetInternal = bottomSheetDialog.findViewById(com.google.android.material.R.id.design_bottom_sheet);
-            if(bottomSheetInternal!=null)
-            {
+            if (bottomSheetInternal != null) {
                 BottomSheetBehavior.from(bottomSheetInternal).setState(BottomSheetBehavior.STATE_EXPANDED);
                 bottomSheetDialog.show();
             }
