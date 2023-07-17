@@ -96,6 +96,10 @@ public class StoreRepository {
             {
                 getStore(value);
             }
+            else
+            {
+                storeListMutableLiveData.postValue(null);
+            }
             Log.d(TAG, "get stores finishes.");
         });
     }

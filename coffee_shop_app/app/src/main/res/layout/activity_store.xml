@@ -20,13 +20,13 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- This component for getting focustable from edittext below -->
+        <!-- This component for getting focusable from edittext below -->
         <Button
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             android:layout_width="0dp"
             android:layout_height="0dp"/>
-        <!-- This component for getting focustable from edittext below -->
+        <!-- This component for getting focusable from edittext below -->
 
         <com.facebook.shimmer.ShimmerFrameLayout
             android:id="@+id/shimmer_layout"
@@ -64,10 +64,11 @@
                 <include layout="@layout/store_item_skeleton" />
             </LinearLayout>
         </com.facebook.shimmer.ShimmerFrameLayout>
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/search_text_box"
             app:layout_constraintTop_toBottomOf="@id/my_toolbar"
-            app:layout_constraintBottom_toTopOf="@id/nested_scroll_view"
+            app:layout_constraintBottom_toTopOf="@id/refreshLayout"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_width="match_parent"
@@ -103,75 +104,81 @@
                     style="@style/regularGrey14"/>
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
-        <androidx.core.widget.NestedScrollView
-            android:id="@+id/nested_scroll_view"
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/refreshLayout"
             app:layout_constraintTop_toBottomOf="@id/search_text_box"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:background="@color/background"
-            android:visibility="gone"
-            android:focusable="true"
-            android:focusableInTouchMode="true">
-            <LinearLayout
+            android:scrollbars="none">
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/nested_scroll_view"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/_16sdp"
-                android:layout_marginVertical="@dimen/_6sdp"
-                android:orientation="vertical"
-                android:nestedScrollingEnabled="false">
-                <TextView
-                    android:id="@+id/nearest_text_view"
+                android:layout_height="match_parent"
+                android:background="@color/background"
+                android:visibility="gone"
+                android:focusable="true"
+                android:focusableInTouchMode="true">
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_10sdp"
-                    android:text="Gần nhất"
-                    android:visibility="@{viewModel.hasNearestStore?View.VISIBLE:View.GONE, default=gone}"
-                    style="@style/boldBlack16"/>
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/nearestStore"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="@{viewModel.hasNearestStore?View.VISIBLE:View.GONE, default=gone}"
-                    android:nestedScrollingEnabled="false"
-                    android:focusable="false"
-                    android:focusableInTouchMode="false"
-                    android:clickable="false"/>
-                <TextView
-                    android:id="@+id/favorite_text_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_10sdp"
-                    android:text="Yêu thích"
-                    android:visibility="@{viewModel.hasFavoriteStores?View.VISIBLE:View.GONE, default=gone}"
-                    style="@style/boldBlack16"/>
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/favoriteStores"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="@{viewModel.hasFavoriteStores?View.VISIBLE:View.GONE, default=gone}"
-                    android:nestedScrollingEnabled="false"
-                    android:focusable="false"
-                    android:focusableInTouchMode="false"
-                    android:clickable="false"/>
-                <TextView
-                    android:id="@+id/other_text_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_10sdp"
-                    android:text="@{viewModel.otherText}"
-                    style="@style/boldBlack16"/>
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/otherStores"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:nestedScrollingEnabled="false"
-                    android:focusable="false"
-                    android:focusableInTouchMode="false"
-                    android:clickable="false"/>
-            </LinearLayout>
-        </androidx.core.widget.NestedScrollView>
+                    android:layout_marginHorizontal="@dimen/_16sdp"
+                    android:layout_marginVertical="@dimen/_6sdp"
+                    android:orientation="vertical"
+                    android:nestedScrollingEnabled="false">
+                    <TextView
+                        android:id="@+id/nearest_text_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_10sdp"
+                        android:text="Gần nhất"
+                        android:visibility="@{viewModel.hasNearestStore?View.VISIBLE:View.GONE, default=gone}"
+                        style="@style/boldBlack16"/>
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/nearestStore"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="@{viewModel.hasNearestStore?View.VISIBLE:View.GONE, default=gone}"
+                        android:nestedScrollingEnabled="false"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:clickable="false"/>
+                    <TextView
+                        android:id="@+id/favorite_text_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_10sdp"
+                        android:text="Yêu thích"
+                        android:visibility="@{viewModel.hasFavoriteStores?View.VISIBLE:View.GONE, default=gone}"
+                        style="@style/boldBlack16"/>
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/favoriteStores"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="@{viewModel.hasFavoriteStores?View.VISIBLE:View.GONE, default=gone}"
+                        android:nestedScrollingEnabled="false"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:clickable="false"/>
+                    <TextView
+                        android:id="@+id/other_text_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_10sdp"
+                        android:text="@{viewModel.otherText}"
+                        style="@style/boldBlack16"/>
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/otherStores"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:nestedScrollingEnabled="false"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:clickable="false"/>
+                </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
