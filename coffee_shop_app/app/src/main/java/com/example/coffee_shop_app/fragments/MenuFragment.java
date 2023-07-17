@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.motion.widget.MotionLayout;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.view.LayoutInflater;
@@ -25,6 +26,8 @@ import com.example.coffee_shop_app.activities.store.StoreActivity;
 import com.example.coffee_shop_app.adapters.ProductAdapter;
 import com.example.coffee_shop_app.databinding.FragmentMenuBinding;
 import com.example.coffee_shop_app.databinding.OrderTypeBottomSheetBinding;
+import com.example.coffee_shop_app.models.User;
+import com.example.coffee_shop_app.repository.AuthRepository;
 import com.example.coffee_shop_app.repository.ProductRepository;
 import com.example.coffee_shop_app.utils.interfaces.OnProductClickListener;
 import com.example.coffee_shop_app.viewmodels.CartButtonViewModel;
@@ -139,6 +142,7 @@ public class MenuFragment extends Fragment {
         MenuViewModel menuViewModel = new MenuViewModel();
         menuViewModel.getFavoriteProducts().observe(getViewLifecycleOwner(), favoriteProductAdapter::changeDataSet);
         menuViewModel.getOtherProducts().observe(getViewLifecycleOwner(), otherProductAdapter::changeDataSet);
+
         fragmentMenuBinding.setMenuViewModel(menuViewModel);
         fragmentMenuBinding.deliveryNestedScrollView.setOnScrollChangeListener((View.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
 

@@ -4,7 +4,6 @@ import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.coffee_shop_app.Data;
 import com.example.coffee_shop_app.models.Product;
 import com.example.coffee_shop_app.viewmodels.CartButtonViewModel;
 import com.google.firebase.firestore.DocumentReference;
@@ -61,7 +60,7 @@ public class ProductRepository {
     }
     void getProduct(QuerySnapshot value, Map<String, List<String>> stateFood)
     {
-        DocumentReference userRef = fireStore.collection("users").document(Data.instance.userId);
+        DocumentReference userRef = fireStore.collection("users").document(Objects.requireNonNull(AuthRepository.getInstance().getCurrentUser()).getId());
         userRef
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {

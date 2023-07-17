@@ -2,26 +2,18 @@ package com.example.coffee_shop_app.repository;
 
 import android.util.Log;
 
-import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.coffee_shop_app.Data;
 import com.example.coffee_shop_app.models.AddressDelivery;
-import com.example.coffee_shop_app.models.Store;
-import com.example.coffee_shop_app.utils.LocationHelper;
 import com.example.coffee_shop_app.utils.interfaces.UpdateDataListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class AddressRepository {
     private static final String TAG = "AddressRepository";
@@ -29,8 +21,8 @@ public class AddressRepository {
     private static AddressRepository instance;
     private AddressRepository() {
         addressListMutableLiveData = new MutableLiveData<>();
-        //define firestore
-        firestore = FirebaseFirestore.getInstance();
+        //define fireStore
+        fireStore = FirebaseFirestore.getInstance();
     }
     public static synchronized AddressRepository getInstance() {
         if (instance == null) {
@@ -40,10 +32,10 @@ public class AddressRepository {
     }
 
     //properties
-    private MutableLiveData<List<AddressDelivery>> addressListMutableLiveData;
-    FirebaseFirestore firestore;
+    private final MutableLiveData<List<AddressDelivery>> addressListMutableLiveData;
+    FirebaseFirestore fireStore;
 
-    //get addresses from firebase firestore
+    //get addresses from firebase fireStore
     public MutableLiveData<List<AddressDelivery>> getAddressListMutableLiveData() {
         if(addressListMutableLiveData.getValue() == null)
         {
@@ -51,37 +43,41 @@ public class AddressRepository {
         }
         return addressListMutableLiveData;
     }
-    void registerSnapshotListener()
+    public void registerSnapshotListener()
     {
-        firestore.collection("users").document(Data.instance.userId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
-                Log.d(TAG, "get address started.");
+        fireStore.collection("users").document(Objects.requireNonNull(AuthRepository.getInstance().getCurrentUser()).getId()).addSnapshotListener((value, error) -> {
+            Log.d(TAG, "get address started.");
+            if(value!=null)
+            {
                 getAddress(value);
-                Log.d(TAG, "get address finished.");
             }
+            Log.d(TAG, "get address finished.");
         });
     }
     void getAddress(DocumentSnapshot value)
     {
-        List<AddressDelivery> addressDeliveries = new ArrayList<AddressDelivery>();
+        List<AddressDelivery> addressDeliveries = new ArrayList<>();
         Map<String, Object> data = value.getData();
-        if(data.get("addresses") != null)
+        if(data!=null)
         {
-            List<Object> addresses = (List<Object>)data.get("addresses");
-            for (Object address: addresses) {
-                addressDeliveries.add(AddressDelivery.fromFireBase((Map<String, Object>) address));
+            if(data.get("addresses") != null)
+            {
+                List<Object> addresses = (List<Object>)data.get("addresses");
+                if(addresses!=null)
+                {
+                    for (Object address: addresses) {
+                        addressDeliveries.add(AddressDelivery.fromFireBase((Map<String, Object>) address));
+                    }
+                    addressListMutableLiveData.postValue(addressDeliveries);
+                    return;
+                }
             }
-            addressListMutableLiveData.postValue(addressDeliveries);
         }
-        else
-        {
-            addressListMutableLiveData.postValue(new ArrayList<>());
-        }
+        addressListMutableLiveData.postValue(new ArrayList<>());
     }
     public void deleteAddress(int index, UpdateDataListener listener)
     {
-        DocumentReference userRef = firestore.collection("users").document(Data.instance.userId);
+        DocumentReference userRef = fireStore.collection("users").document(Objects.requireNonNull(AuthRepository.getInstance().getCurrentUser()).getId());
         userRef.get().addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         List<Object> addresses = (List<Object>) documentSnapshot.get("addresses");
@@ -109,7 +105,7 @@ public class AddressRepository {
     }
     public void insertAddress(AddressDelivery addressDelivery, UpdateDataListener listener)
     {
-        DocumentReference userRef = firestore.collection("users").document(Data.instance.userId);
+        DocumentReference userRef = fireStore.collection("users").document(Objects.requireNonNull(AuthRepository.getInstance().getCurrentUser()).getId());
         userRef.get().addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         List<Object> addresses = (List<Object>) documentSnapshot.get("addresses");
@@ -134,7 +130,7 @@ public class AddressRepository {
     }
     public void updateAddress(AddressDelivery addressDelivery, int index, UpdateDataListener listener)
     {
-        DocumentReference userRef = firestore.collection("users").document(Data.instance.userId);
+        DocumentReference userRef = fireStore.collection("users").document(Objects.requireNonNull(AuthRepository.getInstance().getCurrentUser()).getId());
         userRef.get().addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         List<Object> addresses = (List<Object>) documentSnapshot.get("addresses");
