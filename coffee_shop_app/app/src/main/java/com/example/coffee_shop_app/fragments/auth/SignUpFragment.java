@@ -74,7 +74,13 @@ public class SignUpFragment extends Fragment {
                 String password = passEdit.getText().toString();
                 String repass = confirmPassEdit.getText().toString();
                 if(canSignUp(email, password, repass)) {
-                    authVM.onSignUp(email, password);
+                    authVM.onSignUp(email, password, params -> {
+                        navController.navigate(R.id.action_signUpFragment_to_loginFragment);
+                    }, params -> {
+                        Snackbar snackbar = Snackbar
+                                .make(view, "Đã có lỗi xảy ra, vui lòng thử lại!", Snackbar.LENGTH_LONG);
+                        snackbar.show();
+                    });
                 }
                 else {
                     String msg;
