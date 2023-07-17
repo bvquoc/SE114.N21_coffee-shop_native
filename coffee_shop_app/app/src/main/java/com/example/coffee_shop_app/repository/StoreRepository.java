@@ -4,7 +4,6 @@ import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.coffee_shop_app.Data;
 import com.example.coffee_shop_app.models.Store;
 import com.example.coffee_shop_app.utils.LocationHelper;
 import com.example.coffee_shop_app.utils.interfaces.UpdateDataListener;
@@ -18,6 +17,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 public class StoreRepository {
     private static final String TAG = "StoreRepository";
@@ -105,7 +105,7 @@ public class StoreRepository {
     }
     void getStore(QuerySnapshot value)
     {
-        DocumentReference userRef = fireStore.collection("users").document(Data.instance.userId);
+        DocumentReference userRef = fireStore.collection("users").document(Objects.requireNonNull(AuthRepository.getInstance().getCurrentUser()).getId());
         userRef
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
@@ -165,7 +165,7 @@ public class StoreRepository {
     }
     public void updateFavorite(String storeId, boolean isFavorite, UpdateDataListener listener)
     {
-        DocumentReference userRef = fireStore.collection("users").document(Data.instance.userId);
+        DocumentReference userRef = fireStore.collection("users").document(Objects.requireNonNull(AuthRepository.getInstance().getCurrentUser()).getId());
         if(isFavorite)
         {
             userRef.update("favoriteStores", FieldValue.arrayUnion(storeId))
@@ -178,7 +178,7 @@ public class StoreRepository {
                             for (Store store:tempStores) {
                                 if(store.getId().equals(storeId))
                                 {
-                                    store.setFavorite(isFavorite);
+                                    store.setFavorite(true);
                                     break;
                                 }
                             }
@@ -202,7 +202,7 @@ public class StoreRepository {
                             for (Store store:tempStores) {
                                 if(store.getId().equals(storeId))
                                 {
-                                    store.setFavorite(isFavorite);
+                                    store.setFavorite(false);
                                 }
                             }
                             storeListMutableLiveData.setValue(tempStores);

@@ -98,6 +98,9 @@ public class ProductAdapter extends RecyclerView.Adapter implements Filterable {
 
             Glide.with(holder.itemView.getContext())
                     .load(Uri.parse(product.getImages().get(0)))
+                    .placeholder(R.drawable.img_placeholder)
+                    .error(R.drawable.img_placeholder)
+                    .fitCenter()
                     .into(productItemViewHolder.productImageView);
             productItemViewHolder.productImageView.setAlpha(product.isAvailable()?1.0f:0.4f);
 
@@ -127,6 +130,9 @@ public class ProductAdapter extends RecyclerView.Adapter implements Filterable {
 
             Glide.with(holder.itemView.getContext())
                     .load(Uri.parse(product.getImages().get(0)))
+                    .placeholder(R.drawable.img_placeholder)
+                    .error(R.drawable.img_placeholder)
+                    .fitCenter()
                     .into(productItemViewHolder.productImageView);
 
             long diffInMillis =  (new Date()).getTime() - product.getDateRegister().getTime();
