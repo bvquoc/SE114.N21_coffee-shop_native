@@ -3,6 +3,7 @@ package com.example.coffee_shop_app.viewmodels;
 
 import androidx.databinding.BaseObservable;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
 import com.example.coffee_shop_app.models.AddressDelivery;
@@ -33,7 +34,7 @@ public  class CartViewModel extends BaseObservable {
     private MutableLiveData<Double> totalFood=new MutableLiveData<>();
     private MutableLiveData<Double> discount=new MutableLiveData<>();
     public CartViewModel() {
-
+        cartFoods.observeForever(cartFoods -> calculateTotalFood());
     }
 
     public MutableLiveData<List<CartFood>> getCartFoods() {

@@ -208,7 +208,7 @@ public class ProductDetailActivity extends AppCompatActivity {
                 if(!isAdded) {
                     repo.createCartFood(viewModel.getCartFood());
                 }
-//                CartViewModel.getInstance().getCartFoods().setValue(repo.getCartFood(Data.instance.userId));
+                CartViewModel.getInstance().getCartFoods().setValue(repo.getCartFood(Data.instance.userId));
                 finish();
             }
         });

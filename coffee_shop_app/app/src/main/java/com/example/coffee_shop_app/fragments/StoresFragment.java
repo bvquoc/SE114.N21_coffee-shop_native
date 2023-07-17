@@ -115,11 +115,14 @@ public class StoresFragment extends Fragment {
                             BottomNavigationView bottomNavigationView = requireActivity().findViewById(R.id.bottomNavView);
                             bottomNavigationView.setSelectedItemId(R.id.menuFragment);
                         }
-                        Toast.makeText(
-                                getContext(),
-                                "Đã có lỗi xảy ra. Xin hãy thử lại sau.",
-                                Toast.LENGTH_SHORT
-                        ).show();
+                        else
+                        {
+                            Toast.makeText(
+                                    getContext(),
+                                    "Đã có lỗi xảy ra. Xin hãy thử lại sau.",
+                                    Toast.LENGTH_SHORT
+                            ).show();
+                        }
                     }
                 }
             }
