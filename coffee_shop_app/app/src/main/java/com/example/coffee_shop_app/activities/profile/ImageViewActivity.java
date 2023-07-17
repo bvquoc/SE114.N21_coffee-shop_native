@@ -101,7 +101,11 @@ public class ImageViewActivity extends AppCompatActivity {
                 else {
                     temp.setCoverUrl(e.toString());
                 }
-                AuthRepository.getInstance().update(temp);
+                AuthRepository.getInstance().update(temp, params -> {
+                    //do nothing
+                }, params -> {
+                    //do nothing
+                });
             }).addOnFailureListener(e -> {
                 Log.d("Image viewer", "save image failed");
             });

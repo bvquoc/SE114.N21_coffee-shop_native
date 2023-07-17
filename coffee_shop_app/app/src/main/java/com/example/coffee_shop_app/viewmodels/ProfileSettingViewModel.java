@@ -33,7 +33,11 @@ public class ProfileSettingViewModel extends ViewModel {
     }
 
     public void onSaveInfo(User user){
-        authRepository.update(user);
+        authRepository.update(user, params -> {
+            //do nothing
+        }, params -> {
+            //do nothing
+        });
         this.user = user;
     }
 
