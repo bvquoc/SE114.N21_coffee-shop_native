@@ -45,6 +45,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:padding="@dimen/_8sdp"
+            android:clickable="true"
             android:background="@{viewModel.delivering?@color/blueBackground:@color/white}">
             <ImageView
                 android:layout_width="@dimen/_40sdp"
@@ -115,6 +116,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:padding="@dimen/_8sdp"
+            android:clickable="true"
             android:background="@{viewModel.delivering?@color/white:@color/blueBackground}">
             <ImageView
                 android:layout_width="@dimen/_40sdp"
