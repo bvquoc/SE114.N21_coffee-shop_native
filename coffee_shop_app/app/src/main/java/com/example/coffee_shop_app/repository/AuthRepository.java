@@ -70,7 +70,7 @@ public class AuthRepository {
         }
     }
 
-    public void emailSignUp(String email, String password) {
+    public void emailSignUp(String email, String password, CallBack onSuccess, CallBack onFailed) {
         firebaseAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -87,9 +87,11 @@ public class AuthRepository {
                         if(user != null){
                             push(user);
                         }
+                        onSuccess.invoke();
                     });
                 } else {
                     Log.d("sign up", "Failed");
+                    onFailed.invoke();
                 }
             }
         });
@@ -106,10 +108,10 @@ public class AuthRepository {
                         getUser(rawUser.getUid(), param -> {
                             User post = User.fromFireStore((DocumentSnapshot) param[0]);
                             currentUserLiveData.postValue(post);
+                            onSuccess.invoke(post);
                         });
                     }
                     isLoggedInLiveData.postValue(true);
-                    onSuccess.invoke();
                 } else {
                     Log.d("login", "Failed");
                     currentUserLiveData.postValue(null);
@@ -139,11 +141,13 @@ public class AuthRepository {
                 });
     }
 
-    public void update(User user){
+    public void update(User user, CallBack onSuccess, CallBack onFailed){
         fireStore.collection("users").document(user.getId()).update(User.toFireStore(user)).addOnSuccessListener((temp) -> {
             currentUserLiveData.postValue(user);
+            onSuccess.invoke();
         }).addOnFailureListener(e -> {
             Log.e("auth repository", "update user failed.");
+            onFailed.invoke();
         });;
     }
 

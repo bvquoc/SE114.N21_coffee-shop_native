@@ -1,6 +1,7 @@
 package com.example.coffee_shop_app.viewmodels;
 
 import android.app.Application;
+import android.telecom.Call;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.BaseObservable;
@@ -34,8 +35,8 @@ public class AuthViewModel extends ViewModel {
         isLoggedIn = repository.getIsLoggedInLiveData();
     }
 
-    public void onSignUp(String email, String password){
-        repository.emailSignUp(email, password);
+    public void onSignUp(String email, String password, CallBack onSuccess, CallBack onFailed){
+        repository.emailSignUp(email, password, onSuccess, onFailed);
     }
 
     public void onEmailSignIn(String email, String password, CallBack onSuccess, CallBack onFailed){
@@ -56,5 +57,9 @@ public class AuthViewModel extends ViewModel {
 
     public void onSignOut(){
         repository.signOut();
+    }
+
+    public void onUpdate(User user, CallBack onSuccess, CallBack onFailed){
+        repository.update(user, onSuccess, onFailed);
     }
 }
