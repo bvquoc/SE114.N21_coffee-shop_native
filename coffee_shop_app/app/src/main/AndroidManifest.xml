@@ -24,6 +24,21 @@
             android:name=".activities.order.OrderDetailActivity"
             android:exported="false" />
         <activity
+            android:name=".activities.profile.ImageViewActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.profile.ProfileSettingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.AuthActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".activities.promo.QRScanActivity"
             android:exported="false" />
         <activity
@@ -58,13 +73,7 @@
             android:exported="false" />
         <activity
             android:name=".activities.MainPageActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:exported="true" />
         <activity
             android:name=".activities.HomeActivity"
             android:exported="false" />
