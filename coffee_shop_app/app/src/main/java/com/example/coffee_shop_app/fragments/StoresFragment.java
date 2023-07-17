@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,7 @@ import com.example.coffee_shop_app.activities.store.StoreDetailActivity;
 import com.example.coffee_shop_app.adapters.StoreAdapter;
 import com.example.coffee_shop_app.databinding.FragmentStoresBinding;
 import com.example.coffee_shop_app.models.Store;
+import com.example.coffee_shop_app.repository.ProductRepository;
 import com.example.coffee_shop_app.repository.StoreRepository;
 import com.example.coffee_shop_app.utils.interfaces.OnStoreClickListener;
 import com.example.coffee_shop_app.viewmodels.CartButtonViewModel;
@@ -30,7 +32,9 @@ import com.example.coffee_shop_app.viewmodels.StoreViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class StoresFragment extends Fragment {
     private FragmentStoresBinding fragmentStoresBinding;
@@ -160,10 +164,16 @@ public class StoresFragment extends Fragment {
         fragmentStoresBinding.otherStores.setLayoutManager(new LinearLayoutManager(getContext()));
         fragmentStoresBinding.otherStores.setAdapter(otherStoresAdapter);
 
+        fragmentStoresBinding.refreshLayout.setOnRefreshListener(() -> {
+            StoreRepository.getInstance().registerSnapshotListener();
+            fragmentStoresBinding.refreshLayout.setRefreshing(false);
+        });
+
         fragmentStoresBinding.findStoreFrame.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), StoreSearchActivity.class);
             activityFindStoreResultLauncher.launch(intent);
         });
+
         StoreViewModel storeViewModel = new StoreViewModel();
         storeViewModel.getNearestStoreMutableLiveData().observe(getViewLifecycleOwner(), nearestStore ->{
             if(nearestStore == null)

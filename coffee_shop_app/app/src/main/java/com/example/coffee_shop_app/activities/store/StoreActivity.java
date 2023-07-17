@@ -17,13 +17,16 @@ import com.example.coffee_shop_app.R;
 import com.example.coffee_shop_app.adapters.StoreAdapter;
 import com.example.coffee_shop_app.databinding.ActivityStoreBinding;
 import com.example.coffee_shop_app.models.Store;
+import com.example.coffee_shop_app.repository.ProductRepository;
 import com.example.coffee_shop_app.repository.StoreRepository;
 import com.example.coffee_shop_app.utils.interfaces.OnStoreClickListener;
 import com.example.coffee_shop_app.viewmodels.CartButtonViewModel;
 import com.example.coffee_shop_app.viewmodels.StoreViewModel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class StoreActivity extends AppCompatActivity {
     private ActivityStoreBinding activityStoreBinding;
@@ -107,6 +110,13 @@ public class StoreActivity extends AppCompatActivity {
 
         activityStoreBinding.otherStores.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         activityStoreBinding.otherStores.setAdapter(otherStoresAdapter);
+
+        activityStoreBinding.refreshLayout.setOnRefreshListener(() -> {
+            StoreRepository.getInstance().registerSnapshotListener();
+            activityStoreBinding.refreshLayout.setRefreshing(false);
+        });
+
+
         activityStoreBinding.findStoreFrame.setOnClickListener(v -> {
             Intent intent = new Intent(getApplicationContext(), StoreSearchActivity.class);
             intent.putExtra("isPurposeForShowingDetail", false);
