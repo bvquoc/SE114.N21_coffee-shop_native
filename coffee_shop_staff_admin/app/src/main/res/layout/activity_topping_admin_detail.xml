@@ -100,7 +100,9 @@
                     app:errorEnabled="true"
                     app:errorTextAppearance="@style/regularRed14"
                     app:hintTextAppearance="@style/regularBlue14"
-                    android:paddingHorizontal="@dimen/_16sdp">
+                    android:paddingHorizontal="@dimen/_16sdp"
+                    app:suffixText="VND"
+                    app:suffixTextAppearance="@style/regularGrey14">
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/price_edit_text"
                         android:layout_width="match_parent"
@@ -108,7 +110,7 @@
                         android:paddingHorizontal="0dp"
                         android:maxLines="1"
                         android:inputType="none"
-                        android:hint="Giá (VNĐ)"
+                        android:hint="Giá"
                         android:textAppearance="@style/regularBlack14"
                         android:text="@{viewModel.price}"/>
                 </com.google.android.material.textfield.TextInputLayout>
