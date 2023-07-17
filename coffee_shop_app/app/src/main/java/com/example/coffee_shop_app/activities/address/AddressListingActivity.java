@@ -6,18 +6,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
-
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Toast;
 
 import com.example.coffee_shop_app.R;
 import com.example.coffee_shop_app.databinding.ActivityAddressListingBinding;
 import com.example.coffee_shop_app.models.AddressDelivery;
 import com.example.coffee_shop_app.models.MLocation;
+import com.example.coffee_shop_app.repository.AddressRepository;
+import com.example.coffee_shop_app.repository.AuthRepository;
 import com.example.coffee_shop_app.utils.interfaces.OnAddressClickListener;
 import com.example.coffee_shop_app.utils.interfaces.OnEditAddressClickListener;
 import com.example.coffee_shop_app.utils.styles.RecyclerViewGapDecoration;
@@ -29,8 +27,8 @@ import java.util.ArrayList;
 
 public class AddressListingActivity extends AppCompatActivity {
     private ActivityAddressListingBinding activityAddressListingBinding;
-    private AddressListingItemAdapter addressListingItemAdapter = new AddressListingItemAdapter(new ArrayList<AddressDelivery>());
-    private OnEditAddressClickListener editAddressTouchListener = new OnEditAddressClickListener() {
+    private final AddressListingItemAdapter addressListingItemAdapter = new AddressListingItemAdapter(new ArrayList<>());
+    private final OnEditAddressClickListener editAddressTouchListener = new OnEditAddressClickListener() {
         @Override
         public void onEditAddressClick(int index, AddressDelivery addressDelivery) {
             Intent intent = new Intent(getApplicationContext(), EditDeliveryAddressActivity.class);
@@ -44,14 +42,11 @@ public class AddressListingActivity extends AppCompatActivity {
             activityEditAddressResultLauncher.launch(intent);
         }
     };
-    private OnAddressClickListener addressTouchListener = new OnAddressClickListener() {
-        @Override
-        public void onAddressClick(AddressDelivery addressDelivery) {
-            CartButtonViewModel.getInstance().getSelectedAddressDelivery().postValue(addressDelivery);
-            finish();
-        }
+    private final OnAddressClickListener addressTouchListener = addressDelivery -> {
+        CartButtonViewModel.getInstance().getSelectedAddressDelivery().postValue(addressDelivery);
+        finish();
     };
-    private ActivityResultLauncher<Intent> activityEditAddressResultLauncher = registerForActivityResult(
+    private final ActivityResultLauncher<Intent> activityEditAddressResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == Activity.RESULT_OK) {
@@ -87,12 +82,10 @@ public class AddressListingActivity extends AppCompatActivity {
                             }
                         }
                     }
-                } else {
-                    //User do nothing
                 }
             }
     );
-    private ActivityResultLauncher<Intent> activityGoogleMapResultLauncher = registerForActivityResult(
+    private final ActivityResultLauncher<Intent> activityGoogleMapResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == Activity.RESULT_OK) {
@@ -102,12 +95,21 @@ public class AddressListingActivity extends AppCompatActivity {
                         double lat = intent.getDoubleExtra("lat", 0);
                         double lng = intent.getDoubleExtra("lng",  0);
                         MLocation mLocation = new MLocation(formattedAddress, lat, lng);
-                        AddressDelivery addressDelivery = new AddressDelivery(mLocation, "Nick", "0123456789", "");
+                        String nameReceiver = "Name";
+                        String phone = "Phone";
+                        if(AuthRepository.getInstance().getCurrentUser()!=null)
+                        {
+                            nameReceiver = AuthRepository.getInstance().getCurrentUser().getName();
+                            phone = AuthRepository.getInstance().getCurrentUser().getPhoneNumber();
+                        }
+                        AddressDelivery addressDelivery = new AddressDelivery(
+                                mLocation,
+                                nameReceiver,
+                                phone,
+                                "");
                         CartButtonViewModel.getInstance().getSelectedAddressDelivery().postValue(addressDelivery);
                         finish();
                     }
-                } else {
-                    //User do nothing
                 }
             }
     );
@@ -120,15 +122,9 @@ public class AddressListingActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.my_toolbar);
         toolbar.setTitle("Giao hàng đến");
         setSupportActionBar(toolbar);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
         init();
     }
-    @SuppressLint("ClickableViewAccessibility")
     private void init()
     {
         addressListingItemAdapter.setOnEditAddressTouchListener(editAddressTouchListener);
@@ -137,32 +133,35 @@ public class AddressListingActivity extends AppCompatActivity {
         int distance = (int)getResources().getDimension(com.intuit.sdp.R.dimen._12sdp);
         activityAddressListingBinding.addressListingRecyclerview.addItemDecoration(new RecyclerViewGapDecoration(distance));
         activityAddressListingBinding.addressListingRecyclerview.setAdapter(addressListingItemAdapter);
+
+        activityAddressListingBinding.refreshLayout.setOnRefreshListener(() -> {
+            AddressRepository.getInstance().registerSnapshotListener();
+            activityAddressListingBinding.refreshLayout.setRefreshing(false);
+        });
+
         AddressListingViewModel addressListingViewModel = new AddressListingViewModel();
-        addressListingViewModel.getAddressListMutableLiveData().observe(this, addressList->{
-            if(addressList!=null)
+        AddressRepository.getInstance().getAddressListMutableLiveData().observe(this, addressDeliveries ->
+        {
+            addressListingViewModel.setLoading(true);
+            if(addressDeliveries!=null)
             {
-                addressListingItemAdapter.changeDataSet(addressList);
+                addressListingViewModel.setLoading(false);
+                addressListingItemAdapter.changeDataSet(addressDeliveries);
             }
             else
             {
-                addressListingItemAdapter.changeDataSet(new ArrayList<AddressDelivery>());
+                addressListingItemAdapter.changeDataSet(new ArrayList<>());
             }
         });
         activityAddressListingBinding.setViewModel(addressListingViewModel);
-        activityAddressListingBinding.googleMapButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
-                activityGoogleMapResultLauncher.launch(intent);
-            }
+        activityAddressListingBinding.googleMapButton.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
+            activityGoogleMapResultLauncher.launch(intent);
         });
-        activityAddressListingBinding.newAddressButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), EditDeliveryAddressActivity.class);
-                intent.putExtra("index", -1);
-                activityEditAddressResultLauncher.launch(intent);
-            }
+        activityAddressListingBinding.newAddressButton.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplicationContext(), EditDeliveryAddressActivity.class);
+            intent.putExtra("index", -1);
+            activityEditAddressResultLauncher.launch(intent);
         });
     }
 }

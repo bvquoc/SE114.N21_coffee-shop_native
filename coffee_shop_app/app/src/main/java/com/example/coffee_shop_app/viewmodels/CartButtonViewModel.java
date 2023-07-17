@@ -8,6 +8,7 @@ import com.example.coffee_shop_app.BR;
 import com.example.coffee_shop_app.models.AddressDelivery;
 import com.example.coffee_shop_app.models.CartFood;
 import com.example.coffee_shop_app.models.Store;
+import com.example.coffee_shop_app.repository.AuthRepository;
 import com.example.coffee_shop_app.repository.ProductRepository;
 import com.example.coffee_shop_app.utils.LocationHelper;
 
@@ -47,14 +48,19 @@ public class CartButtonViewModel extends BaseObservable {
             else
             {
                 setUserAddress("Chọn địa chỉ");
-                setNameReceiver("Nick");
-                setPhone("0123456789");
+                String nameReceiver = "Name";
+                String phone = "Phone";
+                if(AuthRepository.getInstance().getCurrentUser()!=null)
+                {
+                    nameReceiver = AuthRepository.getInstance().getCurrentUser().getName();
+                    phone = AuthRepository.getInstance().getCurrentUser().getPhoneNumber();
+                }
+                setNameReceiver(nameReceiver);
+                setPhone(phone);
             }
             changeDistance();
         });
-        selectedOrderType.observeForever(orderType -> {
-            setDelivering(orderType == OrderType.Delivery);
-        });
+        selectedOrderType.observeForever(orderType -> setDelivering(orderType == OrderType.Delivery));
         CartViewModel.getInstance().getTotalFood().observeForever(aDouble -> {
             DecimalFormat formatter = new DecimalFormat("#,##0.##");
             setTotalFoodString(formatter.format(aDouble)+"đ");
@@ -110,9 +116,20 @@ public class CartButtonViewModel extends BaseObservable {
 
 
     @Bindable
-    private String nameReceiver = "Nick";
+    private String nameReceiver = null;
 
     public String getNameReceiver() {
+        if(nameReceiver == null)
+        {
+            if(AuthRepository.getInstance().getCurrentUser()!=null)
+            {
+                nameReceiver = AuthRepository.getInstance().getCurrentUser().getName();
+            }
+            else
+            {
+                nameReceiver = "Name";
+            }
+        }
         return nameReceiver;
     }
 
@@ -122,9 +139,20 @@ public class CartButtonViewModel extends BaseObservable {
     }
 
     @Bindable
-    private String phone = "0123456789";
+    private String phone = null;
 
     public String getPhone() {
+        if(phone == null)
+        {
+            if(AuthRepository.getInstance().getCurrentUser()!=null)
+            {
+                phone = AuthRepository.getInstance().getCurrentUser().getPhoneNumber();
+            }
+            else
+            {
+                phone = "Phone";
+            }
+        }
         return phone;
     }
 

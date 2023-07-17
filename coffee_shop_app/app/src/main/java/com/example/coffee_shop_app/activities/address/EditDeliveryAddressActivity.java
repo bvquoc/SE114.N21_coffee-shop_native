@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.example.coffee_shop_app.databinding.ActivityEditDeliveryAddressBinding;
@@ -122,17 +123,19 @@ public class EditDeliveryAddressActivity extends AppCompatActivity{
             Objects.requireNonNull(getSupportActionBar()).setTitle("Thêm địa chỉ mới");
         }
         KeyboardHelper.setKeyboardVisibilityListener(this, editDeliveryAddressViewModel::setKeyBoardShow);
-        activityEditDeliveryAddressBinding.addressDeliveryFrame.setOnClickListener(v -> {
-            Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
-            if(editDeliveryAddressViewModel.getAddress() != null)
-            {
-                MLocation location = editDeliveryAddressViewModel.getAddress();
-                intent.putExtra("lat", location.getLat());
-                intent.putExtra("lng", location.getLng());
+        activityEditDeliveryAddressBinding.addressPickerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(EditDeliveryAddressActivity.this, MapsActivity.class);
+                if(editDeliveryAddressViewModel.getAddress() != null)
+                {
+                    MLocation location = editDeliveryAddressViewModel.getAddress();
+                    intent.putExtra("lat", location.getLat());
+                    intent.putExtra("lng", location.getLng());
+                }
+                activityGoogleMapResultLauncher.launch(intent);
             }
-            activityGoogleMapResultLauncher.launch(intent);
         });
-
         activityEditDeliveryAddressBinding.loading.setOnTouchListener((v, event) -> true);
         activityEditDeliveryAddressBinding.saveButton.setOnClickListener(v -> {
             if(updateAddressTask!=null)
@@ -206,7 +209,7 @@ public class EditDeliveryAddressActivity extends AppCompatActivity{
                 }
                 if(editDeliveryAddressViewModel.getAddress() == null)
                 {
-                    runOnUiThread(() -> activityEditDeliveryAddressBinding.addressEditTextFrame.setError("Vui lòng nhập tên"));
+                    runOnUiThread(() -> activityEditDeliveryAddressBinding.addressEditTextFrame.setError("Vui lòng chọn địa chỉ"));
                     isValid = false;
                 }
                 else
