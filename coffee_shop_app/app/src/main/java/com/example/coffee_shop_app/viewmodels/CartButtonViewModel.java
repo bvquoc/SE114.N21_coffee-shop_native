@@ -61,6 +61,11 @@ public class CartButtonViewModel extends BaseObservable {
             changeDistance();
         });
         selectedOrderType.observeForever(orderType -> setDelivering(orderType == OrderType.Delivery));
+        distance.observeForever(aDouble -> {
+            DecimalFormat formatter = new DecimalFormat("##0.##");
+            String formattedDistance = formatter.format(aDouble);
+            setDistanceString(formattedDistance + "km");
+        });
         CartViewModel.getInstance().getTotalFood().observeForever(aDouble -> {
             DecimalFormat formatter = new DecimalFormat("#,##0.##");
             setTotalFoodString(formatter.format(aDouble)+"đ");
@@ -78,7 +83,7 @@ public class CartButtonViewModel extends BaseObservable {
     private final MutableLiveData<Store> selectedStore = new MutableLiveData<>();
     private final MutableLiveData<AddressDelivery> selectedAddressDelivery = new MutableLiveData<>();
     private final MutableLiveData<OrderType> selectedOrderType = new MutableLiveData<>(OrderType.Delivery);
-
+    private final MutableLiveData<Double> distance = new MutableLiveData<>(0.0);
     public MutableLiveData<Store> getSelectedStore() {
         return selectedStore;
     }
@@ -90,7 +95,6 @@ public class CartButtonViewModel extends BaseObservable {
     public MutableLiveData<OrderType> getSelectedOrderType() {
         return selectedOrderType;
     }
-
     @Bindable
     private String storeAddress = "Chọn cửa hàng";
     public String getStoreAddress() {
@@ -173,21 +177,6 @@ public class CartButtonViewModel extends BaseObservable {
         notifyPropertyChanged(BR.delivering);
     }
 
-    @Bindable
-    private double distance = -1;
-    public double getDistance()
-    {
-        return distance;
-    }
-
-    public void setDistance(double distance) {
-        this.distance = distance;
-        DecimalFormat formatter = new DecimalFormat("##0.##");
-        String formattedDistance = formatter.format(distance);
-        setDistanceString(formattedDistance + "km");
-        notifyPropertyChanged(BR.distance);
-    }
-
     @Bindable String totalFoodString = "0đ";
 
     public String getTotalFoodString() {
@@ -221,6 +210,17 @@ public class CartButtonViewModel extends BaseObservable {
         this.numberFoodString = numberFoodString;
         notifyPropertyChanged(BR.numberFoodString);
     }
+    @Bindable
+    private boolean needToShowDistance = false;
+
+    public boolean isNeedToShowDistance() {
+        return needToShowDistance;
+    }
+
+    public void setNeedToShowDistance(boolean needToShowDistance) {
+        this.needToShowDistance = needToShowDistance;
+        notifyPropertyChanged(BR.needToShowDistance);
+    }
 
     @Bindable
     private String distanceString = "";
@@ -238,15 +238,17 @@ public class CartButtonViewModel extends BaseObservable {
     {
         if(selectedStore.getValue() == null || selectedAddressDelivery.getValue() == null)
         {
-            setDistance(-1);
+            distance.postValue(-1.0);
+            setNeedToShowDistance(false);
         }
         else
         {
-            setDistance(LocationHelper.calculateDistance(
+            distance.postValue(LocationHelper.calculateDistance(
                     selectedStore.getValue().getAddress().getLat(),
                     selectedStore.getValue().getAddress().getLng(),
                     selectedAddressDelivery.getValue().getAddress().getLat(),
                     selectedAddressDelivery.getValue().getAddress().getLng()));
+            setNeedToShowDistance(true);
         }
     }
 }
