@@ -1,11 +1,8 @@
 package com.example.coffee_shop_staff_admin.fragments;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -23,6 +20,7 @@ import com.example.coffee_shop_staff_admin.activities.PromoAdminDetailActivity;
 import com.example.coffee_shop_staff_admin.activities.PromoAdminEditActivity;
 import com.example.coffee_shop_staff_admin.adapters.PromoAdminAdapter;
 import com.example.coffee_shop_staff_admin.databinding.FragmentPromoAdminBinding;
+import com.example.coffee_shop_staff_admin.repositories.FoodRepository;
 import com.example.coffee_shop_staff_admin.repositories.PromoRepository;
 import com.example.coffee_shop_staff_admin.utils.interfaces.OnPromoAdminClickListener;
 import com.example.coffee_shop_staff_admin.viewmodels.PromoAdminViewModel;
@@ -37,39 +35,9 @@ public class PromoAdminFragment extends Fragment {
         public void onPromoAdminClick(String promoId) {
             Intent intent = new Intent(getContext(), PromoAdminDetailActivity.class);
             intent.putExtra("promoId", promoId);
-            activitySeePromoDetailResultLauncher.launch(intent);
+            startActivity(intent);
         }
     };
-    private final ActivityResultLauncher<Intent> activitySeePromoDetailResultLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == Activity.RESULT_OK) {
-                    Intent data = result.getData();
-                    if (data != null) {
-
-                    }
-                } else {
-                    //User do nothing
-                }
-            }
-    );
-    private final ActivityResultLauncher<Intent> activityAddNewPromoResultLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == Activity.RESULT_OK) {
-                    Intent data = result.getData();
-                    if (data != null) {
-                        //TODO: refresh the page
-                    }
-                } else {
-                    //User do nothing
-                }
-            }
-    );
-    public PromoAdminFragment() {
-        // Required empty public constructor
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -100,7 +68,7 @@ public class PromoAdminFragment extends Fragment {
 
         fragmentPromoAdminBinding.addButton.setOnClickListener(v -> {
             Intent intent = new Intent(getContext(), PromoAdminEditActivity.class);
-            activityAddNewPromoResultLauncher.launch(intent);
+            startActivity(intent);
         });
 
         fragmentPromoAdminBinding.editText.addTextChangedListener(new TextWatcher() {
@@ -120,6 +88,10 @@ public class PromoAdminFragment extends Fragment {
             public void afterTextChanged(Editable s) {
 
             }
+        });
+        fragmentPromoAdminBinding.refreshLayout.setOnRefreshListener(() -> {
+            FoodRepository.getInstance().registerSnapshotListener();
+            fragmentPromoAdminBinding.refreshLayout.setRefreshing(false);
         });
         return fragmentPromoAdminBinding.getRoot();
     }
