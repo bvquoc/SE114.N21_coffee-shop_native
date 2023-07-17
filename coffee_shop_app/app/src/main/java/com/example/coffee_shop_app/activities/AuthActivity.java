@@ -48,30 +48,5 @@ public class AuthActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         }
-//        firebaseAuth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
-//            @Override
-//            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-//                //implement remember me
-//
-//                FirebaseUser raw = firebaseAuth.getCurrentUser();
-//                if (raw != null && currentUser.getValue() == null) {
-//                    SharedPreferences pref = getPreferences(Context.MODE_PRIVATE);
-//                    Boolean val = pref.getBoolean(getString(R.string.is_remember_me), true);
-//                    if(!val){
-//                        AuthRepository.getInstance().signOut();
-//                    }
-//                    else {
-//                        AuthRepository.getInstance().getUser(raw.getUid(), params -> {
-//                            currentUser.postValue(User.fromFireStore((DocumentSnapshot) params[0]));
-//                        });
-//                        AuthRepository.getInstance().getIsLoggedInLiveData().postValue(true);
-//                    }
-//
-//                    Intent intent = new Intent(getApplicationContext(), MainPageActivity.class);
-//                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//                    startActivity(intent);
-//                }
-//            }
-//        });
     }
 }

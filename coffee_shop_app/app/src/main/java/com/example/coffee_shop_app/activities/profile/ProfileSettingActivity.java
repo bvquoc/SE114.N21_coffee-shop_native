@@ -12,6 +12,7 @@ import com.example.coffee_shop_app.databinding.ChangePasswordBottomSheetBinding;
 import com.example.coffee_shop_app.databinding.OrderTypeBottomSheetBinding;
 import com.example.coffee_shop_app.models.User;
 import com.example.coffee_shop_app.repository.AuthRepository;
+import com.example.coffee_shop_app.utils.StringConverter;
 import com.example.coffee_shop_app.viewmodels.CartButtonViewModel;
 import com.example.coffee_shop_app.viewmodels.ProfileSettingViewModel;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -72,7 +73,7 @@ public class ProfileSettingActivity extends AppCompatActivity {
                 updateDob();
             }
         };
-        activityProfileSettingBinding.txtDob.setText(formatDate(viewModel.getUser().getDob()));
+        activityProfileSettingBinding.txtDob.setText(StringConverter.DateToString(viewModel.getUser().getDob()));
 
         activityProfileSettingBinding.btnChangeInfo.setOnClickListener((view) -> {
             activityProfileSettingBinding.txtName.setFocusableInTouchMode(true);
@@ -109,7 +110,6 @@ public class ProfileSettingActivity extends AppCompatActivity {
         activityProfileSettingBinding.btnChangePassword.btnProfileFunction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.e("Hello", "dsadsad");
                 bottomSheetDialog = new BottomSheetDialog(ProfileSettingActivity.this, R.style.BottomSheetTheme);
 
                 bottomSheetDialog.setContentView(R.layout.change_password_bottom_sheet);
@@ -167,35 +167,19 @@ public class ProfileSettingActivity extends AppCompatActivity {
 
     private void onCancel(){
         activityProfileSettingBinding.txtName.setText(viewModel.getUser().getName());
-        activityProfileSettingBinding.txtDob.setText(formatDate(viewModel.getUser().getDob()));
+        activityProfileSettingBinding.txtDob.setText(StringConverter.DateToString(viewModel.getUser().getDob()));
         activityProfileSettingBinding.txtPhone.setText(viewModel.getUser().getPhoneNumber());
     }
 
     private void onSave(){
         User user = viewModel.getUser();
         user.setName(activityProfileSettingBinding.txtName.getText().toString());
-        user.setDob(convertDate(activityProfileSettingBinding.txtDob.getText().toString()));
+        user.setDob(StringConverter.StringToDate(activityProfileSettingBinding.txtDob.getText().toString()));
         user.setPhoneNumber(activityProfileSettingBinding.txtPhone.getText().toString());
         viewModel.onSaveInfo(user);
     }
 
-    private String formatDate(Date date){
-        String pattern = "dd/MM/yyyy";
-        DateFormat df = new SimpleDateFormat(pattern);
-        return  df.format(date);
-    }
 
-    private Date convertDate(String s){
-        String pattern = "dd/MM/yyyy";
-        DateFormat df = new SimpleDateFormat(pattern);
-        Date startDate;
-        try{
-            startDate = df.parse(s);
-        } catch (Exception e) {
-            startDate = DateTime.now().toDate();
-        }
-        return startDate;
-    }
 
     public void onGoAddress(View view){
         String msg = "Nav to support";

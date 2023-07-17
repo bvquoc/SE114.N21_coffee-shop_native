@@ -19,7 +19,7 @@ public class ConfirmPWValidate implements Validate {
         String regex = "^(?=.*[a-z])(?=.*?[0-9]).{8,}$";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(value);
-        return matcher.matches() && value == oldPassWord;
+        return matcher.matches() && value.equals(oldPassWord);
     }
 
     @Nullable

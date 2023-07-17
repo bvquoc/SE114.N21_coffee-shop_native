@@ -40,7 +40,7 @@
             android:layout_height="@dimen/_1sdp"
             android:background="@color/grey_border"/>
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/txt_pass_layout_change"
+            android:id="@+id/txt_name_layout_change"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -49,15 +49,17 @@
             android:hint="Họ và tên">
 
             <EditText
-                android:id="@+id/txt_pass_change"
+                android:id="@+id/txt_name_change"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="@color/black"
                 android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/txt_dob_layout"
+            android:id="@+id/txt_dob_layout_change"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
+            android:focusable="false"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/_16sdp"
             android:layout_marginTop="@dimen/_16sdp"
@@ -66,14 +68,15 @@
             app:endIconMode="custom">
 
             <EditText
-                android:id="@+id/txt_dob"
+                android:id="@+id/txt_dob_change"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="@color/black"
                 android:focusable="false"
                 android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/txt_repass_layout_change"
+            android:id="@+id/txt_phone_layout_change"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -82,14 +85,15 @@
             android:hint="Số điện thoại">
 
             <EditText
-                android:id="@+id/txt_repass_change"
+                android:id="@+id/txt_phone_change"
                 android:layout_width="match_parent"
+                android:textColor="@color/black"
                 android:layout_height="wrap_content"
                 android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
-            android:id="@+id/btn_accept_change_pass"
+            android:id="@+id/btn_accept_change_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginVertical="@dimen/_18sdp"
