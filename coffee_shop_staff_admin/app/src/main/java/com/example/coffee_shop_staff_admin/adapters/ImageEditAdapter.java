@@ -75,7 +75,11 @@ public class ImageEditAdapter extends RecyclerView.Adapter<ImageEditAdapter.Imag
                 try {
                     selectedImageBitmap = MediaStore.Images.Media.getBitmap(
                             holder.itemView.getContext().getContentResolver(), imageUri);
-                    holder.imageView.setImageBitmap(selectedImageBitmap);
+                    Glide.with(holder.itemView.getContext())
+                            .load(selectedImageBitmap)
+                            .placeholder(R.drawable.img_placeholder)
+                            .error(R.drawable.img_placeholder)
+                            .into(holder.imageView);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

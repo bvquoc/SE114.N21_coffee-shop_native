@@ -339,7 +339,8 @@
                                 android:id="@+id/image_recycler"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginBottom="@dimen/_8sdp"/>
+                                android:layout_marginBottom="@dimen/_8sdp"
+                                android:nestedScrollingEnabled="false"/>
 
                             <Button
                                 android:id="@+id/add_image_button"

@@ -94,7 +94,11 @@ public class ToppingAdminEditActivity extends AppCompatActivity {
                     Bitmap selectedImageBitmap;
                     try {
                         selectedImageBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), s);
-                        activityToppingAdminEditBinding.imageView.setImageBitmap(selectedImageBitmap);
+                        Glide.with(ToppingAdminEditActivity.this)
+                                .load(selectedImageBitmap)
+                                .placeholder(R.drawable.img_placeholder)
+                                .error(R.drawable.img_placeholder)
+                                .into(activityToppingAdminEditBinding.imageView);
                     }
                     catch (IOException e) {
                         e.printStackTrace();
