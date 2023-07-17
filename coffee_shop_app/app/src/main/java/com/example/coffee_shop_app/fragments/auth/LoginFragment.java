@@ -31,6 +31,7 @@ import com.example.coffee_shop_app.R;
 import com.example.coffee_shop_app.activities.MainPageActivity;
 import com.example.coffee_shop_app.activities.profile.ProfileSettingActivity;
 import com.example.coffee_shop_app.models.User;
+import com.example.coffee_shop_app.repository.AuthRepository;
 import com.example.coffee_shop_app.utils.StringConverter;
 import com.example.coffee_shop_app.utils.interfaces.CallBack;
 import com.example.coffee_shop_app.utils.interfaces.Validate;
@@ -215,6 +216,8 @@ public class LoginFragment extends Fragment {
             Snackbar snackbar = Snackbar
                     .make(view, msg, Snackbar.LENGTH_LONG);
             snackbar.show();
+            AuthRepository.getInstance().signOut();
+
         });
 
         // Set the behavior to STATE_EXPANDED
