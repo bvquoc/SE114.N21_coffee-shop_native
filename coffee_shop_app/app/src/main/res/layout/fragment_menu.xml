@@ -15,6 +15,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".fragments.MenuFragment">
+        <!-- This component for getting focusable -->
+        <Button
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"/>
+        <!-- This component for getting focusable-->
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/refreshLayout"
             android:layout_width="match_parent"
@@ -23,6 +32,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
+
                 <com.facebook.shimmer.ShimmerFrameLayout
                     android:id="@+id/shimmer_layout"
                     app:layout_constraintTop_toTopOf="parent"
@@ -466,7 +476,7 @@
                                 android:layout_marginTop="@dimen/_20sdp"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="@{cartButtonViewModel.userAddress}"
+                                android:text="@{cartButtonViewModel.delivering ? cartButtonViewModel.userAddress : cartButtonViewModel.storeAddress}"
                                 style="@style/mediumBlack12"
                                 android:maxLines="1"
                                 android:ellipsize="end"/>
