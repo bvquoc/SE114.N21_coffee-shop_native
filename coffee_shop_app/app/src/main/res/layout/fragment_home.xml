@@ -1,14 +1,272 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".fragments.HomeFragment">
-
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <import type="android.view.View" />
+        <variable
+            name="homeViewModel"
+            type="com.example.coffee_shop_app.viewmodels.HomeViewModel"/>
+        <variable
+            name="cartButtonViewModel"
+            type="com.example.coffee_shop_app.viewmodels.CartButtonViewModel" />
+    </data>
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Home" />
+        tools:context=".fragments.HomeFragment">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/scroll_view"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:paddingHorizontal="16dp"
+                android:scrollbarStyle="outsideOverlay"
+                android:background="@color/white">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp"
+                        android:orientation="horizontal"
+                        android:paddingVertical="16dp"
+                        android:background="@drawable/border_ffffff_8_808089">
+                        <LinearLayout
+                            android:id="@+id/store_pickup_picker"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
 
-</FrameLayout>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="72dp"
+                                android:layout_marginHorizontal="12dp"
+                                android:orientation="vertical">
+                                <ImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:scaleType="centerInside"
+                                    android:contentDescription="@null"
+                                    android:src="@drawable/img_pickup_icon" />
+                            </LinearLayout>
+
+
+                            <Space
+                                android:layout_width="match_parent"
+                                android:layout_height="8dp" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Mang đi"
+                                android:textAlignment="center"
+                                style="@style/mediumBlack16"/>
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Phục vụ tốt nhất"
+                                android:textAlignment="center"
+                                style="@style/regularGrey12" />
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="48dp"
+                            android:background="#EBEBF0"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginHorizontal="16dp" />
+
+                        <LinearLayout
+                            android:id="@+id/delivery_picker"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="72dp"
+                                android:layout_marginHorizontal="12dp"
+                                android:orientation="vertical">
+                                <ImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:scaleType="centerInside"
+                                    android:contentDescription="@null"
+                                    android:src="@drawable/img_delivery_icon" />
+                            </LinearLayout>
+
+                            <Space
+                                android:layout_width="match_parent"
+                                android:layout_height="8dp" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Giao hàng tận nơi"
+                                android:textAlignment="center"
+                                style="@style/mediumBlack16" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Luôn luôn đúng giờ"
+                                android:textAlignment="center"
+                                style="@style/regularGrey12" />
+                        </LinearLayout>
+                    </LinearLayout>
+                    <Space
+                        android:layout_width="match_parent"
+                        android:layout_height="16dp"/>
+                    <TextView
+                        android:id="@+id/recent_see_text_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Đã xem gần đây"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginBottom="12dp"
+                        style="@style/boldBlack16" />
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/product_item_recent_recycler_view"
+                        android:nestedScrollingEnabled="true"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="@{homeViewModel.loading?View.GONE:View.VISIBLE}"/>
+                    <Space
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"/>
+                </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cart_button"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/_8sdp"
+                android:layout_marginHorizontal="@dimen/_16sdp"
+                android:orientation="horizontal"
+                app:cardElevation="@dimen/_2sdp"
+                app:cardCornerRadius="@dimen/_4sdp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_margin="@dimen/_8sdp">
+                    <androidx.constraintlayout.motion.widget.MotionLayout
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layoutDescription="@xml/cart_button_address_info_motion_scene"
+                        android:id="@+id/address_info_motion_layout">
+                        <ImageView
+                            android:id="@+id/image_order_type"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            android:layout_marginBottom="@dimen/_20sdp"
+                            android:layout_width="@dimen/_20sdp"
+                            android:layout_height="@dimen/_20sdp"
+                            android:contentDescription="@null"
+                            android:src="@{cartButtonViewModel.delivering?@drawable/img_delivery_small_icon:@drawable/img_pickup_small_icon}"/>
+                        <TextView
+                            android:id="@+id/text_order_type"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintLeft_toRightOf="@id/image_order_type"
+                            app:layout_constraintRight_toRightOf="parent"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/_4sdp"
+                            android:text="@{cartButtonViewModel.delivering ? @string/delivery_to : @string/pick_up_from}"
+                            style="@style/mediumGrey12"/>
+                        <TextView
+                            android:id="@+id/address_text_view"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintRight_toRightOf="parent"
+                            android:layout_marginTop="@dimen/_20sdp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@{cartButtonViewModel.userAddress}"
+                            style="@style/mediumBlack12"
+                            android:maxLines="1"
+                            android:ellipsize="end"/>
+                    </androidx.constraintlayout.motion.widget.MotionLayout>
+                    <Space
+                        android:layout_width="@dimen/_8sdp"
+                        android:layout_height="match_parent"/>
+                    <androidx.constraintlayout.motion.widget.MotionLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:background="@drawable/button_border_none_1a94ff"
+                        app:layoutDescription="@xml/cart_button_price_and_amount_motion_scene"
+                        android:id="@+id/cart_button_price_and_amount_motion_layout"
+                        android:visibility="@{cartButtonViewModel.hasFoodInCart?View.VISIBLE:View.GONE}">
+                        <LinearLayout
+                            android:id="@+id/cart_button_price_and_amount_linear"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintRight_toRightOf="parent"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            android:layout_marginHorizontal="@dimen/_8sdp"
+                            android:layout_marginBottom="@dimen/_6sdp"
+                            android:layout_marginTop="@dimen/_6sdp">
+                            <TextView
+                                android:layout_height="@dimen/_16sdp"
+                                android:layout_width="@dimen/_16sdp"
+                                android:layout_gravity="center_vertical"
+                                android:gravity="center"
+                                android:padding="@dimen/_1sdp"
+                                android:textColor="@color/blue"
+                                android:fontFamily="@font/inter_medium"
+                                android:autoSizeTextType="uniform"
+                                android:autoSizeMaxTextSize="@dimen/_12sdp"
+                                android:autoSizeMinTextSize="@dimen/_4sdp"
+                                android:autoSizeStepGranularity="@dimen/_2sdp"
+                                android:text="@{cartButtonViewModel.numberFoodString}"
+                                android:background="@drawable/button_border_1a94ff_ffffff"/>
+                            <Space
+                                android:layout_width="@dimen/_4sdp"
+                                android:layout_height="match_parent"/>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:text="@{cartButtonViewModel.totalFoodString}"
+                                style="@style/mediumWhite12"/>
+                            <Space
+                                android:layout_width="@dimen/_4sdp"
+                                android:layout_height="match_parent"/>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:text="chevron-right"
+                                android:gravity="center_vertical"
+                                android:textColor="@color/white"
+                                android:fontFamily="@font/font_awesome_free_solid_900"
+                                android:textSize="@dimen/font10"/>
+                            <Space
+                                android:layout_width="@dimen/_2sdp"
+                                android:layout_height="match_parent"/>
+                        </LinearLayout>
+                    </androidx.constraintlayout.motion.widget.MotionLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </FrameLayout>
+</layout>
