@@ -9,107 +9,127 @@
         <import type="android.view.View"/>
     </data>
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_marginTop="@dimen/_8sdp"
         android:layout_marginBottom="@dimen/_16sdp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <androidx.cardview.widget.CardView
-            app:cardElevation="0dp"
             android:id="@+id/imageView"
-            android:layout_marginLeft="@dimen/_8sdp"
             android:layout_width="@dimen/_40sdp"
             android:layout_height="@dimen/_40sdp"
-            app:cardCornerRadius="@dimen/_20sdp">
+            app:cardCornerRadius="@dimen/_20sdp"
+            app:cardElevation="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
-                android:imageURL="@{cartFood.product.images.get(0)}"
                 android:id="@+id/img_product"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:imageURL="@{cartFood.product.images.get(0)}" />
         </androidx.cardview.widget.CardView>
 
         <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_4sdp"
+            android:layout_toEndOf="@id/imageView"
             android:orientation="vertical"
-            android:layout_marginLeft="@dimen/_8sdp"
-            android:layout_toRightOf="@id/imageView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            app:layout_constraintEnd_toStartOf="@+id/btnDelete"
+            app:layout_constraintStart_toEndOf="@+id/imageView"
+            app:layout_constraintTop_toTopOf="parent">
 
             <TextView
+                style="@style/boldBlack14"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{cartFood.product.name}"
-                style="@style/boldBlack14" />
+                android:text="@{cartFood.product.name}" />
 
             <TextView
-                android:layout_marginTop="@dimen/_4sdp"
+                style="@style/regularGrey12"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{@string/size_text+' ' + cartFood.sizeName}"
-                style="@style/regularGrey12" />
+                android:layout_marginTop="@dimen/_4sdp"
+                android:text="@{@string/size_text+' ' + cartFood.sizeName}" />
+
             <TextView
-                android:visibility="@{cartFood.topping.isEmpty() ? View.GONE:View.VISIBLE, default=gone}"
-                android:layout_marginTop="@dimen/_4sdp"
+                style="@style/regularGrey12"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_4sdp"
                 android:text="@{@string/topping_text +' '+ cartFood.toppingName}"
-                style="@style/regularGrey12" />
+                android:visibility="@{cartFood.topping.isEmpty() ? View.GONE:View.VISIBLE, default=gone}" />
+
             <TextView
                 android:id="@+id/txtPrice"
-                android:layout_marginTop="@dimen/_4sdp"
+                style="@style/boldBlack14"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/boldBlack14" />
+                android:layout_marginTop="@dimen/_4sdp" />
 
             <TextView
-                android:visibility="@{cartFood.note.isEmpty() ? View.GONE:View.VISIBLE, default=gone}"
-                android:layout_marginTop="@dimen/_4sdp"
-                android:padding="@dimen/_8sdp"
+                style="@style/regularGrey12"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_4sdp"
                 android:background="@drawable/square_amount_box"
+                android:padding="@dimen/_8sdp"
                 android:text="@{cartFood.note}"
-                style="@style/regularGrey12" />
+                android:visibility="@{cartFood.note.isEmpty() ? View.GONE:View.VISIBLE, default=gone}" />
 
             <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_12sdp"
                 android:gravity="left"
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:orientation="horizontal">
 
                 <ImageView
                     android:id="@+id/btnMinus"
-                    android:padding="@dimen/_8sdp"
                     android:layout_width="@dimen/_40sdp"
                     android:layout_height="@dimen/_40sdp"
                     android:background="@drawable/minus_button"
                     android:clickable="true"
-                    android:focusable="true" />
+                    android:focusable="true"
+                    android:padding="@dimen/_8sdp" />
 
                 <TextView
                     style="@style/regularBlack16"
-                    android:textAlignment="center"
-                    android:padding="@dimen/_8sdp"
-                    android:gravity="center"
                     android:layout_width="@dimen/_40sdp"
                     android:layout_height="@dimen/_40sdp"
                     android:layout_marginHorizontal="@dimen/_4sdp"
                     android:background="@drawable/square_amount_box"
-                    android:text="@{``+ cartFood.quantity}" />
+                    android:gravity="center"
+                    android:padding="@dimen/_8sdp"
+                    android:text="@{``+ cartFood.quantity}"
+                    android:textAlignment="center" />
 
                 <ImageView
                     android:id="@+id/btnAdd"
-                    android:padding="@dimen/_8sdp"
                     android:layout_width="@dimen/_40sdp"
                     android:layout_height="@dimen/_40sdp"
                     android:background="@drawable/round_icon_button_shape"
                     android:clickable="true"
                     android:focusable="true"
+                    android:padding="@dimen/_8sdp"
                     android:src="@drawable/baseline_add_24" />
             </LinearLayout>
         </LinearLayout>
-    </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/btnDelete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_delete_outline_24"
+            app:tint="@color/red"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -7,10 +7,12 @@ import androidx.databinding.Bindable;
 
 import com.example.coffee_shop_app.BR;
 import com.example.coffee_shop_app.models.CartFood;
+import com.example.coffee_shop_app.repository.ProductRepository;
 
 public class ProductDetailViewModel extends BaseObservable {
-    public ProductDetailViewModel(CartFood cartFood) {
+    public ProductDetailViewModel(CartFood cartFood, boolean isFavorite) {
         this.cartFood = cartFood;
+        this.favorite=isFavorite;
     }
     @Bindable
     private CartFood cartFood;
@@ -78,5 +80,7 @@ public class ProductDetailViewModel extends BaseObservable {
         //TODO: add to user favorite list
         boolean value=!this.favorite;
         setFavorite(value);
+        ProductRepository.getInstance().updateFavorite(cartFood.getProduct().getId(), value);
     }
+
 }

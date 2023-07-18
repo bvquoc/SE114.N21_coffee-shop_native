@@ -141,8 +141,8 @@ public class PromoActivity extends AppCompatActivity {
     }
 
     private void choosePromo(Promo promo) {
-        //TODO: MAI - return promo
-        Toast.makeText(getApplicationContext(), promo.getPromoCode(), Toast.LENGTH_SHORT).show();
+        CartViewModel.getInstance().getPromo().setValue(promo);
+        onBackPressed();
     }
 
     @Override
@@ -288,6 +288,7 @@ public class PromoActivity extends AppCompatActivity {
                         null
                 );
                 promoViewModel.setSearching(false);
+                CartViewModel.getInstance().getPromo().setValue(null);
                 dialog.show(getSupportFragmentManager(), "notificationDialog");
             }
         }

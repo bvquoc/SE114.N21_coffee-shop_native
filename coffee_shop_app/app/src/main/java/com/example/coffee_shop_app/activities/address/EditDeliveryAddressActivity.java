@@ -19,8 +19,8 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.coffee_shop_app.databinding.ActivityEditDeliveryAddressBinding;
-import com.example.coffee_shop_app.fragments.ConfirmDialog;
 import com.example.coffee_shop_app.R;
+import com.example.coffee_shop_app.fragments.Dialog.ConfirmDialog;
 import com.example.coffee_shop_app.models.AddressDelivery;
 import com.example.coffee_shop_app.models.MLocation;
 import com.example.coffee_shop_app.repository.AddressRepository;

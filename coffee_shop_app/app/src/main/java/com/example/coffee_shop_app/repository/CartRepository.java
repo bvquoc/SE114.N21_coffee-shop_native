@@ -30,7 +30,7 @@ public class CartRepository {
 
     public void addOrder(Order order){
         HashMap<String, Object> orderMap=new HashMap<>();
-        orderMap.put("user", Data.instance.userId);
+        orderMap.put("user", AuthRepository.getInstance().getCurrentUser().getId());
         if(order.getStore()!=null){
             orderMap.put("store", order.getStore().getId());
         }
