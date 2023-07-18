@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".activities.profile.ProfileSettingActivity">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.example.coffee_shop_staff_admin.viewmodels.ProfileSettingViewModel" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <include
+            android:id="@+id/my_toolbar"
+            layout="@layout/custom_toolbar" />
+
+        <TextView
+            style="@style/boldBlack18"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/_16sdp"
+            android:layout_marginTop="@dimen/_16sdp"
+            android:text="Cài đặt"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_30sdp" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_16sdp">
+
+            <TextView
+                android:id="@+id/textView5"
+                style="@style/boldBlack18"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/_16sdp"
+                android:text="Thông tin cá nhân"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_16sdp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/btn_change_info"
+                style="@style/regularBlue14"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/_16sdp"
+                android:clickable="true"
+                android:text="Thay đổi"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+            <!--Changing Info-->
+            <LinearLayout
+                android:id="@+id/ctn_change_info"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginRight="@dimen/_16sdp"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/btn_cancel_info"
+                    style="@style/regularGrey14"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="@dimen/_16sdp"
+                    android:text="Hủy" />
+
+                <TextView
+                    android:id="@+id/btn_save_info"
+                    style="@style/regularBlue14"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:text="Lưu" />
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_16sdp"
+            android:layout_marginTop="@dimen/_16sdp"
+            android:hint="Họ và tên">
+
+            <EditText
+                android:id="@+id/txt_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="false"
+                android:maxLines="1"
+                android:text="@{viewModel.user.name}" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/txt_dob_layout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_16sdp"
+            android:layout_marginTop="@dimen/_16sdp"
+            android:hint="Ngày sinh"
+            app:endIconDrawable="@drawable/ic_calendar"
+            app:endIconMode="custom"
+            app:endIconTint="@color/grey_icon">
+
+            <EditText
+                android:id="@+id/txt_dob"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="false"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_16sdp"
+            android:layout_marginTop="@dimen/_16sdp"
+            android:hint="Số điện thoại">
+
+            <EditText
+                android:id="@+id/txt_phone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="false"
+                android:inputType="date"
+                android:maxLines="1"
+                android:text="@{viewModel.user.phoneNumber}" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <include
+            android:id="@+id/btn_change_password"
+            layout="@layout/profile_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_12sdp"
+            android:layout_marginTop="@dimen/_10sdp"
+            app:description="@{`Thay đổi mật khẩu`}"
+            app:haveArrow="@{true}"
+            app:icon="@{@drawable/ic_shield}"
+            app:title="@{`Mật khẩu`}" />
+    </LinearLayout>
+</layout>

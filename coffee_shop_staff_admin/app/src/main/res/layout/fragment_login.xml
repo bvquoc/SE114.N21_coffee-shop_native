@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".fragments.auth.LoginFragment">
+
+
+    <!-- TODO: Update blank fragment layout -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <View android:layout_width="match_parent"
+            android:layout_height="@dimen/_40ssp"/>
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    style="@style/boldBlack18"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/_16sdp"
+                    android:layout_marginTop="@dimen/_16sdp"
+                    android:text="Đăng nhập"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_30sdp" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/txt_email_layout_login"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/_16sdp"
+                    android:layout_marginTop="@dimen/_16sdp"
+                    android:hint="Email">
+
+                    <EditText
+                        android:id="@+id/txt_email_login"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/txt_pass_layout_login"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/_16sdp"
+                    android:layout_marginTop="@dimen/_16sdp"
+                    android:hint="Mật khẩu">
+
+                    <EditText
+                        android:id="@+id/txt_password_login"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="20dp"
+                    android:layout_marginVertical="8dp">
+
+                    <CheckBox
+                        android:id="@+id/checkbox_remember"
+                        style="@style/regularBlack10"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:buttonTint="@color/blue"
+                        android:enabled="true"
+                        android:text="Ghi nhớ tôi"
+                        android:textSize="@dimen/_12sdp" />
+
+                    <TextView
+                        style="@style/regularBlack10"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginTop="12dp"
+                        android:text="Quên mật khẩu?"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12sdp" />
+                </RelativeLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp">
+
+                    <Button
+                        android:id="@+id/btn_login"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="20dp"
+                        android:background="@drawable/rounded_button"
+                        android:text="Đăng Nhập"
+                        app:layout_constraintHorizontal_bias="0.498"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+</layout>

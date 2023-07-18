@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".activities.profile.ImageViewActivity">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#1E1E1E">
+        <include
+            android:id="@+id/my_toolbar"
+            layout="@layout/custom_toolbar"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"/>
+
+        <ImageView
+            android:adjustViewBounds="true"
+            android:id="@+id/img_viewer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/blue"
+            app:layout_constraintTop_toBottomOf="@id/my_toolbar"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/ctn_button"
+            />
+        <LinearLayout
+            android:id="@+id/ctn_button"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_16sdp"
+            android:layout_marginVertical="@dimen/_16sdp"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+            <Button
+                android:id="@+id/btn_img_cancel"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:paddingVertical="@dimen/_13sdp"
+                android:background="@drawable/rounded_button"
+                android:backgroundTint="@color/white"
+                android:text="Hủy"
+                android:visibility="gone"/>
+            <View
+                android:id="@+id/ctn_separator"
+                android:layout_width="@dimen/_18sdp"
+                android:layout_height="match_parent"
+                android:visibility="gone"/>
+            <Button
+                android:id="@+id/btn_img_viewed"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:paddingVertical="@dimen/_13sdp"
+                android:background="@drawable/rounded_button"
+                android:text="Xong"/>
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>
