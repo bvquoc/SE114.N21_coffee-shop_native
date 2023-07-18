@@ -5,6 +5,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
 import com.example.coffee_shop_app.models.AddressDelivery;
+import com.example.coffee_shop_app.models.Promo;
 import com.example.coffee_shop_app.models.Store;
 
 import java.util.Date;
@@ -24,12 +25,19 @@ public class CartDeliveryViewModel extends ViewModel {
                 fromStore.setValue(store);
             }
         });
+
+        if(CartButtonViewModel.getInstance().getSelectedAddressDelivery().getValue()==null){
+            toAddress.setValue(null);
+        }
         CartButtonViewModel.getInstance().getSelectedAddressDelivery().observeForever(new Observer<AddressDelivery>() {
             @Override
             public void onChanged(AddressDelivery addressDelivery) {
                 toAddress.setValue(addressDelivery);
             }
         });
+        cartViewModel.getDiscount().observeForever(
+                dis->calculateTotalPrice());
+        deliveryCost.observeForever(ship->calculateTotalPrice());
     }
 
     public CartViewModel getCartViewModel() {
@@ -65,19 +73,13 @@ public class CartDeliveryViewModel extends ViewModel {
     }
 
     public void calculateTotalPrice(){
-        cartViewModel.calculateTotalFood();
         double total=cartViewModel.getTotalFood().getValue();
         if(deliveryCost.getValue()!=null){
             total=total+deliveryCost.getValue();
         }
+        if(cartViewModel.getDiscount().getValue()!=null){
+            total=total-cartViewModel.getDiscount().getValue();
+        }
         this.total.setValue(total);
     }
-//    @Override
-//    public void placeOrder(Store store, AddressDelivery address, Date pickupTime, String status){
-//        super.placeOrder(
-//                this.fromStore.getValue(),
-//                this.toAddress.getValue(),
-//                null,
-//                "Đang xử lí");
-//    }
 }

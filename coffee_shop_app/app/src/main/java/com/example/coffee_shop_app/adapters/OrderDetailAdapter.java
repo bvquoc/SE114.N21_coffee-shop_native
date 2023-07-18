@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.coffee_shop_app.R;
 import com.example.coffee_shop_app.databinding.OrderDetailItemBinding;
-import com.example.coffee_shop_app.fragments.ConfirmDialog;
+import com.example.coffee_shop_app.fragments.Dialog.ConfirmDialog;
 import com.example.coffee_shop_app.models.CartFood;
 import com.example.coffee_shop_app.utils.SqliteHelper;
 
@@ -69,6 +69,28 @@ public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailAdapter.
             orderDetailItemBinding.setCartFood(cartFood);
             orderDetailItemBinding.executePendingBindings();
             orderDetailItemBinding.txtPrice.setText(formatter.format(cartFood.getTotalPrice()) + orderDetailItemBinding.getRoot().getContext().getString(R.string.vndUnit));
+
+            orderDetailItemBinding.btnDelete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    SqliteHelper repo = new SqliteHelper(orderDetailItemBinding.getRoot().getContext());
+                    ConfirmDialog dialog = new ConfirmDialog(
+                            "Xác nhận",
+                            "Bạn muốn xoá sản phẩm khỏi giỏ hàng ?",
+                            new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    repo.deleteCartFood(cartFood.getId());
+                                    cartFoods.remove(cartFood);
+                                    notifyItemRemoved(getAdapterPosition());
+                                    onCartQuantityUpdate.onItemClick(cartFood,true);
+                                }
+                            },
+                            null
+                    );
+                    dialog.show(((AppCompatActivity) orderDetailItemBinding.getRoot().getContext()).getSupportFragmentManager(), "confirmDialog");
+                }
+            });
             orderDetailItemBinding.btnMinus.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -76,8 +98,8 @@ public class OrderDetailAdapter extends RecyclerView.Adapter<OrderDetailAdapter.
                     int quantity = cartFood.getQuantity() - 1;
                     if (quantity == 0) {
                         ConfirmDialog dialog = new ConfirmDialog(
-                                "Confirmation",
-                                "Do you want to remove this product?",
+                                "Xác nhận",
+                                "Bạn muốn xoá sản phẩm khỏi giỏ hàng ?",
                                 new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
