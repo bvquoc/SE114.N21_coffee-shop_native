@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import com.example.coffee_shop_app.Data;
 import com.example.coffee_shop_app.models.CartFood;
 import com.example.coffee_shop_app.models.Product;
+import com.example.coffee_shop_app.repository.AuthRepository;
 import com.example.coffee_shop_app.repository.ProductRepository;
 
 import java.util.ArrayList;
@@ -50,7 +51,7 @@ public class SqliteHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(COLUMN_FOOD_ID, cartFood.getProduct().getId());
         values.put(COLUMN_QUANTITY, cartFood.getQuantity());
-        values.put(COLUMN_USER_ID, Data.instance.userId);
+        values.put(COLUMN_USER_ID, AuthRepository.getInstance().getCurrentUser().getId());
         values.put(COLUMN_SIZE, cartFood.getSize());
         values.put(COLUMN_TOPPING, cartFood.getTopping());
         values.put(COLUMN_NOTE, cartFood.getNote());
@@ -117,7 +118,7 @@ public class SqliteHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put(COLUMN_FOOD_ID, cartFood.getProduct().getId());
         values.put(COLUMN_QUANTITY, cartFood.getQuantity());
-        values.put(COLUMN_USER_ID, Data.instance.userId);
+        values.put(COLUMN_USER_ID, AuthRepository.getInstance().getCurrentUser().getId());
         values.put(COLUMN_SIZE, cartFood.getSize());
         values.put(COLUMN_TOPPING, cartFood.getTopping());
         values.put(COLUMN_NOTE, cartFood.getNote());
