@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -24,6 +25,8 @@ import com.example.coffee_shop_staff_admin.utils.interfaces.OnToppingAdminClickL
 import com.example.coffee_shop_staff_admin.viewmodels.ToppingAdminViewModel;
 
 public class ToppingAdminFragment extends Fragment {
+    private FragmentToppingAdminBinding fragmentToppingAdminBinding;
+    private final ToppingAdminViewModel toppingAdminViewModel = new ToppingAdminViewModel();
     private final ToppingAdminAdapter toppingAdminAdapter = new ToppingAdminAdapter();
     private final Handler handler = new Handler();
     private Runnable searchRunnable;
@@ -45,13 +48,21 @@ public class ToppingAdminFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        com.example.coffee_shop_staff_admin.databinding.FragmentToppingAdminBinding fragmentToppingAdminBinding = FragmentToppingAdminBinding.inflate(inflater, container, false);
+        fragmentToppingAdminBinding = FragmentToppingAdminBinding.inflate(inflater, container, false);
+
+        fragmentToppingAdminBinding.setViewModel(toppingAdminViewModel);
+
+        return fragmentToppingAdminBinding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         toppingAdminAdapter.setOnToppingAdminClickListener(listener);
         fragmentToppingAdminBinding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         fragmentToppingAdminBinding.recyclerView.setAdapter(toppingAdminAdapter);
 
-        ToppingAdminViewModel toppingAdminViewModel = new ToppingAdminViewModel();
         ToppingRepository.getInstance().getToppingListMutableLiveData().observe(this, toppings -> {
             toppingAdminViewModel.setLoading(true);
             if (toppings != null) {
@@ -59,8 +70,6 @@ public class ToppingAdminFragment extends Fragment {
                 toppingAdminViewModel.setLoading(false);
             }
         });
-
-        fragmentToppingAdminBinding.setViewModel(toppingAdminViewModel);
 
         fragmentToppingAdminBinding.addButton.setOnClickListener(v -> {
             Intent intent = new Intent(getContext(), ToppingAdminEditActivity.class);
@@ -90,7 +99,5 @@ public class ToppingAdminFragment extends Fragment {
             FoodRepository.getInstance().registerSnapshotListener();
             fragmentToppingAdminBinding.refreshLayout.setRefreshing(false);
         });
-
-        return fragmentToppingAdminBinding.getRoot();
     }
 }

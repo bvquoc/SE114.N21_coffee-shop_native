@@ -31,9 +31,7 @@ import java.util.List;
 public class ProductAdapter extends RecyclerView.Adapter implements Filterable {
     private static final int VIEW_TYPE_EMPTY_STATE = 0;
     private static final int VIEW_TYPE_ITEM_HORIZONTAL = 1;
-    private static final int VIEW_TYPE_ITEM_VERTICAL = 2;
     private final boolean isNeedSearch;
-    private final boolean isVertical;
     private List<Product> products;
     private List<Product> productFilter;
     private OnProductClickListener onProductClickListener;
@@ -47,18 +45,15 @@ public class ProductAdapter extends RecyclerView.Adapter implements Filterable {
         productFilter = productList;
         notifyDataSetChanged();
     }
-    public ProductAdapter(List<Product> products, boolean isVertical) {
-        this.products = products;
-        this.productFilter = products;
-        isNeedSearch = false;
-        this.isVertical = isVertical;
-    }
-    
     public ProductAdapter(List<Product> products) {
         this.products = products;
         this.productFilter = products;
         isNeedSearch = false;
-        isVertical = false;
+    }
+    public ProductAdapter(List<Product> products, boolean isNeedSearch) {
+        this.products = products;
+        this.productFilter = products;
+        this.isNeedSearch = isNeedSearch;
     }
     @NonNull
     @Override
@@ -66,12 +61,9 @@ public class ProductAdapter extends RecyclerView.Adapter implements Filterable {
         if (viewType == VIEW_TYPE_EMPTY_STATE) {
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.can_not_find_state, parent, false);
             return new EmptyProductStateViewHolder(view);
-        } else if (viewType == VIEW_TYPE_ITEM_HORIZONTAL){
+        } else {
             View view  = LayoutInflater.from(parent.getContext()).inflate(R.layout.product_item, parent, false);
             return new ProductItemHorizontalViewHolder(view);
-        } else{
-            View view  = LayoutInflater.from(parent.getContext()).inflate(R.layout.product_item_vertical, parent, false);
-            return new ProductItemVerticalViewHolder(view);
         }
     }
 
@@ -104,73 +96,52 @@ public class ProductAdapter extends RecyclerView.Adapter implements Filterable {
             long diffInDays = Math.round((double) diffInMillis / (24 * 60 * 60 * 1000));
             productItemViewHolder.statusNewTextView.setAlpha(diffInDays < 7?(product.isAvailable()?1.0f:0.4f):0);
 
-            productItemViewHolder.itemView.setOnClickListener(v -> {
-                SharedPreferences prefs =
-                        productItemViewHolder.itemView.getContext().getSharedPreferences(
-                                "recentProducts",
-                                MODE_PRIVATE);
+            if(product.isAvailable())
+            {
+                productItemViewHolder.itemView.setOnClickListener(v -> {
+                    SharedPreferences prefs =
+                            productItemViewHolder.itemView.getContext().getSharedPreferences(
+                                    "recentProducts",
+                                    MODE_PRIVATE);
 
-                Gson gson = new Gson();
+                    Gson gson = new Gson();
 
-                String json = prefs.getString(
-                        "recentProducts", null);
+                    String json = prefs.getString(
+                            "recentProducts", null);
 
-                List<String> recentProducts;
+                    List<String> recentProducts;
 
-                if(json == null)
-                {
-                    recentProducts = new ArrayList<>();
-                }
-                else
-                {
-                    Type type = new TypeToken<ArrayList<String>>() {}.getType();
-                    recentProducts = gson.fromJson(json, type);
-                }
-
-                if(!recentProducts.contains(product.getId())){
-                    if (recentProducts.size() > 8){
-                        recentProducts.remove(0);
+                    if(json == null)
+                    {
+                        recentProducts = new ArrayList<>();
                     }
-                }
-                else{
-                    recentProducts.remove(product.getId());
-                }
-                recentProducts.add(product.getId());
+                    else
+                    {
+                        Type type = new TypeToken<ArrayList<String>>() {}.getType();
+                        recentProducts = gson.fromJson(json, type);
+                    }
 
-                String jsonDone = gson.toJson(recentProducts);
+                    if(!recentProducts.contains(product.getId())){
+                        if (recentProducts.size() > 8){
+                            recentProducts.remove(0);
+                        }
+                    }
+                    else{
+                        recentProducts.remove(product.getId());
+                    }
+                    recentProducts.add(product.getId());
 
-                SharedPreferences.Editor editor = prefs.edit();
-                editor.putString("recentProducts", jsonDone);
-                editor.apply();
-                if(onProductClickListener!=null)
-                {
-                    onProductClickListener.onProductClick(product.getId());
-                }
-            });
-        }
-        else if (holder instanceof ProductItemVerticalViewHolder) {
-            ProductItemVerticalViewHolder productItemViewHolder = (ProductItemVerticalViewHolder) holder;
-            Product product = productFilter.get(position);
+                    String jsonDone = gson.toJson(recentProducts);
 
-            productItemViewHolder.nameTextView.setText(product.getName());
-
-            DecimalFormat formatter = new DecimalFormat("#,##0.##");
-            String formattedPrice = formatter.format(product.getPrice());
-
-            productItemViewHolder.priceTextView.setText(formattedPrice + "đ");
-
-            Glide.with(holder.itemView.getContext())
-                    .load(Uri.parse(product.getImages().get(0)))
-                    .placeholder(R.drawable.img_placeholder)
-                    .error(R.drawable.img_placeholder)
-                    .fitCenter()
-                    .into(productItemViewHolder.productImageView);
-
-            long diffInMillis =  (new Date()).getTime() - product.getDateRegister().getTime();
-            long diffInDays = Math.round((double) diffInMillis / (24 * 60 * 60 * 1000));
-            productItemViewHolder.statusNewImageView.setAlpha(diffInDays < 7?1.0f:0);
-
-            productItemViewHolder.itemView.setOnClickListener(v -> onProductClickListener.onProductClick(product.getId()));
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putString("recentProducts", jsonDone);
+                    editor.apply();
+                    if(onProductClickListener!=null)
+                    {
+                        onProductClickListener.onProductClick(product.getId());
+                    }
+                });
+            }
         }
     }
 
@@ -182,21 +153,11 @@ public class ProductAdapter extends RecyclerView.Adapter implements Filterable {
             }
             else 
             {
-                if(isVertical) {
-                    return VIEW_TYPE_ITEM_VERTICAL;
-                }
-                else {
-                    return VIEW_TYPE_ITEM_HORIZONTAL;
-                }
+                return VIEW_TYPE_ITEM_HORIZONTAL;
             }
         }
         else {
-            if(isVertical) {
-                return VIEW_TYPE_ITEM_VERTICAL;
-            }
-            else {
-                return VIEW_TYPE_ITEM_HORIZONTAL;
-            }
+            return VIEW_TYPE_ITEM_HORIZONTAL;
         }
     }
 
@@ -258,20 +219,6 @@ public class ProductAdapter extends RecyclerView.Adapter implements Filterable {
             productImageView = itemView.findViewById(R.id.product_image);
             statusNewTextView = itemView.findViewById(R.id.status_new);
             statusNotAvailableTextView = itemView.findViewById(R.id.status_not_available_text_view);
-        }
-    }
-    public static class ProductItemVerticalViewHolder extends RecyclerView.ViewHolder{
-        private final TextView nameTextView;
-        private final TextView priceTextView;
-        private final ImageView statusNewImageView;
-        private final ImageView productImageView;
-
-        public ProductItemVerticalViewHolder(@NonNull View itemView) {
-            super(itemView);
-            nameTextView = itemView.findViewById(R.id.name_text_view);
-            priceTextView = itemView.findViewById(R.id.price_text_view);
-            productImageView = itemView.findViewById(R.id.product_image);
-            statusNewImageView = itemView.findViewById(R.id.status_new);
         }
     }
     public static class EmptyProductStateViewHolder extends RecyclerView.ViewHolder{

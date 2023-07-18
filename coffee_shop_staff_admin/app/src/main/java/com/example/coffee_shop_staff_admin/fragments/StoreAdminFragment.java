@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -26,6 +27,8 @@ import com.example.coffee_shop_staff_admin.utils.interfaces.OnStoreAdminClickLis
 import com.example.coffee_shop_staff_admin.viewmodels.StoreAdminViewModel;
 
 public class StoreAdminFragment extends Fragment {
+    private FragmentStoreAdminBinding fragmentStoreAdminBinding;
+    private final StoreAdminViewModel storeAdminViewModel = new StoreAdminViewModel();
     private final StoreAdminAdapter storeAdminAdapter = new StoreAdminAdapter();
     private final Handler handler = new Handler();
     private Runnable searchRunnable;
@@ -47,13 +50,21 @@ public class StoreAdminFragment extends Fragment {
         Toolbar toolbar = requireActivity().findViewById(R.id.my_toolbar);
         toolbar.setTitle("Cửa hàng");
 
-        FragmentStoreAdminBinding fragmentStoreAdminBinding = FragmentStoreAdminBinding.inflate(inflater, container, false);
+        fragmentStoreAdminBinding = FragmentStoreAdminBinding.inflate(inflater, container, false);
 
+        fragmentStoreAdminBinding.setViewModel(storeAdminViewModel);
+
+        return fragmentStoreAdminBinding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         storeAdminAdapter.setOnStoreAdminClickListener(listener);
         fragmentStoreAdminBinding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         fragmentStoreAdminBinding.recyclerView.setAdapter(storeAdminAdapter);
 
-        StoreAdminViewModel storeAdminViewModel = new StoreAdminViewModel();
+
         StoreRepository.getInstance().getStoreListMutableLiveData().observe(this, stores -> {
             storeAdminViewModel.setLoading(true);
             if (stores != null) {
@@ -61,8 +72,6 @@ public class StoreAdminFragment extends Fragment {
                 storeAdminViewModel.setLoading(false);
             }
         });
-
-        fragmentStoreAdminBinding.setViewModel(storeAdminViewModel);
 
         fragmentStoreAdminBinding.addButton.setOnClickListener(v -> {
             Intent intent = new Intent(getContext(), StoreAdminEditActivity.class);
@@ -92,7 +101,5 @@ public class StoreAdminFragment extends Fragment {
             FoodRepository.getInstance().registerSnapshotListener();
             fragmentStoreAdminBinding.refreshLayout.setRefreshing(false);
         });
-
-        return fragmentStoreAdminBinding.getRoot();
     }
 }
