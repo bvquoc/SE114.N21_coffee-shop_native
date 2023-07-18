@@ -25,33 +25,26 @@ public class CartButtonViewModel extends BaseObservable {
         }
         return instance;
     }
-    private CartButtonViewModel(){
+    private CartButtonViewModel() {
         selectedStore.observeForever(store -> {
             ProductRepository.getInstance().registerSnapshotListener(store.getStateFood());
-            if(store!=null)
-            {
+            if (store != null) {
                 setStoreAddress(store.getShortName() + ", " + store.getAddress().getFormattedAddress());
-            }
-            else
-            {
+            } else {
                 setStoreAddress("Chọn cửa hàng");
             }
             changeDistance();
         });
         selectedAddressDelivery.observeForever(addressDelivery -> {
-            if(addressDelivery!=null)
-            {
+            if (addressDelivery != null) {
                 setUserAddress(addressDelivery.getAddress().getFormattedAddress());
                 setNameReceiver(addressDelivery.getNameReceiver());
                 setPhone(addressDelivery.getPhone());
-            }
-            else
-            {
+            } else {
                 setUserAddress("Chọn địa chỉ");
                 String nameReceiver = "Name";
                 String phone = "Phone";
-                if(AuthRepository.getInstance().getCurrentUser()!=null)
-                {
+                if (AuthRepository.getInstance().getCurrentUser() != null) {
                     nameReceiver = AuthRepository.getInstance().getCurrentUser().getName();
                     phone = AuthRepository.getInstance().getCurrentUser().getPhoneNumber();
                 }
@@ -60,7 +53,10 @@ public class CartButtonViewModel extends BaseObservable {
             }
             changeDistance();
         });
-        selectedOrderType.observeForever(orderType -> setDelivering(orderType == OrderType.Delivery));
+        selectedOrderType.observeForever(orderType -> {
+            setDelivering(orderType == OrderType.Delivery);
+            changeDistance();
+        });
         distance.observeForever(aDouble -> {
             DecimalFormat formatter = new DecimalFormat("##0.##");
             String formattedDistance = formatter.format(aDouble);
@@ -68,7 +64,7 @@ public class CartButtonViewModel extends BaseObservable {
         });
         CartViewModel.getInstance().getTotalFood().observeForever(aDouble -> {
             DecimalFormat formatter = new DecimalFormat("#,##0.##");
-            setTotalFoodString(formatter.format(aDouble)+"đ");
+            setTotalFoodString(formatter.format(aDouble) + "đ");
         });
         CartViewModel.getInstance().getCartFoods().observeForever(cartFoods -> {
             int numberFoods = 0;
@@ -95,6 +91,11 @@ public class CartButtonViewModel extends BaseObservable {
     public MutableLiveData<OrderType> getSelectedOrderType() {
         return selectedOrderType;
     }
+
+    public MutableLiveData<Double> getDistance() {
+        return distance;
+    }
+
     @Bindable
     private String storeAddress = "Chọn cửa hàng";
     public String getStoreAddress() {
@@ -236,19 +237,55 @@ public class CartButtonViewModel extends BaseObservable {
 
     public void changeDistance()
     {
-        if(selectedStore.getValue() == null || selectedAddressDelivery.getValue() == null)
+        if(getSelectedOrderType().getValue() == OrderType.Delivery)
         {
-            distance.postValue(-1.0);
-            setNeedToShowDistance(false);
+            if(selectedStore.getValue() != null)
+            {
+                if(selectedAddressDelivery.getValue() != null)
+                {
+                    distance.postValue(LocationHelper.calculateDistance(
+                            selectedStore.getValue().getAddress().getLat(),
+                            selectedStore.getValue().getAddress().getLng(),
+                            selectedAddressDelivery.getValue().getAddress().getLat(),
+                            selectedAddressDelivery.getValue().getAddress().getLng()));
+                    setNeedToShowDistance(true);
+                }
+                else if(LocationHelper.getInstance().getCurrentLocation()!=null)
+                {
+                    distance.postValue(LocationHelper.calculateDistance(
+                            selectedStore.getValue().getAddress().getLat(),
+                            selectedStore.getValue().getAddress().getLng(),
+                            LocationHelper.getInstance().getCurrentLocation().latitude,
+                            LocationHelper.getInstance().getCurrentLocation().longitude));
+                    setNeedToShowDistance(true);
+                }
+                else
+                {
+                    distance.postValue(-1.0);
+                    setNeedToShowDistance(false);
+                }
+            }
+            else
+            {
+                distance.postValue(-1.0);
+                setNeedToShowDistance(false);
+            }
         }
-        else
-        {
-            distance.postValue(LocationHelper.calculateDistance(
-                    selectedStore.getValue().getAddress().getLat(),
-                    selectedStore.getValue().getAddress().getLng(),
-                    selectedAddressDelivery.getValue().getAddress().getLat(),
-                    selectedAddressDelivery.getValue().getAddress().getLng()));
-            setNeedToShowDistance(true);
+        else {
+            if(selectedStore.getValue() == null || LocationHelper.getInstance().getCurrentLocation()==null)
+            {
+                distance.postValue(-1.0);
+                setNeedToShowDistance(false);
+            }
+            else
+            {
+                distance.postValue(LocationHelper.calculateDistance(
+                        selectedStore.getValue().getAddress().getLat(),
+                        selectedStore.getValue().getAddress().getLng(),
+                        LocationHelper.getInstance().getCurrentLocation().latitude,
+                        LocationHelper.getInstance().getCurrentLocation().longitude));
+                setNeedToShowDistance(true);
+            }
         }
     }
 }
