@@ -150,7 +150,7 @@ public class AddNewUserActivity extends AppCompatActivity {
                             addNewUserViewModel.getName() +
                             "\",\"role\":\"" +
                             (addNewUserViewModel.isAddStaff()?"staff":"admin") +
-                            "\",\"staffOf\":\"" +
+                            "\",\"store\":\"" +
                             (addNewUserViewModel.isAddStaff()?addNewUserViewModel.getStoreID():"") +
                             "\"}";
             RequestBody body = RequestBody.create(requestBody, mediaType);

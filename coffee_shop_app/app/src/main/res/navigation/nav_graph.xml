@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/splashFragment">
+
+    <fragment
+        android:id="@+id/splashFragment"
+        android:name="com.example.coffee_shop_app.fragments.SplashFragment"
+        android:label="fragment_splash"
+        tools:layout="@layout/fragment_splash" >
+        <action
+            android:id="@+id/action_splashFragment_to_authActivity2"
+            app:destination="@id/authActivity" />
+        <action
+            android:id="@+id/action_splashFragment_to_mainPageActivity2"
+            app:destination="@id/mainPageActivity" />
+    </fragment>
+    <activity
+        android:id="@+id/authActivity"
+        android:name="com.example.coffee_shop_app.activities.AuthActivity"
+        android:label="activity_auth"
+        tools:layout="@layout/activity_auth" />
+    <activity
+        android:id="@+id/mainPageActivity"
+        android:name="com.example.coffee_shop_app.activities.MainPageActivity"
+        android:label="activity_main_page"
+        tools:layout="@layout/activity_main_page" />
+</navigation>

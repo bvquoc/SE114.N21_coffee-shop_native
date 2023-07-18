@@ -136,7 +136,7 @@
                                 android:layout_gravity="center_vertical"/>
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
-                    <androidx.cardview.widget.CardView
+                   <!--<androidx.cardview.widget.CardView
                         android:id="@+id/notification_card_view"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -192,7 +192,7 @@
                                 android:src="@drawable/ic_chevron_right_24"
                                 android:layout_gravity="center_vertical"/>
                         </LinearLayout>
-                    </androidx.cardview.widget.CardView>
+                    </androidx.cardview.widget.CardView>-->
                 </LinearLayout>
             </androidx.core.widget.NestedScrollView>
         </androidx.constraintlayout.widget.ConstraintLayout>

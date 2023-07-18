@@ -34,5 +34,7 @@
         app:itemBackground="@drawable/bottom_view_background"
         app:labelVisibilityMode="labeled"
         app:itemRippleColor="@color/blueRipple"
+        app:itemTextAppearanceActive="@style/BottomNavigationTextAppearance"
+        app:itemTextAppearanceInactive="@style/BottomNavigationTextAppearance"
         app:menu="@menu/admin_bottom_nav_menu"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

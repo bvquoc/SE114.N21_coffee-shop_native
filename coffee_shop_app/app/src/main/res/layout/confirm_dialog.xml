@@ -40,35 +40,32 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:orientation="horizontal">
-        <androidx.appcompat.widget.AppCompatButton
+        <Button
             android:id="@+id/yes_button"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:textAllCaps="false"
-            android:text="Yes"
-            android:textColor="@color/blue"
-            android:fontFamily="@font/inter_regular"
-            android:textSize="16dp"
-            android:lineSpacingMultiplier="1.5"
-            style="?android:attr/borderlessButtonStyle"
-            android:background="@drawable/button_border_1a94ff_ffffff"/>
+            android:textAppearance="@style/regularBlue14"
+            app:shapeAppearanceOverlay="@style/roundButtonShape"
+            android:stateListAnimator="@null"
+            app:strokeColor="@color/blue"
+            android:text="Yes"/>
         <Space
             android:layout_width="8dp"
             android:layout_height="match_parent"/>
-        <androidx.appcompat.widget.AppCompatButton
+        <Button
             android:id="@+id/no_button"
+            style="@style/Widget.MaterialComponents.Button"
             android:layout_weight="1"
             android:layout_width="0dp"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:textAllCaps="false"
-            android:text="No"
-            android:textColor="@color/white"
-            android:fontFamily="@font/inter_regular"
-            android:textSize="16dp"
-            android:lineSpacingMultiplier="1.5"
-            style="?android:attr/borderlessButtonStyle"
-            android:background="@drawable/button_border_none_1a94ff"/>
+            android:textAppearance="@style/regularBlue14"
+            app:shapeAppearanceOverlay="@style/roundButtonShape"
+            android:stateListAnimator="@null"
+            android:text="No"/>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

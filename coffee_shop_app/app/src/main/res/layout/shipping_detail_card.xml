@@ -58,53 +58,67 @@
                 android:layout_marginVertical="@dimen/_8sdp"
                 android:background="@color/divider" />
 
-            <RelativeLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_height="wrap_content">
 
                 <ImageView
                     android:id="@+id/icon_location"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="@dimen/_10sdp"
-                    android:src="@drawable/baseline_location_on_24" />
+                    android:src="@drawable/baseline_location_on_24"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/toTxt"
                     style="@style/regularBlack14"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_toRightOf="@id/icon_location"
-                    android:text="Đến" />
+                    android:layout_marginStart="@dimen/_10sdp"
+                    android:text="Đến"
+                    app:layout_constraintStart_toEndOf="@id/icon_location"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/txtToAddress"
                     style="@style/boldBlack14"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/toTxt"
+                    android:layout_marginStart="@dimen/_10sdp"
                     android:layout_marginTop="@dimen/_4sdp"
-                    android:layout_toRightOf="@id/icon_location"
-                    android:text="285 CMT8, D.10, HCM city" />
+                    android:text="285 CMT8, D.10, HCM city"
+                    app:layout_constraintEnd_toStartOf="@id/icon_address_chevron"
+                    app:layout_constraintStart_toEndOf="@id/icon_location"
+                    app:layout_constraintTop_toBottomOf="@id/toTxt" />
 
                 <TextView
+                    android:id="@+id/txtNamePhone"
                     style="@style/regularGrey12"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/txtToAddress"
+                    android:layout_marginStart="@dimen/_10sdp"
                     android:layout_marginTop="@dimen/_4sdp"
-                    android:layout_toRightOf="@id/icon_location"
-                    android:text="Nick • 0969696969" />
+                    android:text="Nick • 0969696969"
+                    app:layout_constraintEnd_toStartOf="@id/icon_address_chevron"
+                    app:layout_constraintStart_toEndOf="@id/icon_location"
+                    app:layout_constraintTop_toBottomOf="@id/txtToAddress" />
 
                 <ImageView
-                    android:layout_width="@dimen/_30sdp"
-                    android:layout_height="@dimen/_30sdp"
+                    android:id="@+id/icon_address_chevron"
+                    android:layout_width="@dimen/_24sdp"
+                    android:layout_height="@dimen/_24sdp"
                     android:layout_alignParentRight="true"
                     android:layout_centerInParent="true"
-                    android:layout_marginRight="@dimen/_10sdp"
-                    android:src="@drawable/baseline_chevron_right_24" />
-            </RelativeLayout>
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:src="@drawable/baseline_chevron_right_24"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

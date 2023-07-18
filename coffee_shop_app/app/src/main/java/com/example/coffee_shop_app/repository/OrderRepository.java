@@ -68,7 +68,8 @@ public class OrderRepository {
             listenerRegistration.remove();
         }
         //TODO: get order by current user
-        listenerRegistration = firestore.collection("beorders").addSnapshotListener(new EventListener<QuerySnapshot>() {
+        listenerRegistration = firestore.collection("beorders").whereEqualTo("user", AuthRepository.getInstance().getCurrentUser().getId())
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 Log.d(TAG, "get order started.");

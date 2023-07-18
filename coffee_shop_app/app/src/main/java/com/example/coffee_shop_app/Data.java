@@ -7,12 +7,14 @@ import com.example.coffee_shop_app.models.Size;
 import com.example.coffee_shop_app.models.Topping;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 public class Data {
     public static Data instance = new Data();
     public String userId = "5BPFiFycnWOJFv9OutOX11gXqHw2";
+    public Date createAt;
     public List<Product> products = new ArrayList<Product>();
     public List<Product> favoriteProducts =new ArrayList<Product>();
     public List<Size> sizes = new ArrayList<>();
@@ -20,5 +22,9 @@ public class Data {
     public List<Topping> toppings = new ArrayList<>();
 
     private Data() {
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2023, Calendar.JULY, 14);
+        createAt = calendar.getTime();
     }
 }

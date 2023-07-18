@@ -23,8 +23,8 @@ import java.util.List;
 public class ToppingAdminAdapter extends RecyclerView.Adapter implements Filterable {
     private static final int VIEW_TYPE_EMPTY_STATE = 0;
     private static final int VIEW_TYPE_ITEM = 1;
-    private List<Topping> toppings = new ArrayList<Topping>();
-    private List<Topping> toppingFilter = new ArrayList<Topping>();
+    private List<Topping> toppings = new ArrayList<>();
+    private List<Topping> toppingFilter = new ArrayList<>();
 
     private OnToppingAdminClickListener onToppingAdminClickListener;
 
@@ -96,14 +96,12 @@ public class ToppingAdminAdapter extends RecyclerView.Adapter implements Filtera
 
             Glide.with(holder.itemView.getContext())
                     .load(topping.getImage())
+                    .placeholder(R.drawable.img_placeholder)
+                    .error(R.drawable.img_placeholder)
                     .into(toppingItemViewHolder.toppingImageView);
 
-            toppingItemViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onToppingAdminClickListener.onToppingAdminClickListener(topping.getId());
-                }
-            });
+            toppingItemViewHolder.itemView.setOnClickListener(
+                    v -> onToppingAdminClickListener.onToppingAdminClickListener(topping.getId()));
         }
     }
 
@@ -130,17 +128,15 @@ public class ToppingAdminAdapter extends RecyclerView.Adapter implements Filtera
         }
     }
     public static class ToppingItemViewHolder extends RecyclerView.ViewHolder{
-        private TextView nameTextView;
-        private TextView priceTextView;
-        private ImageView toppingImageView;
+        private final TextView nameTextView;
+        private final TextView priceTextView;
+        private final ImageView toppingImageView;
 
-        private View itemView;
         public ToppingItemViewHolder(@NonNull View itemView) {
             super(itemView);
             nameTextView = itemView.findViewById(R.id.name_text_view);
             priceTextView = itemView.findViewById(R.id.price_text_view);
             toppingImageView = itemView.findViewById(R.id.topping_image);
-            this.itemView = itemView;
         }
     }
     public static class EmptyProductStateViewHolder extends RecyclerView.ViewHolder{

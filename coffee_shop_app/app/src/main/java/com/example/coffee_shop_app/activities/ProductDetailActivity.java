@@ -23,6 +23,7 @@ import com.example.coffee_shop_app.models.Product;
 import com.example.coffee_shop_app.models.Size;
 import com.example.coffee_shop_app.models.Store;
 import com.example.coffee_shop_app.models.Topping;
+import com.example.coffee_shop_app.repository.AuthRepository;
 import com.example.coffee_shop_app.repository.ProductRepository;
 import com.example.coffee_shop_app.repository.SizeRepository;
 import com.example.coffee_shop_app.repository.ToppingRepository;
@@ -58,6 +59,7 @@ public class ProductDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activityProductDetailBinding = DataBindingUtil.setContentView(this, R.layout.activity_product_detail);
+        activityProductDetailBinding = DataBindingUtil.setContentView(this, R.layout.activity_product_detail);
 
         Toolbar toolbar = findViewById(R.id.my_toolbar);
         toolbar.setTitle("");
@@ -70,7 +72,6 @@ public class ProductDetailActivity extends AppCompatActivity {
         });
 
         String prdId = ProductDetailActivity.this.getIntent().getStringExtra("productId");
-
         ProductRepository.getInstance().getProductListMutableLiveData().observe(this, new Observer<List<Product>>() {
             @Override
             public void onChanged(List<Product> products) {
@@ -86,7 +87,6 @@ public class ProductDetailActivity extends AppCompatActivity {
                     }
                 }
                 activityProductDetailBinding.setIsLoading(false);
-
             }
         });
     }
@@ -102,7 +102,7 @@ public class ProductDetailActivity extends AppCompatActivity {
                 }
             }
         });
-        viewModel=new ProductDetailViewModel(new CartFood(product, null, 0));
+        viewModel=new ProductDetailViewModel(new CartFood(product, null, 0), product.isFavorite());
         viewModel.setFavorite(product.isFavorite());
         activityProductDetailBinding.setViewModel(viewModel);
         setImageViewPager(product.getImages().toArray(new String[0]));
@@ -161,8 +161,6 @@ public class ProductDetailActivity extends AppCompatActivity {
         return super.dispatchKeyEvent(event);
     }
     private void init() {
-        activityProductDetailBinding.setIsLoading(true);
-
         activityProductDetailBinding.productCard.txtName.setVisibility(View.VISIBLE);
         activityProductDetailBinding.productCard.txtPrice.setVisibility(View.VISIBLE);
         activityProductDetailBinding.productCard.description.setVisibility(View.VISIBLE);
@@ -191,7 +189,7 @@ public class ProductDetailActivity extends AppCompatActivity {
             public void onClick(View v) {
                 boolean isAdded=false;
                 SqliteHelper repo=new SqliteHelper(ProductDetailActivity.this);
-                ArrayList<CartFood> items= repo.getCartFood(Data.instance.userId);
+                ArrayList<CartFood> items= repo.getCartFood(AuthRepository.getInstance().getCurrentUser().getId());
                 CartFood cartFoodToAdd=viewModel.getCartFood();
                 for (CartFood item :
                         items) {
@@ -208,11 +206,12 @@ public class ProductDetailActivity extends AppCompatActivity {
                 if(!isAdded) {
                     repo.createCartFood(viewModel.getCartFood());
                 }
-//                CartViewModel.getInstance().getCartFoods().setValue(repo.getCartFood(Data.instance.userId));
+                CartViewModel.getInstance()
+                        .getCartFoods()
+                        .setValue(repo.getCartFood(AuthRepository.getInstance().getCurrentUser().getId()));
                 finish();
             }
         });
-        activityProductDetailBinding.setIsLoading(false);
     }
 
     private void setImageViewPager(String[] images) {

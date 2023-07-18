@@ -45,6 +45,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:padding="@dimen/_8sdp"
+            android:clickable="true"
             android:background="@{viewModel.delivering?@color/blueBackground:@color/white}">
             <ImageView
                 android:layout_width="@dimen/_40sdp"
@@ -80,7 +81,7 @@
                         android:maxLines="1"
                         android:ellipsize="end"
                         style="@style/regularBlack14"
-                        android:layout_marginRight="@dimen/_2sdp"/>
+                        android:layout_marginRight="@dimen/_4sdp"/>
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -115,6 +116,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:padding="@dimen/_8sdp"
+            android:clickable="true"
             android:background="@{viewModel.delivering?@color/white:@color/blueBackground}">
             <ImageView
                 android:layout_width="@dimen/_40sdp"
@@ -145,7 +147,8 @@
                    android:text="@{viewModel.distanceString}"
                    android:maxLines="1"
                    android:ellipsize="end"
-                   style="@style/regularBlack14"/>
+                   style="@style/regularBlack14"
+                   android:visibility="@{viewModel.needToShowDistance?View.VISIBLE:View.GONE}"/>
             </LinearLayout>
             <Button
                 android:id="@+id/pick_up_edit_button"

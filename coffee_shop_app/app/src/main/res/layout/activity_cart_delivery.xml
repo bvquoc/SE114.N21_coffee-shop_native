@@ -35,6 +35,7 @@
                 android:layout_height="wrap_content">
 
                 <TextView
+                    android:layout_marginBottom="@dimen/_8sdp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Thông tin vận chuyển"
@@ -52,6 +53,9 @@
                     style="@style/boldBlack16" />
 
                 <include android:id="@+id/orderDetails" layout="@layout/order_details" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_16sdp"/>
             </LinearLayout>
         </ScrollView>
 
@@ -83,17 +87,22 @@
                         android:src="@drawable/baseline_discount_24" />
 
                     <TextView
+                        android:id="@+id/txtUsePromo"
                         android:layout_marginLeft="10dp"
                         android:layout_toRightOf="@id/discountImage"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/su_dung_mgg"
                         style="@style/boldBlack14"/>
+
                     <ImageView
+                        android:minWidth="@dimen/_24sdp"
+                        android:minHeight="@dimen/_24sdp"
                         android:id="@+id/btnApplyChevron"
-                        android:layout_alignParentRight="true"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:background="?selectableItemBackgroundBorderless"
                         android:clickable="true"
                         android:focusable="true"
                         android:src="@drawable/baseline_chevron_right_24" />

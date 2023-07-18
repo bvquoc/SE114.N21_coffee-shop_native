@@ -19,7 +19,11 @@
         android:layout_height="match_parent"
         android:background="@color/background"
         tools:context=".activities.ProductDetailActivity">
-
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="@{isLoading?View.GONE:View.VISIBLE, default=visible}"
+            android:background="@color/background">
         <include
             android:id="@+id/my_toolbar"
             layout="@layout/custom_toolbar"
@@ -231,14 +235,19 @@
                     app:backgroundTint="@null" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
-        <ProgressBar
-            android:layout_width="@dimen/_25sdp"
-            android:layout_height="@dimen/_25sdp"
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:visibility="@{isLoading?View.VISIBLE:View.GONE, default=gone}"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <com.facebook.shimmer.ShimmerFrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <include layout="@layout/product_detail_skeleton"
+                    />
+            </com.facebook.shimmer.ShimmerFrameLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -27,7 +27,7 @@
         tools:layout="@layout/fragment_order" />
     <fragment
         android:id="@+id/profileFragment"
-        android:name="com.example.coffee_shop_app.fragments.ProfileFragment"
+        android:name="com.example.coffee_shop_app.fragments.profile.ProfileFragment"
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile" />
 </navigation>

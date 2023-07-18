@@ -10,11 +10,15 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <activity
+            android:name=".activities.OrderDetailActivity"
+            android:exported="false" />
         <activity
             android:name=".activities.AddNewUserActivity"
             android:exported="false"
-            android:windowSoftInputMode="adjustResize"/>
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".activities.ChooseStoreActivity"
             android:exported="false" />
@@ -31,6 +35,10 @@
         <activity
             android:name=".activities.PromoAdminDetailActivity"
             android:exported="false" />
+        <activity
+            android:name=".activities.StoreManageActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan"/>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -52,10 +60,10 @@
         <activity
             android:name=".activities.SizeAdminEditActivity"
             android:exported="false"
-            android:windowSoftInputMode="adjustResize"/>
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".activities.SizeAdminDetailActivity"
-            android:exported="false"/>
+            android:exported="false" />
         <activity
             android:name=".activities.ToppingAdminDetailActivity"
             android:exported="false" />
@@ -67,11 +75,13 @@
             android:name=".activities.MainPageAdminActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustPan">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+             <intent-filter>
+             <action android:name="android.intent.action.MAIN" />
+
+
+             <category android:name="android.intent.category.LAUNCHER" />
+             </intent-filter>
         </activity>
     </application>
 

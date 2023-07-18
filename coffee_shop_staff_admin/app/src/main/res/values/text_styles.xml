@@ -120,4 +120,8 @@
         <item name="android:textSize">@dimen/font10</item>
         <item name="android:textColor">@color/white</item>
     </style>
+    <style name="BottomNavigationTextAppearance">
+        <item name="android:textSize">@dimen/font12</item>
+        <item name="fontFamily">@font/inter_regular</item>
+    </style>
 </resources>

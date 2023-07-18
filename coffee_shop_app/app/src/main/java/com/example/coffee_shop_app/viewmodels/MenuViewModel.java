@@ -46,6 +46,8 @@ public class MenuViewModel extends BaseObservable {
                         otherList.add(product);
                     }
                 }
+                favoriteProducts.postValue(favoriteList);
+                otherProducts.postValue(otherList);
                 if(favoriteList.size() != 0)
                 {
                     setHasFavoriteFood(true);
@@ -63,8 +65,6 @@ public class MenuViewModel extends BaseObservable {
                 {
                     setHasOtherFood(false);
                 }
-                favoriteProducts.postValue(favoriteList);
-                otherProducts.postValue(otherList);
                 setLoading(false);
             }
         });

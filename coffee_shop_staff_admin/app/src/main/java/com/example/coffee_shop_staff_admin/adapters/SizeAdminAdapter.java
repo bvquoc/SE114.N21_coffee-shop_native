@@ -24,7 +24,7 @@ public class SizeAdminAdapter extends RecyclerView.Adapter implements Filterable
     private static final int VIEW_TYPE_EMPTY_STATE = 0;
     private static final int VIEW_TYPE_ITEM = 1;
     private List<Size> sizes = new ArrayList<Size>();
-    private List<Size> sizeFilter = new ArrayList<Size>();
+    private List<Size> sizeFilter = new ArrayList<>();
 
     private OnSizeAdminClickListener onSizeAdminClickListener;
 
@@ -95,14 +95,12 @@ public class SizeAdminAdapter extends RecyclerView.Adapter implements Filterable
 
             Glide.with(holder.itemView.getContext())
                     .load(size.getImage())
+                    .placeholder(R.drawable.img_placeholder)
+                    .error(R.drawable.img_placeholder)
                     .into(sizeItemViewHolder.sizeImageView);
 
-            sizeItemViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onSizeAdminClickListener.onSizeAdminClickListener(size.getId());
-                }
-            });
+            sizeItemViewHolder.itemView.setOnClickListener(
+                    v -> onSizeAdminClickListener.onSizeAdminClickListener(size.getId()));
         }
     }
 
@@ -129,17 +127,15 @@ public class SizeAdminAdapter extends RecyclerView.Adapter implements Filterable
         }
     }
     public static class SizeItemViewHolder extends RecyclerView.ViewHolder{
-        private TextView nameTextView;
-        private TextView priceTextView;
-        private ImageView sizeImageView;
+        private final TextView nameTextView;
+        private final TextView priceTextView;
+        private final ImageView sizeImageView;
 
-        private View itemView;
         public SizeItemViewHolder(@NonNull View itemView) {
             super(itemView);
             nameTextView = itemView.findViewById(R.id.name_text_view);
             priceTextView = itemView.findViewById(R.id.price_text_view);
             sizeImageView = itemView.findViewById(R.id.size_image);
-            this.itemView = itemView;
         }
     }
     public static class EmptyProductStateViewHolder extends RecyclerView.ViewHolder{

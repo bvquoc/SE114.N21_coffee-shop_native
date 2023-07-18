@@ -47,6 +47,7 @@
                     style="@style/boldBlack14" />
 
                 <TextView
+                    android:visibility="gone"
                     android:id="@+id/txtShipStr"
                     android:layout_marginTop="@dimen/_16sdp"
                     android:layout_width="wrap_content"
@@ -56,6 +57,7 @@
                     style="@style/regularBlack14" />
 
                 <TextView
+                    android:visibility="gone"
                     android:id="@+id/txtShip"
                     android:layout_alignParentRight="true"
                     android:layout_marginTop="@dimen/_16sdp"
@@ -63,6 +65,27 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/txtPrice"
                     android:text="15.000 ₫"
+                    style="@style/boldBlack14" />
+                <TextView
+                    android:visibility="gone"
+                    android:id="@+id/txtPromo"
+                    android:layout_marginTop="@dimen/_16sdp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/txtShipStr"
+                    android:text="Giảm giá từ cửa hàng"
+                    style="@style/regularBlack14" />
+
+                <TextView
+                    android:visibility="gone"
+                    android:textColor="@color/green"
+                    android:id="@+id/txtPromoPricr"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginTop="@dimen/_16sdp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/txtShipStr"
+                    android:text="- 15.000 ₫"
                     style="@style/boldBlack14" />
             </RelativeLayout>
 

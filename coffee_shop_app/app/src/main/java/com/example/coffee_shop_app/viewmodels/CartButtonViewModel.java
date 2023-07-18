@@ -1,17 +1,14 @@
 package com.example.coffee_shop_app.viewmodels;
 
-import androidx.annotation.NonNull;
 import androidx.databinding.BaseObservable;
 import androidx.databinding.Bindable;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
 
 import com.example.coffee_shop_app.BR;
-import com.example.coffee_shop_app.models.Address;
 import com.example.coffee_shop_app.models.AddressDelivery;
+import com.example.coffee_shop_app.models.CartFood;
 import com.example.coffee_shop_app.models.Store;
+import com.example.coffee_shop_app.repository.AuthRepository;
 import com.example.coffee_shop_app.repository.ProductRepository;
 import com.example.coffee_shop_app.utils.LocationHelper;
 
@@ -28,59 +25,61 @@ public class CartButtonViewModel extends BaseObservable {
         }
         return instance;
     }
-    private CartButtonViewModel(){
-        selectedStore.observeForever(new Observer<Store>() {
-            @Override
-            public void onChanged(Store store) {
-                ProductRepository.getInstance().registerSnapshotListener(store.getStateFood());
-                if(store!=null)
-                {
-                    setStoreAddress(store.getShortName() + ", " + store.getAddress().getFormattedAddress());
-                }
-                else
-                {
-                    setStoreAddress("Chọn cửa hàng");
-                }
-                changeDistance();
+    private CartButtonViewModel() {
+        selectedStore.observeForever(store -> {
+            ProductRepository.getInstance().registerSnapshotListener(store.getStateFood());
+            if (store != null) {
+                setStoreAddress(store.getShortName() + ", " + store.getAddress().getFormattedAddress());
+            } else {
+                setStoreAddress("Chọn cửa hàng");
             }
+            changeDistance();
         });
-        selectedAddressDelivery.observeForever(new Observer<AddressDelivery>() {
-            @Override
-            public void onChanged(AddressDelivery addressDelivery) {
-                if(addressDelivery!=null)
-                {
-                    setUserAddress(addressDelivery.getAddress().getFormattedAddress());
-                    setNameReceiver(addressDelivery.getNameReceiver());
-                    setPhone(addressDelivery.getPhone());
+        selectedAddressDelivery.observeForever(addressDelivery -> {
+            if (addressDelivery != null) {
+                setUserAddress(addressDelivery.getAddress().getFormattedAddress());
+                setNameReceiver(addressDelivery.getNameReceiver());
+                setPhone(addressDelivery.getPhone());
+            } else {
+                setUserAddress("Chọn địa chỉ");
+                String nameReceiver = "Name";
+                String phone = "Phone";
+                if (AuthRepository.getInstance().getCurrentUser() != null) {
+                    nameReceiver = AuthRepository.getInstance().getCurrentUser().getName();
+                    phone = AuthRepository.getInstance().getCurrentUser().getPhoneNumber();
                 }
-                else
-                {
-                    setUserAddress("Chọn địa chỉ");
-                    setNameReceiver("Nick");
-                    setPhone("0123456789");
-                }
-                changeDistance();
+                setNameReceiver(nameReceiver);
+                setPhone(phone);
             }
+            changeDistance();
         });
-        selectedOrderType.observeForever(new Observer<OrderType>() {
-            @Override
-            public void onChanged(OrderType orderType) {
-                if(orderType == OrderType.Delivery)
-                {
-                    setDelivering(true);
-                }
-                else
-                {
-                    setDelivering(false);
-                }
+        selectedOrderType.observeForever(orderType -> {
+            setDelivering(orderType == OrderType.Delivery);
+            changeDistance();
+        });
+        distance.observeForever(aDouble -> {
+            DecimalFormat formatter = new DecimalFormat("##0.##");
+            String formattedDistance = formatter.format(aDouble);
+            setDistanceString(formattedDistance + "km");
+        });
+        CartViewModel.getInstance().getTotalFood().observeForever(aDouble -> {
+            DecimalFormat formatter = new DecimalFormat("#,##0.##");
+            setTotalFoodString(formatter.format(aDouble) + "đ");
+        });
+        CartViewModel.getInstance().getCartFoods().observeForever(cartFoods -> {
+            int numberFoods = 0;
+            for (CartFood cartFood : cartFoods) {
+                numberFoods += cartFood.getQuantity();
             }
+            setNumberFoodString(String.valueOf(numberFoods));
+            setHasFoodInCart(cartFoods.size() != 0);
         });
     }
 
-    private MutableLiveData<Store> selectedStore = new MutableLiveData<Store>();
-    private MutableLiveData<AddressDelivery> selectedAddressDelivery = new MutableLiveData<AddressDelivery>();
-    private MutableLiveData<OrderType> selectedOrderType = new MutableLiveData<OrderType>();
-
+    private final MutableLiveData<Store> selectedStore = new MutableLiveData<>();
+    private final MutableLiveData<AddressDelivery> selectedAddressDelivery = new MutableLiveData<>();
+    private final MutableLiveData<OrderType> selectedOrderType = new MutableLiveData<>(OrderType.Delivery);
+    private final MutableLiveData<Double> distance = new MutableLiveData<>(0.0);
     public MutableLiveData<Store> getSelectedStore() {
         return selectedStore;
     }
@@ -91,6 +90,10 @@ public class CartButtonViewModel extends BaseObservable {
 
     public MutableLiveData<OrderType> getSelectedOrderType() {
         return selectedOrderType;
+    }
+
+    public MutableLiveData<Double> getDistance() {
+        return distance;
     }
 
     @Bindable
@@ -118,9 +121,20 @@ public class CartButtonViewModel extends BaseObservable {
 
 
     @Bindable
-    private String nameReceiver = "Nick";
+    private String nameReceiver = null;
 
     public String getNameReceiver() {
+        if(nameReceiver == null)
+        {
+            if(AuthRepository.getInstance().getCurrentUser()!=null)
+            {
+                nameReceiver = AuthRepository.getInstance().getCurrentUser().getName();
+            }
+            else
+            {
+                nameReceiver = "Name";
+            }
+        }
         return nameReceiver;
     }
 
@@ -130,9 +144,20 @@ public class CartButtonViewModel extends BaseObservable {
     }
 
     @Bindable
-    private String phone = "0123456789";
+    private String phone = null;
 
     public String getPhone() {
+        if(phone == null)
+        {
+            if(AuthRepository.getInstance().getCurrentUser()!=null)
+            {
+                phone = AuthRepository.getInstance().getCurrentUser().getPhoneNumber();
+            }
+            else
+            {
+                phone = "Phone";
+            }
+        }
         return phone;
     }
 
@@ -148,24 +173,54 @@ public class CartButtonViewModel extends BaseObservable {
         return delivering;
     }
 
-    public void setDelivering(boolean delivering) {
+    private void setDelivering(boolean delivering) {
         this.delivering = delivering;
         notifyPropertyChanged(BR.delivering);
     }
 
-    @Bindable
-    private double distance = -1;
-    public double getDistance()
-    {
-        return distance;
+    @Bindable String totalFoodString = "0đ";
+
+    public String getTotalFoodString() {
+        return totalFoodString;
     }
 
-    public void setDistance(double distance) {
-        this.distance = distance;
-        DecimalFormat formatter = new DecimalFormat("##0.##");
-        String formattedDistance = formatter.format(distance);
-        setDistanceString(formattedDistance + "km");
-        notifyPropertyChanged(BR.distance);
+    public void setTotalFoodString(String totalFoodString) {
+        this.totalFoodString = totalFoodString;
+        notifyPropertyChanged(BR.totalFoodString);
+    }
+
+    @Bindable
+    private boolean hasFoodInCart = false;
+
+    public boolean isHasFoodInCart() {
+        return hasFoodInCart;
+    }
+
+    public void setHasFoodInCart(boolean hasFoodInCart) {
+        this.hasFoodInCart = hasFoodInCart;
+        notifyPropertyChanged(BR.hasFoodInCart);
+    }
+
+    @Bindable String numberFoodString = "0";
+
+    public String getNumberFoodString() {
+        return numberFoodString;
+    }
+
+    public void setNumberFoodString(String numberFoodString) {
+        this.numberFoodString = numberFoodString;
+        notifyPropertyChanged(BR.numberFoodString);
+    }
+    @Bindable
+    private boolean needToShowDistance = false;
+
+    public boolean isNeedToShowDistance() {
+        return needToShowDistance;
+    }
+
+    public void setNeedToShowDistance(boolean needToShowDistance) {
+        this.needToShowDistance = needToShowDistance;
+        notifyPropertyChanged(BR.needToShowDistance);
     }
 
     @Bindable
@@ -177,21 +232,60 @@ public class CartButtonViewModel extends BaseObservable {
 
     public void setDistanceString(String distanceString) {
         this.distanceString = distanceString;
+        notifyPropertyChanged(BR.distanceString);
     }
 
     public void changeDistance()
     {
-        if(selectedStore.getValue() == null || selectedAddressDelivery.getValue() == null)
+        if(getSelectedOrderType().getValue() == OrderType.Delivery)
         {
-            setDistance(-1);
+            if(selectedStore.getValue() != null)
+            {
+                if(selectedAddressDelivery.getValue() != null)
+                {
+                    distance.postValue(LocationHelper.calculateDistance(
+                            selectedStore.getValue().getAddress().getLat(),
+                            selectedStore.getValue().getAddress().getLng(),
+                            selectedAddressDelivery.getValue().getAddress().getLat(),
+                            selectedAddressDelivery.getValue().getAddress().getLng()));
+                    setNeedToShowDistance(true);
+                }
+                else if(LocationHelper.getInstance().getCurrentLocation()!=null)
+                {
+                    distance.postValue(LocationHelper.calculateDistance(
+                            selectedStore.getValue().getAddress().getLat(),
+                            selectedStore.getValue().getAddress().getLng(),
+                            LocationHelper.getInstance().getCurrentLocation().latitude,
+                            LocationHelper.getInstance().getCurrentLocation().longitude));
+                    setNeedToShowDistance(true);
+                }
+                else
+                {
+                    distance.postValue(-1.0);
+                    setNeedToShowDistance(false);
+                }
+            }
+            else
+            {
+                distance.postValue(-1.0);
+                setNeedToShowDistance(false);
+            }
         }
-        else
-        {
-            setDistance(LocationHelper.calculateDistance(
-                    selectedStore.getValue().getAddress().getLat(),
-                    selectedStore.getValue().getAddress().getLng(),
-                    selectedAddressDelivery.getValue().getAddress().getLat(),
-                    selectedAddressDelivery.getValue().getAddress().getLng()));
+        else {
+            if(selectedStore.getValue() == null || LocationHelper.getInstance().getCurrentLocation()==null)
+            {
+                distance.postValue(-1.0);
+                setNeedToShowDistance(false);
+            }
+            else
+            {
+                distance.postValue(LocationHelper.calculateDistance(
+                        selectedStore.getValue().getAddress().getLat(),
+                        selectedStore.getValue().getAddress().getLng(),
+                        LocationHelper.getInstance().getCurrentLocation().latitude,
+                        LocationHelper.getInstance().getCurrentLocation().longitude));
+                setNeedToShowDistance(true);
+            }
         }
     }
 }

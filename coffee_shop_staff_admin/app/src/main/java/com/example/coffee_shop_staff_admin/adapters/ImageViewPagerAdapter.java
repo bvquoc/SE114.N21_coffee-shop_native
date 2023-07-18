@@ -7,17 +7,15 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
-import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.coffee_shop_staff_admin.R;
-import com.example.coffee_shop_staff_admin.databinding.ImageItemBinding;
 
 import java.util.List;
 
 public class ImageViewPagerAdapter extends RecyclerView.Adapter<ImageViewPagerAdapter.ImageViewHolder> {
-    private List<String> images;
+    private final List<String> images;
 
     public ImageViewPagerAdapter(List<String> images) {
         this.images = images;
@@ -36,6 +34,8 @@ public class ImageViewPagerAdapter extends RecyclerView.Adapter<ImageViewPagerAd
 
         Glide.with(holder.itemView.getContext())
                 .load(Uri.parse(image))
+                .placeholder(R.drawable.img_placeholder)
+                .error(R.drawable.img_placeholder)
                 .into(holder.imageView);
     }
 
@@ -44,8 +44,8 @@ public class ImageViewPagerAdapter extends RecyclerView.Adapter<ImageViewPagerAd
         return images.size();
     }
 
-    public class ImageViewHolder extends RecyclerView.ViewHolder{
-        private ImageView imageView;
+    public static class ImageViewHolder extends RecyclerView.ViewHolder{
+        private final ImageView imageView;
 
         public ImageViewHolder(@NonNull View itemView) {
             super(itemView);

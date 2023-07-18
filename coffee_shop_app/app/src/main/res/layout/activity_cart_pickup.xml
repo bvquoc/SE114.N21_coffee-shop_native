@@ -48,6 +48,9 @@
 
                 <include android:id="@+id/orderDetails"
                     layout="@layout/order_details" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_16sdp"/>
             </LinearLayout>
         </ScrollView>
 
@@ -154,6 +157,7 @@
                         android:src="@drawable/baseline_discount_24" />
 
                     <TextView
+                        android:id="@+id/txtUsePromo"
                         android:layout_marginLeft="10dp"
                         android:layout_toRightOf="@id/discountImage"
                         android:layout_width="wrap_content"

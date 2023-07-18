@@ -2,6 +2,7 @@ package com.example.coffee_shop_app.viewmodels;
 
 import android.os.Handler;
 
+import androidx.annotation.NonNull;
 import androidx.databinding.BaseObservable;
 import androidx.databinding.Bindable;
 import androidx.lifecycle.MutableLiveData;
@@ -13,18 +14,19 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.squareup.okhttp.Callback;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
-import com.squareup.okhttp.ResponseBody;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+
 public class MapViewModel extends BaseObservable {
     public MapViewModel(){}
-    private Handler handler = new Handler();
+    private final Handler handler = new Handler();
     private Runnable searchRunable;
     @Bindable
     private Boolean isLoading = true;
@@ -62,7 +64,7 @@ public class MapViewModel extends BaseObservable {
     }
 
     @Bindable
-    private MutableLiveData<LatLng> selectedLatLng = new MutableLiveData<>();
+    private final MutableLiveData<LatLng> selectedLatLng = new MutableLiveData<>();
 
     public MutableLiveData<LatLng> getSelectedLatLng() {
         return selectedLatLng;
@@ -89,57 +91,52 @@ public class MapViewModel extends BaseObservable {
         searchText = s.toString();
         if(searchText.isEmpty())
         {
-            suggestLocationList.postValue(new ArrayList<MLocation>());
+            suggestLocationList.postValue(new ArrayList<>());
             return;
         }
 
-        searchRunable = new Runnable() {
+        searchRunable = () -> LocationAPI.getLocationResponse(searchText, new Callback() {
             @Override
-            public void run() {
-                LocationAPI.getLocationResponse(searchText, new Callback() {
-                    @Override
-                    public void onFailure(Request request, IOException e) {
-                        suggestLocationList.postValue(null);
-                    }
-
-                    @Override
-                    public void onResponse(Response response) {
-                        try
+            public void onResponse(@NonNull Call call, @NonNull Response response) {
+                try
+                {
+                    if(response.isSuccessful())
+                    {
+                        ResponseBody responseBody = response.body();
+                        if(responseBody!=null)
                         {
-                            if(response.isSuccessful())
+                            String responseJson = responseBody.string();
+
+                            Gson gson = new Gson();
+                            JsonObject responseObj = gson.fromJson(responseJson, JsonObject.class);
+                            JsonArray featuresArray = responseObj.getAsJsonArray("features");
+                            List<MLocation> locationList = new ArrayList<>();
+                            for(int i = 0; i < featuresArray.size(); i++)
                             {
-                                ResponseBody responseBody = response.body();
-                                if(responseBody!=null)
-                                {
-                                    String responseJson = responseBody.string();
-
-                                    Gson gson = new Gson();
-                                    JsonObject responseObj = gson.fromJson(responseJson, JsonObject.class);
-                                    JsonArray featuresArray = responseObj.getAsJsonArray("features");
-                                    List<MLocation> locationList = new ArrayList<MLocation>();
-                                    for(int i = 0; i < featuresArray.size(); i++)
-                                    {
-                                        JsonObject featureObj = featuresArray.get(i).getAsJsonObject();
-                                        locationList.add(MLocation.fromJson(featureObj));
-                                    }
-                                    suggestLocationList.postValue(locationList);
-                                    return;
-                                }
+                                JsonObject featureObj = featuresArray.get(i).getAsJsonObject();
+                                locationList.add(MLocation.fromJson(featureObj));
                             }
-                            suggestLocationList.postValue(null);
-                        }
-                        catch(Exception e)
-                        {
-                            suggestLocationList.postValue(null);
+                            suggestLocationList.postValue(locationList);
+                            return;
                         }
                     }
-                });
+                    suggestLocationList.postValue(null);
+                }
+                catch(Exception e)
+                {
+                    suggestLocationList.postValue(null);
+                }
             }
-        };
+
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                suggestLocationList.postValue(null);
+            }
+        });
         handler.postDelayed(searchRunable, 500);
     }
 
-    MutableLiveData<List<MLocation>> suggestLocationList = new MutableLiveData<>(new ArrayList<MLocation>());
+    MutableLiveData<List<MLocation>> suggestLocationList = new MutableLiveData<>(new ArrayList<>());
 
     public MutableLiveData<List<MLocation>> getSuggestLocationList() {
         return suggestLocationList;

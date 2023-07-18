@@ -2,21 +2,19 @@ package com.example.coffee_shop_app.viewmodels;
 
 import androidx.databinding.BaseObservable;
 import androidx.databinding.Bindable;
-import androidx.lifecycle.MutableLiveData;
 
-import com.example.coffee_shop_app.models.AddressDelivery;
-import com.example.coffee_shop_app.repository.AddressRepository;
-
-import java.util.List;
+import com.example.coffee_shop_app.BR;
 
 public class AddressListingViewModel extends BaseObservable {
-    public AddressListingViewModel(){
-        addressListMutableLiveData = AddressRepository.getInstance().getAddressListMutableLiveData();
-    }
     @Bindable
-    private MutableLiveData<List<AddressDelivery>> addressListMutableLiveData;
+    private boolean loading = true;
 
-    public MutableLiveData<List<AddressDelivery>> getAddressListMutableLiveData() {
-        return addressListMutableLiveData;
+    public boolean isLoading() {
+        return loading;
+    }
+
+    public void setLoading(boolean loading) {
+        this.loading = loading;
+        notifyPropertyChanged(BR.loading);
     }
 }

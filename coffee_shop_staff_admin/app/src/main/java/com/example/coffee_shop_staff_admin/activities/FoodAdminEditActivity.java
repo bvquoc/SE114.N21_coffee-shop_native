@@ -150,7 +150,7 @@ public class FoodAdminEditActivity extends AppCompatActivity {
             foodAdminToppingAdapter.changeAvailableToppings(food.getToppings());
             foodAdminSizeAdapter.changeAvailableSizes(food.getSizes());
             imageEditAdapter = new ImageEditAdapter(food.getImages());
-            toolbar.setTitle("Thay đổi cửa hàng");
+            toolbar.setTitle("Thay đổi đồ uống");
         }
         else
         {

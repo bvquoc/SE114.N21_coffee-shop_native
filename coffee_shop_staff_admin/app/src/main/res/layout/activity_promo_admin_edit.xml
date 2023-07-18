@@ -189,7 +189,7 @@
                                 app:errorEnabled="true"
                                 app:errorTextAppearance="@style/regularRed14"
                                 app:hintTextAppearance="@style/regularBlue14"
-                                app:counterMaxLength="200"
+                                app:counterMaxLength="500"
                                 app:counterEnabled="true"
                                 app:counterTextAppearance="@style/regularGrey14">
                                 <com.google.android.material.textfield.TextInputEditText
@@ -201,7 +201,7 @@
                                     android:hint="Mô tả"
                                     android:textAppearance="@style/regularBlack14"
                                     android:text="@{viewModel.description}"
-                                    android:maxLength="200"
+                                    android:maxLength="500"
                                     android:onTextChanged="@{viewModel::onDescriptionChanged}"/>
                             </com.google.android.material.textfield.TextInputLayout>
                             <LinearLayout
@@ -461,7 +461,8 @@
                             <androidx.recyclerview.widget.RecyclerView
                                 android:id="@+id/recyclerStore"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content" />
+                                android:layout_height="wrap_content"
+                                android:nestedScrollingEnabled="false"/>
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
                 </LinearLayout>

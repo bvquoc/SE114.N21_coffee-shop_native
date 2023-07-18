@@ -3,12 +3,14 @@ package com.example.coffee_shop_app.viewmodels;
 
 import androidx.databinding.BaseObservable;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
 import com.example.coffee_shop_app.models.AddressDelivery;
 import com.example.coffee_shop_app.models.CartFood;
 import com.example.coffee_shop_app.models.Order;
 import com.example.coffee_shop_app.models.OrderFood;
+import com.example.coffee_shop_app.models.Promo;
 import com.example.coffee_shop_app.models.Store;
 import com.example.coffee_shop_app.repository.CartRepository;
 
@@ -32,8 +34,29 @@ public  class CartViewModel extends BaseObservable {
     private CartRepository repository=new CartRepository();
     private MutableLiveData<Double> totalFood=new MutableLiveData<>();
     private MutableLiveData<Double> discount=new MutableLiveData<>();
+    private MutableLiveData<Promo> promo=new MutableLiveData<>();
     public CartViewModel() {
-
+        cartFoods.observeForever(cartFoods -> calculateTotalFood());
+        promo.observeForever(new Observer<Promo>() {
+            @Override
+            public void onChanged(Promo promo) {
+                calculatePromo();
+            }
+        });
+    }
+    public void calculatePromo(){
+        if(promo!=null && promo.getValue()!=null){
+            Double discount=totalFood.getValue()*promo.getValue().getPercent();
+            if(discount>promo.getValue().getMaxPrice()){
+                discount=promo.getValue().getMaxPrice();
+            }
+            getDiscount().postValue(discount);
+        } else{
+            getDiscount().postValue(0.0);
+        }
+    }
+    public MutableLiveData<Promo> getPromo() {
+        return promo;
     }
 
     public MutableLiveData<List<CartFood>> getCartFoods() {
@@ -59,30 +82,6 @@ public  class CartViewModel extends BaseObservable {
             totalFood=totalFood+prd.getUnitPrice()*prd.getQuantity();
         }
         this.totalFood.setValue(totalFood);
+        calculatePromo();
     }
-
-//    public void placeOrder(Store store, AddressDelivery address, Date pickupTime, String status){
-//        List<OrderFood> orderFoods=new ArrayList<>();
-//        for (CartFood cartFood :
-//                this.cartFoods.getValue()) {
-//
-//            //TODO: get the size and topping properly
-//            //TODO: fix this
-////            OrderFood ord= new OrderFood(
-////                    cartFood.getProduct().getImage(),
-////                    cartFood.getProduct().getName(),
-////                    cartFood.getQuantity(),
-////                    cartFood.getSize(),
-////                    cartFood.getUnitPrice());
-////            ord.setNote(cartFood.getNote());
-////            ord.setTopping(cartFood.getTopping());
-////            orderFoods.add(ord);
-//        }
-//        Order order=new Order(new Date(), orderFoods, status);
-//        order.setTotal(this.total.getValue());
-//        order.setTotalProduct(this.totalFood.getValue());
-//        order.setAddress(address);
-//        order.setPickupTime(pickupTime);
-//        repository.addOrder(order);
-//    }
 }
