@@ -13,4 +13,5 @@
     <string name="vndUnit">\ ₫\</string>
     <string name="size_text">Size: </string>
     <string name="topping_text">Topping: </string>
+    <string name="is_remember_me" />
 </resources>
