@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -24,6 +25,8 @@ import com.example.coffee_shop_staff_admin.utils.interfaces.OnSizeAdminClickList
 import com.example.coffee_shop_staff_admin.viewmodels.SizeAdminViewModel;
 
 public class SizeAdminFragment extends Fragment {
+    private FragmentSizeAdminBinding fragmentSizeAdminBinding;
+    private final SizeAdminViewModel sizeAdminViewModel = new SizeAdminViewModel();
     private final SizeAdminAdapter sizeAdminAdapter = new SizeAdminAdapter();
     private final Handler handler = new Handler();
     private Runnable searchRunnable;
@@ -42,13 +45,22 @@ public class SizeAdminFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        com.example.coffee_shop_staff_admin.databinding.FragmentSizeAdminBinding fragmentSizeAdminBinding = FragmentSizeAdminBinding.inflate(inflater, container, false);
+        fragmentSizeAdminBinding = FragmentSizeAdminBinding.inflate(inflater, container, false);
+
+        fragmentSizeAdminBinding.setViewModel(sizeAdminViewModel);
+
+        return fragmentSizeAdminBinding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         sizeAdminAdapter.setOnSizeAdminClickListener(listener);
         fragmentSizeAdminBinding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         fragmentSizeAdminBinding.recyclerView.setAdapter(sizeAdminAdapter);
 
-        SizeAdminViewModel sizeAdminViewModel = new SizeAdminViewModel();
+
         SizeRepository.getInstance().getSizeListMutableLiveData().observe(this, sizes -> {
             sizeAdminViewModel.setLoading(true);
             if (sizes != null) {
@@ -56,8 +68,6 @@ public class SizeAdminFragment extends Fragment {
                 sizeAdminViewModel.setLoading(false);
             }
         });
-
-        fragmentSizeAdminBinding.setViewModel(sizeAdminViewModel);
 
         fragmentSizeAdminBinding.addButton.setOnClickListener(v -> {
             Intent intent = new Intent(getContext(), SizeAdminEditActivity.class);
@@ -87,7 +97,5 @@ public class SizeAdminFragment extends Fragment {
             FoodRepository.getInstance().registerSnapshotListener();
             fragmentSizeAdminBinding.refreshLayout.setRefreshing(false);
         });
-
-        return fragmentSizeAdminBinding.getRoot();
     }
 }

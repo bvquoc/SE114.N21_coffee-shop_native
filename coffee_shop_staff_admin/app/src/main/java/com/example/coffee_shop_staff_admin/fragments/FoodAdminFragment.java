@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -25,6 +26,8 @@ import com.example.coffee_shop_staff_admin.utils.interfaces.OnFoodAdminClickList
 import com.example.coffee_shop_staff_admin.viewmodels.FoodAdminViewModel;
 
 public class FoodAdminFragment extends Fragment {
+    private FragmentFoodAdminBinding fragmentFoodAdminBinding;
+    private final FoodAdminViewModel foodAdminViewModel = new FoodAdminViewModel();
     private final FoodAdminAdapter foodAdminAdapter = new FoodAdminAdapter();
     private final Handler handler = new Handler();
     private Runnable searchRunnable;
@@ -46,13 +49,15 @@ public class FoodAdminFragment extends Fragment {
         Toolbar toolbar = requireActivity().findViewById(R.id.my_toolbar);
         toolbar.setTitle("Sản phẩm");
 
-        FragmentFoodAdminBinding fragmentFoodAdminBinding = FragmentFoodAdminBinding.inflate(inflater, container, false);
+        fragmentFoodAdminBinding = FragmentFoodAdminBinding.inflate(inflater, container, false);
 
-        foodAdminAdapter.setOnFoodAdminClickListener(listener);
-        fragmentFoodAdminBinding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        fragmentFoodAdminBinding.recyclerView.setAdapter(foodAdminAdapter);
+        fragmentFoodAdminBinding.setViewModel(foodAdminViewModel);
 
-        FoodAdminViewModel foodAdminViewModel = new FoodAdminViewModel();
+        return fragmentFoodAdminBinding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         FoodRepository.getInstance().getFoodListMutableLiveData().observe(this, foods -> {
             foodAdminViewModel.setLoading(true);
             if(foods != null)
@@ -61,7 +66,10 @@ public class FoodAdminFragment extends Fragment {
                 foodAdminViewModel.setLoading(false);
             }
         });
-        fragmentFoodAdminBinding.setViewModel(foodAdminViewModel);
+
+        foodAdminAdapter.setOnFoodAdminClickListener(listener);
+        fragmentFoodAdminBinding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        fragmentFoodAdminBinding.recyclerView.setAdapter(foodAdminAdapter);
 
         fragmentFoodAdminBinding.addButton.setOnClickListener(v -> {
             Intent intent = new Intent(getContext(), FoodAdminEditActivity.class);
@@ -91,6 +99,6 @@ public class FoodAdminFragment extends Fragment {
             FoodRepository.getInstance().registerSnapshotListener();
             fragmentFoodAdminBinding.refreshLayout.setRefreshing(false);
         });
-        return fragmentFoodAdminBinding.getRoot();
+        super.onViewCreated(view, savedInstanceState);
     }
 }

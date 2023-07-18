@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -26,17 +27,16 @@ import com.example.coffee_shop_staff_admin.utils.interfaces.OnPromoAdminClickLis
 import com.example.coffee_shop_staff_admin.viewmodels.PromoAdminViewModel;
 
 public class PromoAdminFragment extends Fragment {
+    private FragmentPromoAdminBinding fragmentPromoAdminBinding;
+    private final PromoAdminViewModel promoAdminViewModel = new PromoAdminViewModel();
     private final PromoAdminAdapter promoAdminAdapter = new PromoAdminAdapter();
     private final Handler handler = new Handler();
     private Runnable searchRunnable;
     private final int MILLISECOND_DELAY_SEARCH = 300;
-    private final OnPromoAdminClickListener listener = new OnPromoAdminClickListener() {
-        @Override
-        public void onPromoAdminClick(String promoId) {
-            Intent intent = new Intent(getContext(), PromoAdminDetailActivity.class);
-            intent.putExtra("promoId", promoId);
-            startActivity(intent);
-        }
+    private final OnPromoAdminClickListener listener = promoId -> {
+        Intent intent = new Intent(getContext(), PromoAdminDetailActivity.class);
+        intent.putExtra("promoId", promoId);
+        startActivity(intent);
     };
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -49,13 +49,22 @@ public class PromoAdminFragment extends Fragment {
         Toolbar toolbar = requireActivity().findViewById(R.id.my_toolbar);
         toolbar.setTitle("Mã giảm giá");
 
-        FragmentPromoAdminBinding fragmentPromoAdminBinding = FragmentPromoAdminBinding.inflate(inflater, container, false);
+        fragmentPromoAdminBinding = FragmentPromoAdminBinding.inflate(inflater, container, false);
+
+        fragmentPromoAdminBinding.setViewModel(promoAdminViewModel);
+
+        return fragmentPromoAdminBinding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         promoAdminAdapter.setOnPromoClickListener(listener);
         fragmentPromoAdminBinding.recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         fragmentPromoAdminBinding.recyclerView.setAdapter(promoAdminAdapter);
 
-        PromoAdminViewModel promoAdminViewModel = new PromoAdminViewModel();
+
         PromoRepository.getInstance().getPromoListMutableLiveData().observe(this, promos -> {
             promoAdminViewModel.setLoading(true);
             if (promos != null) {
@@ -63,8 +72,6 @@ public class PromoAdminFragment extends Fragment {
                 promoAdminViewModel.setLoading(false);
             }
         });
-
-        fragmentPromoAdminBinding.setViewModel(promoAdminViewModel);
 
         fragmentPromoAdminBinding.addButton.setOnClickListener(v -> {
             Intent intent = new Intent(getContext(), PromoAdminEditActivity.class);
@@ -93,6 +100,5 @@ public class PromoAdminFragment extends Fragment {
             FoodRepository.getInstance().registerSnapshotListener();
             fragmentPromoAdminBinding.refreshLayout.setRefreshing(false);
         });
-        return fragmentPromoAdminBinding.getRoot();
     }
 }
