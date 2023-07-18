@@ -86,6 +86,9 @@ public class OrderProdItemAdapter extends RecyclerView.Adapter<OrderProdItemAdap
                             +" x" +orderFood.getQuantity());
             Glide.with(context)
                     .load(Uri.parse(orderFood.getImage()))
+                    .placeholder(R.drawable.img_placeholder)
+                    .error(R.drawable.img_placeholder)
+                    .fitCenter()
                     .into(orderProdItemBinding.imgProduct);
             orderProdItemBinding.imgProduct.setOnClickListener(new View.OnClickListener() {
                 @Override
