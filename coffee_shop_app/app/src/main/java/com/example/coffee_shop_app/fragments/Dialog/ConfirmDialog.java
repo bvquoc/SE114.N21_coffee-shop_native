@@ -1,4 +1,4 @@
-package com.example.coffee_shop_app.fragments;
+package com.example.coffee_shop_app.fragments.Dialog;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -13,6 +13,7 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDialogFragment;
 
 import com.example.coffee_shop_app.R;
@@ -34,11 +35,12 @@ public class ConfirmDialog extends AppCompatDialogFragment {
         this.onClickListenerNoButton = onClickListenerNoButton;
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-        LayoutInflater inflater = getActivity().getLayoutInflater();
+        LayoutInflater inflater = requireActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.confirm_dialog, null, false);
 
         Button noButton = (Button) view.findViewById(R.id.no_button);
@@ -90,18 +92,19 @@ public class ConfirmDialog extends AppCompatDialogFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Dialog dialog = getDialog();
 
-        Window window = dialog.getWindow();
+        if(dialog!=null)
+        {
+            Window window = dialog.getWindow();
 
-        ColorDrawable back = new ColorDrawable(Color.TRANSPARENT);
-        InsetDrawable inset = new InsetDrawable(back, 32);
+            ColorDrawable back = new ColorDrawable(Color.TRANSPARENT);
+            InsetDrawable inset = new InsetDrawable(back, 32);
 
-        window.setBackgroundDrawable(inset);
+            window.setBackgroundDrawable(inset);
+        }
 
-        View view = inflater.inflate(R.layout.confirm_dialog, container, false);
-
-        return view;
+        return inflater.inflate(R.layout.confirm_dialog, container, false);
     }
 }

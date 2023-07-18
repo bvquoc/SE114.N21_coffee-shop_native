@@ -8,7 +8,6 @@ import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import android.app.AlertDialog;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -23,6 +22,7 @@ import com.example.coffee_shop_app.Data;
 import com.example.coffee_shop_app.R;
 import com.example.coffee_shop_app.adapters.PromoAdapter;
 import com.example.coffee_shop_app.databinding.ActivityPromoBinding;
+import com.example.coffee_shop_app.fragments.Dialog.NotificationDialog;
 import com.example.coffee_shop_app.models.Promo;
 import com.example.coffee_shop_app.models.Store;
 import com.example.coffee_shop_app.repository.PromoRepository;
@@ -183,6 +183,11 @@ public class PromoActivity extends AppCompatActivity {
         });
 
         activityPromoBinding.editTextFindPromo.setStartIconOnClickListener(v -> startQRCodeScanner());
+
+        activityPromoBinding.refreshLayout.setOnRefreshListener(() -> {
+            PromoRepository.getInstance().registerSnapshotListener();
+            activityPromoBinding.refreshLayout.setRefreshing(false);
+        });
     }
 
     private void startQRCodeScanner() {
@@ -277,12 +282,13 @@ public class PromoActivity extends AppCompatActivity {
             }
             else
             {
-                AlertDialog alertDialog = new AlertDialog.Builder(PromoActivity.this)
-                        .setTitle("Thông báo")
-                        .setMessage(v)
-                        .setPositiveButton("OK", (dialog, which) -> dialog.dismiss()).create();
+                NotificationDialog dialog = new NotificationDialog(
+                        NotificationDialog.NotificationType.failed,
+                        v,
+                        null
+                );
                 promoViewModel.setSearching(false);
-                alertDialog.show();
+                dialog.show(getSupportFragmentManager(), "notificationDialog");
             }
         }
     }
