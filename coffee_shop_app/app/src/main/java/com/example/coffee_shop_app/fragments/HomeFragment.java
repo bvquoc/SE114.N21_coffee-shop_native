@@ -297,4 +297,10 @@ public class HomeFragment extends Fragment {
             bottomNavigationView.setSelectedItemId(R.id.menuFragment);
         });
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ((AppCompatActivity) requireActivity()).getSupportActionBar().show();
+    }
 }

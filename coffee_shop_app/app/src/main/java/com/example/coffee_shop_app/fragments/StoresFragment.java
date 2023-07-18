@@ -7,6 +7,8 @@ import android.os.Bundle;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -35,12 +37,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class StoresFragment extends Fragment {
     private FragmentStoresBinding fragmentStoresBinding;
     private final StoreAdapter nearestStoreAdapter = new StoreAdapter(new ArrayList<>());
     private final StoreAdapter favoriteStoresAdapter = new StoreAdapter(new ArrayList<>());
     private final StoreAdapter otherStoresAdapter = new StoreAdapter(new ArrayList<>());
+    private final StoreViewModel storeViewModel = new StoreViewModel();
     private final OnStoreClickListener listener = new OnStoreClickListener() {
         @Override
         public void onStoreClick(String storeId) {
@@ -149,11 +153,20 @@ public class StoresFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         setToolBarTittle();
+
+        fragmentStoresBinding = FragmentStoresBinding.inflate(inflater, container, false);
+
+        fragmentStoresBinding.setViewModel(storeViewModel);
+
+        return fragmentStoresBinding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         nearestStoreAdapter.setOnClickListener(listener);
         favoriteStoresAdapter.setOnClickListener(listener);
         otherStoresAdapter.setOnClickListener(listener);
-
-        fragmentStoresBinding = FragmentStoresBinding.inflate(inflater, container, false);
 
         fragmentStoresBinding.nearestStore.setLayoutManager(new LinearLayoutManager(getContext()));
         fragmentStoresBinding.nearestStore.setAdapter(nearestStoreAdapter);
@@ -174,7 +187,6 @@ public class StoresFragment extends Fragment {
             activityFindStoreResultLauncher.launch(intent);
         });
 
-        StoreViewModel storeViewModel = new StoreViewModel();
         storeViewModel.getNearestStoreMutableLiveData().observe(getViewLifecycleOwner(), nearestStore ->{
             if(nearestStore == null)
             {
@@ -242,8 +254,5 @@ public class StoresFragment extends Fragment {
                 fragmentStoresBinding.shimmerLayout.stopShimmer();
             }
         });
-        fragmentStoresBinding.setViewModel(storeViewModel);
-
-        return fragmentStoresBinding.getRoot();
     }
 }

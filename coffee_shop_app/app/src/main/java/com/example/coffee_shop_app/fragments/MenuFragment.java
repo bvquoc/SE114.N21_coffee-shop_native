@@ -7,6 +7,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.motion.widget.MotionLayout;
 import androidx.fragment.app.Fragment;
@@ -43,6 +45,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class MenuFragment extends Fragment {
     private FragmentMenuBinding fragmentMenuBinding;
@@ -51,6 +54,8 @@ public class MenuFragment extends Fragment {
     private boolean isExecutingCartButtonAnimation1 = false;
     private boolean isExecutingCartButtonAnimation2 = false;
     private BottomSheetDialog bottomSheetDialog;
+
+    private final MenuViewModel menuViewModel = new MenuViewModel();
     private final OnProductClickListener listener = productId -> {
         SharedPreferences prefs =
                 requireContext().getSharedPreferences(
@@ -113,10 +118,58 @@ public class MenuFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        fragmentMenuBinding = FragmentMenuBinding.inflate(inflater, container, false);
+
+        fragmentMenuBinding.setCartButtonViewModel(CartButtonViewModel.getInstance());
+
+        fragmentMenuBinding.setMenuViewModel(menuViewModel);
+
+        fragmentMenuBinding.cartButton.setOnClickListener(view -> {
+            bottomSheetDialog = new BottomSheetDialog(requireContext(), R.style.BottomSheetTheme);
+            OrderTypeBottomSheetBinding orderTypeBottomSheetBinding = OrderTypeBottomSheetBinding.inflate(LayoutInflater.from(getContext()), container, false);
+            orderTypeBottomSheetBinding.setViewModel(CartButtonViewModel.getInstance());
+
+            orderTypeBottomSheetBinding.closeButton.setOnClickListener(view1 -> bottomSheetDialog.dismiss());
+
+            orderTypeBottomSheetBinding.pickUpEditButton.setOnClickListener(view12 -> {
+                bottomSheetDialog.dismiss();
+                Intent intent = new Intent(getContext(), StoreActivity.class);
+                startActivity(intent);
+            });
+
+            orderTypeBottomSheetBinding.deliveryEditButton.setOnClickListener(view13 -> {
+                bottomSheetDialog.dismiss();
+                Intent intent = new Intent(getContext(), AddressListingActivity.class);
+                startActivity(intent);
+            });
+
+            orderTypeBottomSheetBinding.deliveryLayout.setOnClickListener(view14 -> {
+                CartButtonViewModel.getInstance().getSelectedOrderType().postValue(OrderType.Delivery);
+                bottomSheetDialog.dismiss();
+            });
+            orderTypeBottomSheetBinding.pickUpLayout.setOnClickListener(view15 -> {
+                CartButtonViewModel.getInstance().getSelectedOrderType().postValue(OrderType.StorePickUp);
+                bottomSheetDialog.dismiss();
+            });
+
+            bottomSheetDialog.setContentView(orderTypeBottomSheetBinding.getRoot());
+            // Set the behavior to STATE_EXPANDED
+            View bottomSheetInternal = bottomSheetDialog.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+            if (bottomSheetInternal != null) {
+                BottomSheetBehavior.from(bottomSheetInternal).setState(BottomSheetBehavior.STATE_EXPANDED);
+                bottomSheetDialog.show();
+            }
+        });
+
+        return fragmentMenuBinding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
         favoriteProductAdapter.setOnProductClickListener(listener);
         otherProductAdapter.setOnProductClickListener(listener);
-
-        fragmentMenuBinding = FragmentMenuBinding.inflate(inflater, container, false);
 
         fragmentMenuBinding.pickUpProductItemFavoritesRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         fragmentMenuBinding.pickUpProductItemFavoritesRecyclerView.setAdapter(favoriteProductAdapter);
@@ -137,13 +190,10 @@ public class MenuFragment extends Fragment {
                 setToolBarTitle("Mang đi");
             }
         });
-        fragmentMenuBinding.setCartButtonViewModel(CartButtonViewModel.getInstance());
 
-        MenuViewModel menuViewModel = new MenuViewModel();
         menuViewModel.getFavoriteProducts().observe(getViewLifecycleOwner(), favoriteProductAdapter::changeDataSet);
         menuViewModel.getOtherProducts().observe(getViewLifecycleOwner(), otherProductAdapter::changeDataSet);
 
-        fragmentMenuBinding.setMenuViewModel(menuViewModel);
         fragmentMenuBinding.deliveryNestedScrollView.setOnScrollChangeListener((View.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
 
             if (Math.abs(scrollY - oldScrollY) > 5) {
@@ -250,43 +300,5 @@ public class MenuFragment extends Fragment {
             ProductRepository.getInstance().registerSnapshotListener(stateFood);
             fragmentMenuBinding.refreshLayout.setRefreshing(false);
         });
-
-        fragmentMenuBinding.cartButton.setOnClickListener(view -> {
-            bottomSheetDialog = new BottomSheetDialog(requireContext(), R.style.BottomSheetTheme);
-            OrderTypeBottomSheetBinding orderTypeBottomSheetBinding = OrderTypeBottomSheetBinding.inflate(LayoutInflater.from(getContext()), container, false);
-            orderTypeBottomSheetBinding.setViewModel(CartButtonViewModel.getInstance());
-
-            orderTypeBottomSheetBinding.closeButton.setOnClickListener(view1 -> bottomSheetDialog.dismiss());
-
-            orderTypeBottomSheetBinding.pickUpEditButton.setOnClickListener(view12 -> {
-                bottomSheetDialog.dismiss();
-                Intent intent = new Intent(getContext(), StoreActivity.class);
-                startActivity(intent);
-            });
-
-            orderTypeBottomSheetBinding.deliveryEditButton.setOnClickListener(view13 -> {
-                bottomSheetDialog.dismiss();
-                Intent intent = new Intent(getContext(), AddressListingActivity.class);
-                startActivity(intent);
-            });
-
-            orderTypeBottomSheetBinding.deliveryLayout.setOnClickListener(view14 -> {
-                CartButtonViewModel.getInstance().getSelectedOrderType().postValue(OrderType.Delivery);
-                bottomSheetDialog.dismiss();
-            });
-            orderTypeBottomSheetBinding.pickUpLayout.setOnClickListener(view15 -> {
-                CartButtonViewModel.getInstance().getSelectedOrderType().postValue(OrderType.StorePickUp);
-                bottomSheetDialog.dismiss();
-            });
-
-            bottomSheetDialog.setContentView(orderTypeBottomSheetBinding.getRoot());
-            // Set the behavior to STATE_EXPANDED
-            View bottomSheetInternal = bottomSheetDialog.findViewById(com.google.android.material.R.id.design_bottom_sheet);
-            if (bottomSheetInternal != null) {
-                BottomSheetBehavior.from(bottomSheetInternal).setState(BottomSheetBehavior.STATE_EXPANDED);
-                bottomSheetDialog.show();
-            }
-        });
-        return fragmentMenuBinding.getRoot();
     }
 }
