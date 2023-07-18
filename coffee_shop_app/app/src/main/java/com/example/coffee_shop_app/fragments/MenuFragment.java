@@ -1,20 +1,16 @@
 package com.example.coffee_shop_app.fragments;
 
-import static android.content.Context.MODE_PRIVATE;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.motion.widget.MotionLayout;
 import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.view.LayoutInflater;
@@ -30,13 +26,10 @@ import com.example.coffee_shop_app.activities.SearchFoodActivity;
 import com.example.coffee_shop_app.activities.address.AddressListingActivity;
 import com.example.coffee_shop_app.activities.cart.CartDeliveryActivity;
 import com.example.coffee_shop_app.activities.cart.CartPickupActivity;
-import com.example.coffee_shop_app.activities.order.OrderHistoryActivity;
 import com.example.coffee_shop_app.activities.store.StoreActivity;
 import com.example.coffee_shop_app.adapters.ProductAdapter;
 import com.example.coffee_shop_app.databinding.FragmentMenuBinding;
 import com.example.coffee_shop_app.databinding.OrderTypeBottomSheetBinding;
-import com.example.coffee_shop_app.models.User;
-import com.example.coffee_shop_app.repository.AuthRepository;
 import com.example.coffee_shop_app.repository.ProductRepository;
 import com.example.coffee_shop_app.utils.interfaces.OnProductClickListener;
 import com.example.coffee_shop_app.viewmodels.CartButtonViewModel;
@@ -44,15 +37,10 @@ import com.example.coffee_shop_app.viewmodels.MenuViewModel;
 import com.example.coffee_shop_app.viewmodels.OrderType;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class MenuFragment extends Fragment {
     private FragmentMenuBinding fragmentMenuBinding;
@@ -64,44 +52,6 @@ public class MenuFragment extends Fragment {
 
     private final MenuViewModel menuViewModel = new MenuViewModel();
     private final OnProductClickListener listener = productId -> {
-        SharedPreferences prefs =
-                requireContext().getSharedPreferences(
-                        "recentProducts",
-                        MODE_PRIVATE);
-
-        Gson gson = new Gson();
-
-        String json = prefs.getString(
-                "recentProducts", null);
-
-        List<String> recentProducts;
-
-        if(json == null)
-        {
-            recentProducts = new ArrayList<>();
-        }
-        else
-        {
-            Type type = new TypeToken<ArrayList<String>>() {}.getType();
-            recentProducts = gson.fromJson(json, type);
-        }
-
-        if(!recentProducts.contains(productId)){
-            if (recentProducts.size() > 8){
-                recentProducts.remove(0);
-            }
-        }
-        else{
-            recentProducts.remove(productId);
-        }
-        recentProducts.add(productId);
-
-        String jsonDone = gson.toJson(recentProducts);
-
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString("recentProducts", jsonDone);
-        editor.apply();
-
         Intent intent = new Intent(getContext(), ProductDetailActivity.class);
         intent.putExtra("productId", productId);
         startActivity(intent);
