@@ -13,11 +13,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import com.example.coffee_shop_app.R;
+import com.example.coffee_shop_app.activities.address.AddressListingActivity;
 import com.example.coffee_shop_app.activities.promo.PromoActivity;
+import com.example.coffee_shop_app.activities.store.StoreActivity;
 import com.example.coffee_shop_app.adapters.OrderDetailAdapter;
 import com.example.coffee_shop_app.databinding.ActivityCartPickupBinding;
+import com.example.coffee_shop_app.databinding.OrderTypeBottomSheetBinding;
 import com.example.coffee_shop_app.fragments.Dialog.ConfirmDialog;
 import com.example.coffee_shop_app.fragments.Dialog.NotificationDialog;
 import com.example.coffee_shop_app.fragments.LoadingDialog;
@@ -30,9 +34,13 @@ import com.example.coffee_shop_app.models.Store;
 import com.example.coffee_shop_app.repository.AuthRepository;
 import com.example.coffee_shop_app.repository.ProductRepository;
 import com.example.coffee_shop_app.utils.SqliteHelper;
+import com.example.coffee_shop_app.viewmodels.CartButtonViewModel;
 import com.example.coffee_shop_app.viewmodels.CartPickupViewModel;
+import com.example.coffee_shop_app.viewmodels.OrderType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -89,6 +97,7 @@ public class CartPickupActivity extends AppCompatActivity {
         super.onResume();
 //        init();
     }
+    private BottomSheetDialog changeOrderTypeBottomSheet;
 
     private void init() {
         activityCartPickupBinding.orderDetails.recyclerOrderDetails.setNestedScrollingEnabled(false);
@@ -133,7 +142,52 @@ public class CartPickupActivity extends AppCompatActivity {
                 dialog.show(getSupportFragmentManager(), PLACEORDER);
             }
         });
+        activityCartPickupBinding.txtChange.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeOrderTypeBottomSheet = new BottomSheetDialog(CartPickupActivity.this, R.style.BottomSheetTheme);
+                OrderTypeBottomSheetBinding orderTypeBottomSheetBinding =
+                        OrderTypeBottomSheetBinding
+                                .inflate(LayoutInflater.from(CartPickupActivity.this), null, false);
+                orderTypeBottomSheetBinding.setViewModel(CartButtonViewModel.getInstance());
 
+                orderTypeBottomSheetBinding.closeButton.setOnClickListener(view1 -> changeOrderTypeBottomSheet.dismiss());
+
+                orderTypeBottomSheetBinding.pickUpEditButton.setOnClickListener(view12 -> {
+                    changeOrderTypeBottomSheet.dismiss();
+                    Intent intent = new Intent(CartPickupActivity.this, StoreActivity.class);
+                    startActivity(intent);
+                });
+
+                orderTypeBottomSheetBinding.deliveryEditButton.setOnClickListener(view13 -> {
+                    changeOrderTypeBottomSheet.dismiss();
+                    Intent intent = new Intent(CartPickupActivity.this, AddressListingActivity.class);
+                    startActivity(intent);
+                });
+
+                orderTypeBottomSheetBinding.deliveryLayout.setOnClickListener(view14 -> {
+                    CartButtonViewModel.getInstance().getSelectedOrderType().postValue(OrderType.Delivery);
+                    changeOrderTypeBottomSheet.dismiss();
+                    Intent intent = new Intent(CartPickupActivity.this,CartDeliveryActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_TASK_ON_HOME);
+                    startActivity(intent);
+                    CartPickupActivity.this.finish();
+                });
+                orderTypeBottomSheetBinding.pickUpLayout.setOnClickListener(view15 -> {
+                    CartButtonViewModel.getInstance().getSelectedOrderType().postValue(OrderType.StorePickUp);
+                    changeOrderTypeBottomSheet.dismiss();
+                });
+
+                changeOrderTypeBottomSheet.setContentView(orderTypeBottomSheetBinding.getRoot());
+                // Set the behavior to STATE_EXPANDED
+                View bottomSheetInternal = changeOrderTypeBottomSheet
+                        .findViewById(com.google.android.material.R.id.design_bottom_sheet);
+                if (bottomSheetInternal != null) {
+                    BottomSheetBehavior.from(bottomSheetInternal).setState(BottomSheetBehavior.STATE_EXPANDED);
+                    changeOrderTypeBottomSheet.show();
+                }
+            }
+        });
 
         viewModel.getTimePickup().observe(this, new Observer<Date>() {
             @Override
@@ -285,16 +339,24 @@ public class CartPickupActivity extends AppCompatActivity {
         }
     private static final String PLACEORDER="PLACE ORDER";
     private FirebaseFirestore firestore;
-    public void placeOrder(){
+    private void placeOrder(){
         try{
             HashMap<String, Object> map=new HashMap<>();
             map.put("user", AuthRepository.getInstance().getCurrentUser().getId());
+            DateTime now=DateTime.now();
+            if(viewModel.getStorePickup().getValue()==null){
+                NotificationDialog alertDialog=new NotificationDialog(
+                        NotificationDialog.NotificationType.failed,
+                        "Đặt hàng không thành công",
+                        null);
+                alertDialog.show(getSupportFragmentManager(), PLACEORDER);
+                return;
+            }
             map.put("store", viewModel.getStorePickup().getValue().getId());
 
-            //TODO: put promo
-//            if(viewModel.getCartViewModel().getPromo().getValue()!=null){
-//                map.put("promo", viewModel.getCartViewModel().getPromo().getValue().getPromoCode());
-//            }
+            if(viewModel.getCartViewModel().getPromo().getValue()!=null){
+                map.put("promo", viewModel.getCartViewModel().getPromo().getValue().getPromoCode());
+            }
 
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
             map.put("dateOrder", format.format(new Date()));
@@ -352,6 +414,7 @@ public class CartPickupActivity extends AppCompatActivity {
                                                                     repo.deleteCartFood(cf.getId());
                                                                 }
                                                                 viewModel.getCartViewModel().getCartFoods().postValue(new ArrayList<>());
+                                                                viewModel.getCartViewModel().getPromo().postValue(null);
                                                                 NotificationDialog alertDialog=new NotificationDialog(
                                                                         NotificationDialog.NotificationType.success,
                                                                         "Đặt hàng thành công",
