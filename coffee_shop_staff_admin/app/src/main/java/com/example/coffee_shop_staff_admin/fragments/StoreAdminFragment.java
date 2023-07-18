@@ -1,16 +1,11 @@
 package com.example.coffee_shop_staff_admin.fragments;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.os.Handler;
@@ -25,55 +20,21 @@ import com.example.coffee_shop_staff_admin.activities.StoreAdminDetailActivity;
 import com.example.coffee_shop_staff_admin.activities.StoreAdminEditActivity;
 import com.example.coffee_shop_staff_admin.adapters.StoreAdminAdapter;
 import com.example.coffee_shop_staff_admin.databinding.FragmentStoreAdminBinding;
-import com.example.coffee_shop_staff_admin.models.Store;
+import com.example.coffee_shop_staff_admin.repositories.FoodRepository;
 import com.example.coffee_shop_staff_admin.repositories.StoreRepository;
 import com.example.coffee_shop_staff_admin.utils.interfaces.OnStoreAdminClickListener;
 import com.example.coffee_shop_staff_admin.viewmodels.StoreAdminViewModel;
-
-import java.util.List;
 
 public class StoreAdminFragment extends Fragment {
     private final StoreAdminAdapter storeAdminAdapter = new StoreAdminAdapter();
     private final Handler handler = new Handler();
     private Runnable searchRunnable;
     private final int MILLISECOND_DELAY_SEARCH  = 300;
-    private  final OnStoreAdminClickListener listener = new OnStoreAdminClickListener() {
-        @Override
-        public void onStoreAdminClick(String storeId, String storeName) {
-            Intent intent = new Intent(getContext(), StoreAdminDetailActivity.class);
-            intent.putExtra("storeId", storeId);
-            activitySeeStoreDetailResultLauncher.launch(intent);
-        }
+    private  final OnStoreAdminClickListener listener = (storeId, storeName) -> {
+        Intent intent = new Intent(getContext(), StoreAdminDetailActivity.class);
+        intent.putExtra("storeId", storeId);
+        startActivity(intent);
     };
-    private final ActivityResultLauncher<Intent> activitySeeStoreDetailResultLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == Activity.RESULT_OK) {
-                    Intent data = result.getData();
-                    if (data != null) {
-                        //TODO: refresh the page
-                    }
-                } else {
-                    //User do nothing
-                }
-            }
-    );
-    private final ActivityResultLauncher<Intent> activityAddNewStoreResultLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == Activity.RESULT_OK) {
-                    Intent data = result.getData();
-                    if (data != null) {
-                        //TODO: refresh the page
-                    }
-                } else {
-                    //User do nothing
-                }
-            }
-    );
-    public StoreAdminFragment() {
-        // Required empty public constructor
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -83,7 +44,7 @@ public class StoreAdminFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Toolbar toolbar = ((AppCompatActivity)requireActivity()).findViewById(R.id.my_toolbar);
+        Toolbar toolbar = requireActivity().findViewById(R.id.my_toolbar);
         toolbar.setTitle("Cửa hàng");
 
         FragmentStoreAdminBinding fragmentStoreAdminBinding = FragmentStoreAdminBinding.inflate(inflater, container, false);
@@ -105,7 +66,7 @@ public class StoreAdminFragment extends Fragment {
 
         fragmentStoreAdminBinding.addButton.setOnClickListener(v -> {
             Intent intent = new Intent(getContext(), StoreAdminEditActivity.class);
-            activityAddNewStoreResultLauncher.launch(intent);
+            startActivity(intent);
         });
 
         fragmentStoreAdminBinding.editText.addTextChangedListener(new TextWatcher() {
@@ -126,6 +87,12 @@ public class StoreAdminFragment extends Fragment {
 
             }
         });
+
+        fragmentStoreAdminBinding.refreshLayout.setOnRefreshListener(() -> {
+            FoodRepository.getInstance().registerSnapshotListener();
+            fragmentStoreAdminBinding.refreshLayout.setRefreshing(false);
+        });
+
         return fragmentStoreAdminBinding.getRoot();
     }
 }

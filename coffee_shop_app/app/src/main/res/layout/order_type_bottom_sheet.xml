@@ -148,7 +148,7 @@
                    android:maxLines="1"
                    android:ellipsize="end"
                    style="@style/regularBlack14"
-                   android:visibility="@{viewModel.distance==-1?View.GONE:View.VISIBLE}"/>
+                   android:visibility="@{viewModel.needToShowDistance?View.VISIBLE:View.GONE}"/>
             </LinearLayout>
             <Button
                 android:id="@+id/pick_up_edit_button"

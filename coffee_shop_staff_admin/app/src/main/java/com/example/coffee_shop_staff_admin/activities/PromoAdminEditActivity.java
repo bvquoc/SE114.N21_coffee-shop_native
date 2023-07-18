@@ -113,7 +113,7 @@ public class PromoAdminEditActivity extends AppCompatActivity {
         {
             promoAdminEditViewModel.updateParameter(promo);
             promoAdminStoreAdapter.changeAvailableStores(promo.getStores());
-            toolbar.setTitle("Thay đổi cửa hàng");
+            toolbar.setTitle("Thay đổi mã giảm giá");
         }
         StoreRepository.getInstance().getStoreListMutableLiveData().observe(this, observer);
 

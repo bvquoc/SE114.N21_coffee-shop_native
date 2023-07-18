@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:title="Home"
+    <item android:title="Trang chủ"
         android:icon="@drawable/outline_home_24"
         android:id="@+id/homeFragment"/>
-    <item android:title="Menu"
+    <item android:title="Thực đơn"
         android:icon="@drawable/outline_coffee_24"
         android:id="@+id/menuFragment"/>
-    <item android:title="Stores"
+    <item android:title="Cửa hàng"
         android:icon="@drawable/outline_store_24"
         android:id="@+id/storesFragment"/>
-    <item android:title="Order"
+    <item android:title="Đơn hàng"
         android:icon="@drawable/twotone_menu_book_24"
         android:id="@+id/orderFragment"/>
-    <item android:title="Profile"
+    <item android:title="Cá nhân"
         android:icon="@drawable/outline_profile_24"
         android:id="@+id/profileFragment"/>
 </menu>

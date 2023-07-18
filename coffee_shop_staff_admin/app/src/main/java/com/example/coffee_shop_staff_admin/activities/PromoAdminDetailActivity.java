@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.coffee_shop_staff_admin.R;
 import com.example.coffee_shop_staff_admin.adapters.PromoAdminStoreAdapter;
 import com.example.coffee_shop_staff_admin.databinding.ActivityPromoAdminDetailBinding;
@@ -119,7 +120,11 @@ public class PromoAdminDetailActivity extends AppCompatActivity {
                 {
                     int sdp108 = getResources().getDimensionPixelSize(com.intuit.sdp.R.dimen._108sdp);
                     Bitmap qrCodeBitmap = generateQRCode(selectedPromo.getPromoCode(), sdp108, sdp108);
-                    activityPromoAdminDetailBinding.promoQr.setImageBitmap(qrCodeBitmap);
+                    Glide.with(PromoAdminDetailActivity.this)
+                            .load(qrCodeBitmap)
+                            .placeholder(R.drawable.img_placeholder)
+                            .error(R.drawable.img_placeholder)
+                            .into(activityPromoAdminDetailBinding.promoQr);
 
                     promoAdminStoreAdapter.changeAvailableStores(selectedPromo.getStores());
 

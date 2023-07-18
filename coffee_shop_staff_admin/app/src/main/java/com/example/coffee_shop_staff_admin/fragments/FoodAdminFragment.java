@@ -1,11 +1,8 @@
 package com.example.coffee_shop_staff_admin.fragments;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -32,43 +29,11 @@ public class FoodAdminFragment extends Fragment {
     private final Handler handler = new Handler();
     private Runnable searchRunnable;
     private final int MILLISECOND_DELAY_SEARCH  = 300;
-    private final OnFoodAdminClickListener listener = new OnFoodAdminClickListener() {
-        @Override
-        public void onFoodAdminClick(String foodId) {
-            Intent intent = new Intent(getContext(), FoodAdminDetailActivity.class);
-            intent.putExtra("foodId", foodId);
-            activitySeeFoodDetailResultLauncher.launch(intent);
-        }
+    private final OnFoodAdminClickListener listener = foodId -> {
+        Intent intent = new Intent(getContext(), FoodAdminDetailActivity.class);
+        intent.putExtra("foodId", foodId);
+        startActivity(intent);
     };
-    private final ActivityResultLauncher<Intent> activitySeeFoodDetailResultLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == Activity.RESULT_OK) {
-                    Intent data = result.getData();
-                    if (data != null) {
-                        //TODO: refresh the page
-                    }
-                } else {
-                    //User do nothing
-                }
-            }
-    );
-    private final ActivityResultLauncher<Intent> activityAddNewFoodResultLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == Activity.RESULT_OK) {
-                    Intent data = result.getData();
-                    if (data != null) {
-                        //TODO: refresh the page
-                    }
-                } else {
-                    //User do nothing
-                }
-            }
-    );
-    public FoodAdminFragment() {
-        // Required empty public constructor
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -100,7 +65,7 @@ public class FoodAdminFragment extends Fragment {
 
         fragmentFoodAdminBinding.addButton.setOnClickListener(v -> {
             Intent intent = new Intent(getContext(), FoodAdminEditActivity.class);
-            activityAddNewFoodResultLauncher.launch(intent);
+            startActivity(intent);
         });
 
         fragmentFoodAdminBinding.editText.addTextChangedListener(new TextWatcher() {
@@ -120,6 +85,11 @@ public class FoodAdminFragment extends Fragment {
             public void afterTextChanged(Editable s) {
 
             }
+        });
+
+        fragmentFoodAdminBinding.refreshLayout.setOnRefreshListener(() -> {
+            FoodRepository.getInstance().registerSnapshotListener();
+            fragmentFoodAdminBinding.refreshLayout.setRefreshing(false);
         });
         return fragmentFoodAdminBinding.getRoot();
     }
