@@ -11,19 +11,26 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.motion.widget.MotionLayout;
+import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.coffee_shop_app.R;
 import com.example.coffee_shop_app.activities.ProductDetailActivity;
+import com.example.coffee_shop_app.activities.SearchFoodActivity;
 import com.example.coffee_shop_app.activities.address.AddressListingActivity;
 import com.example.coffee_shop_app.activities.cart.CartDeliveryActivity;
 import com.example.coffee_shop_app.activities.cart.CartPickupActivity;
+import com.example.coffee_shop_app.activities.order.OrderHistoryActivity;
 import com.example.coffee_shop_app.activities.store.StoreActivity;
 import com.example.coffee_shop_app.adapters.ProductAdapter;
 import com.example.coffee_shop_app.databinding.FragmentMenuBinding;
@@ -99,6 +106,7 @@ public class MenuFragment extends Fragment {
         intent.putExtra("productId", productId);
         startActivity(intent);
     };
+
 
     public MenuFragment() {
 
@@ -190,6 +198,23 @@ public class MenuFragment extends Fragment {
                 setToolBarTitle("Mang đi");
             }
         });
+
+        requireActivity().addMenuProvider(new MenuProvider() {
+            @Override
+            public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+                menuInflater.inflate(R.menu.menu_menu_page, menu);
+            }
+
+            @Override
+            public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
+                if(menuItem.getItemId()==R.id.action_search){
+                    Intent intent=new Intent(getContext(), SearchFoodActivity.class);
+                    getActivity().startActivity(intent);
+                    return true;
+                }
+                return false;
+            }
+        }, getViewLifecycleOwner(), Lifecycle.State.RESUMED);
 
         menuViewModel.getFavoriteProducts().observe(getViewLifecycleOwner(), favoriteProductAdapter::changeDataSet);
         menuViewModel.getOtherProducts().observe(getViewLifecycleOwner(), otherProductAdapter::changeDataSet);
