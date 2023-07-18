@@ -1,12 +1,16 @@
 package com.example.coffee_shop_app.repository;
 
+
 import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.coffee_shop_app.models.Product;
+
 import com.example.coffee_shop_app.viewmodels.CartButtonViewModel;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -88,4 +92,49 @@ public class ProductRepository {
                 .addOnFailureListener(e -> Log.e(TAG, "get products failed."));
     }
 
+    public void updateFavorite(String prdId, boolean isFav){
+        fireStore.collection("users")
+                .document(AuthRepository.getInstance().getCurrentUser().getId())
+                .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        Map<String, Object> map=documentSnapshot.getData();
+                        List<String> favorites=new ArrayList<>();
+                        if(map!=null && map.containsKey("favoriteFoods")){
+                             favorites=(List<String>)(map.get("favoriteFoods"));
+                        }
+
+                        if(favorites.contains(prdId)){
+                            if(!isFav){
+                                favorites.remove(prdId);
+                            }
+                        } else{
+                            if(isFav){
+                                favorites.add(prdId);
+                            }
+                        }
+
+                        fireStore.collection("users")
+                                .document(AuthRepository.getInstance().getCurrentUser().getId())
+                                .update("favoriteFoods", favorites).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void unused) {
+                                      List<Product> tempList=
+                                              ProductRepository.getInstance().getProductListMutableLiveData().getValue();
+                                        if(tempList!=null)
+                                        {
+                                            for (Product prd:tempList) {
+                                                if(prd.getId().equals(prdId))
+                                                {
+                                                    prd.setFavorite(isFav);
+                                                    break;
+                                                }
+                                            }
+                                            ProductRepository.getInstance().getProductListMutableLiveData().setValue(tempList);
+                                        }
+                                    }
+                                });
+                    }
+                });
+    }
 }
