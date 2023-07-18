@@ -47,6 +47,9 @@ func OrderCreate(c *gin.Context) {
 	delete(data, "pickupTime")
 	delete(data, "address")
 	delete(data, "deliveryCost")
+	if data["promo"] == "" {
+		delete(data, "promo")
+	}
 	ordersId, err := app_context.App.CreateDocument(constants.CLT_ORDER, data)
 	if err != nil {
 		fmt.Println("Error create firestore document:", err)
