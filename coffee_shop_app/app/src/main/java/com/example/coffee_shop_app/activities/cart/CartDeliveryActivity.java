@@ -399,12 +399,8 @@ public class CartDeliveryActivity extends AppCompatActivity {
                                                                         NotificationDialog alertDialog=new NotificationDialog(
                                                                                 NotificationDialog.NotificationType.success,
                                                                                 "Đặt hàng thành công",
-                                                                                new View.OnClickListener() {
-                                                                                    @Override
-                                                                                    public void onClick(View v) {
-                                                                                        dialog.dismiss();
-                                                                                        onBackPressed();
-                                                                                    }
+                                                                                dialog1 -> {
+                                                                                    //TODO: Do something when dismiss here
                                                                                 });
                                                                         dialog.dismiss();
                                                                         alertDialog.show(getSupportFragmentManager(), PLACEORDER);
@@ -421,12 +417,8 @@ public class CartDeliveryActivity extends AppCompatActivity {
                                         NotificationDialog alertDialog=new NotificationDialog(
                                                 NotificationDialog.NotificationType.failed,
                                                 "Đặt hàng không thành công",
-                                                new View.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View v) {
-                                                        dialog.dismiss();
-                                                        onBackPressed();
-                                                    }
+                                                dialog1 -> {
+                                                    //TODO: Do something when dismiss here
                                                 });
                                         alertDialog.show(getSupportFragmentManager(), PLACEORDER);
                                         Log.e(PLACEORDER, "Receive json error");
@@ -436,12 +428,8 @@ public class CartDeliveryActivity extends AppCompatActivity {
                                     NotificationDialog alertDialog=new NotificationDialog(
                                             NotificationDialog.NotificationType.failed,
                                             "Đặt hàng không thành công",
-                                            new View.OnClickListener() {
-                                                @Override
-                                                public void onClick(View v) {
-                                                    dialog.dismiss();
-                                                    onBackPressed();
-                                                }
+                                            dialog1 -> {
+                                                //TODO: Do something when dismiss here
                                             });
                                     alertDialog.show(getSupportFragmentManager(), PLACEORDER);
                                     Log.e(PLACEORDER, e.getMessage());
