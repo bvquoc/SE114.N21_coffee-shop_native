@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"coffee_shop_backend/models"
+	"encoding/json"
 	"fmt"
 	"strconv"
 )
@@ -118,4 +119,23 @@ func ToStore(data map[string]interface{}) models.Store {
 	}
 
 	return store
+}
+
+/* For model Promo */
+
+// func ToPromo(data map[string]interface{}) models.Store {
+func ToPromo(m map[string]interface{}) models.Promo {
+	var promo models.Promo
+
+	jsonString, err := json.Marshal(m)
+	if err != nil {
+		return promo
+	}
+
+	err = json.Unmarshal(jsonString, &promo)
+	if err != nil {
+		return promo
+	}
+
+	return promo
 }

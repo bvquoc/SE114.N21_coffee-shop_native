@@ -166,23 +166,21 @@ func calcPrice(ord *models.Order) {
 		if err != nil {
 			fmt.Println("Invalid promo code")
 		} else {
+			promo := helpers.ToPromo(respPromo)
+			// fmt.Print(promo)
 			canUse := false
-			for _, v := range respPromo["stores"].([]interface{}) {
-				if s, ok := v.(string); ok {
-					if s == ord.IDStore {
-						canUse = true
-						break
-					}
+			for _, v := range promo.StoreIdList {
+				if v == ord.IDStore {
+					canUse = true
+					break
 				}
 			}
 
 			if canUse {
 				canUse = false
-				atLeastPrice := int(respPromo["minPrice"].(float64))
-				maxDiscount := int(respPromo["maxPrice"].(float64))
 
-				if ord.PriceProducts >= atLeastPrice {
-					ord.PriceDiscount = int(math.Min(float64(ord.PriceProducts)*respPromo["percent"].(float64), float64(maxDiscount)))
+				if ord.PriceProducts >= promo.AtLeastPrice {
+					ord.PriceDiscount = int(math.Min(float64(ord.PriceProducts)*respPromo["percent"].(float64), float64(promo.MaxDiscount)))
 				}
 			}
 		}
