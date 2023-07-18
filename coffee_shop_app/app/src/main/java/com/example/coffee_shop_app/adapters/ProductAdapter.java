@@ -13,7 +13,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.AppCompatButton;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -33,10 +32,10 @@ public class ProductAdapter extends RecyclerView.Adapter implements Filterable {
     private static final int VIEW_TYPE_EMPTY_STATE = 0;
     private static final int VIEW_TYPE_ITEM_HORIZONTAL = 1;
     private static final int VIEW_TYPE_ITEM_VERTICAL = 2;
-    private  boolean isNeedSearch;
-    private  boolean isVertical;
-    private List<Product> products = new ArrayList<Product>();
-    private List<Product> productFilter = new ArrayList<>();
+    private final boolean isNeedSearch;
+    private final boolean isVertical;
+    private List<Product> products;
+    private List<Product> productFilter;
     private OnProductClickListener onProductClickListener;
 
     public void setOnProductClickListener(OnProductClickListener onProductClickListener) {
@@ -47,12 +46,6 @@ public class ProductAdapter extends RecyclerView.Adapter implements Filterable {
         products = productList;
         productFilter = productList;
         notifyDataSetChanged();
-    }
-    public ProductAdapter(List<Product> products, boolean isVertical, boolean isNeedSearch) {
-        this.products = products;
-        this.productFilter = products;
-        this.isNeedSearch = isNeedSearch;
-        this.isVertical = isVertical;
     }
     public ProductAdapter(List<Product> products, boolean isVertical) {
         this.products = products;
@@ -67,6 +60,7 @@ public class ProductAdapter extends RecyclerView.Adapter implements Filterable {
         isNeedSearch = false;
         isVertical = false;
     }
+    @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == VIEW_TYPE_EMPTY_STATE) {
@@ -110,9 +104,46 @@ public class ProductAdapter extends RecyclerView.Adapter implements Filterable {
             long diffInDays = Math.round((double) diffInMillis / (24 * 60 * 60 * 1000));
             productItemViewHolder.statusNewTextView.setAlpha(diffInDays < 7?(product.isAvailable()?1.0f:0.4f):0);
 
-            productItemViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+            productItemViewHolder.itemView.setOnClickListener(v -> {
+                SharedPreferences prefs =
+                        productItemViewHolder.itemView.getContext().getSharedPreferences(
+                                "recentProducts",
+                                MODE_PRIVATE);
+
+                Gson gson = new Gson();
+
+                String json = prefs.getString(
+                        "recentProducts", null);
+
+                List<String> recentProducts;
+
+                if(json == null)
+                {
+                    recentProducts = new ArrayList<>();
+                }
+                else
+                {
+                    Type type = new TypeToken<ArrayList<String>>() {}.getType();
+                    recentProducts = gson.fromJson(json, type);
+                }
+
+                if(!recentProducts.contains(product.getId())){
+                    if (recentProducts.size() > 8){
+                        recentProducts.remove(0);
+                    }
+                }
+                else{
+                    recentProducts.remove(product.getId());
+                }
+                recentProducts.add(product.getId());
+
+                String jsonDone = gson.toJson(recentProducts);
+
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putString("recentProducts", jsonDone);
+                editor.apply();
+                if(onProductClickListener!=null)
+                {
                     onProductClickListener.onProductClick(product.getId());
                 }
             });
@@ -139,12 +170,7 @@ public class ProductAdapter extends RecyclerView.Adapter implements Filterable {
             long diffInDays = Math.round((double) diffInMillis / (24 * 60 * 60 * 1000));
             productItemViewHolder.statusNewImageView.setAlpha(diffInDays < 7?1.0f:0);
 
-            productItemViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onProductClickListener.onProductClick(product.getId());
-                }
-            });
+            productItemViewHolder.itemView.setOnClickListener(v -> onProductClickListener.onProductClick(product.getId()));
         }
     }
 
@@ -217,32 +243,13 @@ public class ProductAdapter extends RecyclerView.Adapter implements Filterable {
             }
         };
     }
-    public  static class ProductItemViewHolder extends RecyclerView.ViewHolder{
-        private TextView nameTextView;
-        private TextView priceTextView;
-        private TextView statusNewTextView;
-        private TextView statusNotAvailableTextView;
-        private ImageView productImageView;
 
-        private View itemView;
-
-        public ProductItemViewHolder(@NonNull View itemView) {
-            super(itemView);
-            nameTextView = itemView.findViewById(R.id.name_text_view);
-            priceTextView = itemView.findViewById(R.id.price_text_view);
-            productImageView = itemView.findViewById(R.id.product_image);
-            statusNewTextView = itemView.findViewById(R.id.status_new);
-            statusNotAvailableTextView = itemView.findViewById(R.id.status_not_available_text_view);
-            this.itemView = itemView;
-        }
-    }
     public  static class ProductItemHorizontalViewHolder extends RecyclerView.ViewHolder{
-        private TextView nameTextView;
-        private TextView priceTextView;
-        private TextView statusNewTextView;
-        private TextView statusNotAvailableTextView;
-        private ImageView productImageView;
-        private View itemView;
+        private final TextView nameTextView;
+        private final TextView priceTextView;
+        private final TextView statusNewTextView;
+        private final TextView statusNotAvailableTextView;
+        private final ImageView productImageView;
 
         public ProductItemHorizontalViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -251,15 +258,13 @@ public class ProductAdapter extends RecyclerView.Adapter implements Filterable {
             productImageView = itemView.findViewById(R.id.product_image);
             statusNewTextView = itemView.findViewById(R.id.status_new);
             statusNotAvailableTextView = itemView.findViewById(R.id.status_not_available_text_view);
-            this.itemView = itemView;
         }
     }
     public static class ProductItemVerticalViewHolder extends RecyclerView.ViewHolder{
-        private TextView nameTextView;
-        private TextView priceTextView;
-        private ImageView statusNewImageView;
-        private ImageView productImageView;
-        private View itemView;
+        private final TextView nameTextView;
+        private final TextView priceTextView;
+        private final ImageView statusNewImageView;
+        private final ImageView productImageView;
 
         public ProductItemVerticalViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -267,7 +272,6 @@ public class ProductAdapter extends RecyclerView.Adapter implements Filterable {
             priceTextView = itemView.findViewById(R.id.price_text_view);
             productImageView = itemView.findViewById(R.id.product_image);
             statusNewImageView = itemView.findViewById(R.id.status_new);
-            this.itemView = itemView;
         }
     }
     public static class EmptyProductStateViewHolder extends RecyclerView.ViewHolder{
