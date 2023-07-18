@@ -14,18 +14,20 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
-
-import com.example.coffee_shop_app.Data;
 import com.example.coffee_shop_app.R;
+import com.example.coffee_shop_app.activities.promo.PromoActivity;
 import com.example.coffee_shop_app.adapters.OrderDetailAdapter;
 import com.example.coffee_shop_app.databinding.ActivityCartPickupBinding;
+import com.example.coffee_shop_app.fragments.Dialog.ConfirmDialog;
+import com.example.coffee_shop_app.fragments.Dialog.NotificationDialog;
 import com.example.coffee_shop_app.fragments.LoadingDialog;
 import com.example.coffee_shop_app.fragments.TimePickerBottomSheet;
 import com.example.coffee_shop_app.models.CartFood;
 
 import com.example.coffee_shop_app.models.Product;
+import com.example.coffee_shop_app.models.Promo;
 import com.example.coffee_shop_app.models.Store;
+import com.example.coffee_shop_app.repository.AuthRepository;
 import com.example.coffee_shop_app.repository.ProductRepository;
 import com.example.coffee_shop_app.utils.SqliteHelper;
 import com.example.coffee_shop_app.viewmodels.CartPickupViewModel;
@@ -94,12 +96,21 @@ public class CartPickupActivity extends AppCompatActivity {
         activityCartPickupBinding.orderDetails.recyclerOrderDetails.addItemDecoration(new DividerItemDecoration(this,
                 DividerItemDecoration.VERTICAL));
 
+        activityCartPickupBinding.orderDetails.txtShip.setVisibility(View.GONE);
+        activityCartPickupBinding.orderDetails.txtShipStr.setVisibility(View.GONE);
+        activityCartPickupBinding.btnApplyChevron.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(CartPickupActivity.this, PromoActivity.class);
+                startActivity(intent);
+            }
+        });
         SqliteHelper repo = new SqliteHelper(CartPickupActivity.this);
         ProductRepository.getInstance().getProductListMutableLiveData().observe(this, new Observer<List<Product>>() {
             @Override
             public void onChanged(List<Product> products) {
                 //TODO: get the user properly
-                cartFoods = repo.getCartFood(Data.instance.userId);
+                cartFoods = repo.getCartFood(AuthRepository.getInstance().getCurrentUser().getId());
                 setUICartFood();
             }
         });
@@ -109,7 +120,17 @@ public class CartPickupActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //TODO: place order
-                placeOrder();
+                ConfirmDialog dialog=new ConfirmDialog(
+                        "Lưu ý",
+                        "Bạn sẽ không được huỷ đơn nếu xác nhận đặt hàng",
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                placeOrder();
+                            }
+                        },
+                        null);
+                dialog.show(getSupportFragmentManager(), PLACEORDER);
             }
         });
 
@@ -149,8 +170,33 @@ public class CartPickupActivity extends AppCompatActivity {
     Runnable timerRunnable = new Runnable() {
         @Override
         public void run() {
-            viewModel.initDayTimeList();
-            Log.d("TIMER", new Date().toString()+"   " +i++);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    viewModel.initDayTimeList();
+                }
+            });
+            Date selectedDate=viewModel.getTimePickup().getValue();
+            if(selectedDate!=null){
+                DateTime date=new DateTime(selectedDate);
+                DateTime now=DateTime.now();
+                if((date.withTimeAtStartOfDay().isEqual(now.withTimeAtStartOfDay()))){
+                    if(viewModel.getHourStartTimeList().getValue().size()==3
+                    && viewModel.getDayList().getValue().size()==3){
+                        int hourStartTime=viewModel.getHourStartTimeList().getValue().get(0);
+                        int startHour=(hourStartTime/2);
+                        int startMinute=(hourStartTime%2)*30;
+                        if(date.getHourOfDay()<startHour
+                        || date.getHourOfDay()==startHour
+                        && date.getMinuteOfHour()<startMinute){
+                            viewModel.initSelectedDate();
+                        }
+                    } else{
+                        bottomSheet.initNumberPicker();
+                    }
+                }
+            }
+//            Log.d("TIMER", new Date().toString()+"   " +i++);
         }
     };
     Timer timer = new Timer();
@@ -190,6 +236,9 @@ public class CartPickupActivity extends AppCompatActivity {
                     }
                 }
                 viewModel.getCartViewModel().getCartFoods().setValue(newList);
+                if(newList.size()==0){
+                    onBackPressed();
+                }
             }
         });
         activityCartPickupBinding.orderDetails.recyclerOrderDetails.setAdapter(adapter);
@@ -198,34 +247,59 @@ public class CartPickupActivity extends AppCompatActivity {
         viewModel.getCartViewModel().getCartFoods().observe(this, new Observer<List<CartFood>>() {
             @Override
             public void onChanged(List<CartFood> cartFoods) {
-                viewModel.calculateTotalPrice();
-                DecimalFormat formatter = new DecimalFormat("#,##0.##");
                 activityCartPickupBinding.btnPay.setText(formatter.format(viewModel.getCartViewModel().getTotalFood().getValue()) + getString(R.string.vndUnit));
                 activityCartPickupBinding.orderDetails
                         .txtPrice.setText(formatter.format(viewModel.getCartViewModel().getTotalFood().getValue()) + getString(R.string.vndUnit));
-
-                activityCartPickupBinding.orderDetails.txtShip.setVisibility(View.GONE);
-                activityCartPickupBinding.orderDetails.txtShipStr.setVisibility(View.GONE);
 
                 adapter.setCartFoods(cartFoods);
                 adapter.notifyDataSetChanged();
             }
         });
+        viewModel.getTotal().observe(this, totalPrice->setTotalPriceUI(totalPrice));
+        viewModel.getCartViewModel().getDiscount().observe(this, dis->setPromoPriceUI(dis));
+        viewModel.getCartViewModel().getPromo().observe(this, new Observer<Promo>() {
+            @Override
+            public void onChanged(Promo promo) {
+                if(promo!=null){
+                    activityCartPickupBinding.txtUsePromo.setText(promo.getPromoCode());
+                }else{
+                    activityCartPickupBinding.txtUsePromo.setText("Sử dụng mã giảm giá");
+                }
+            }
+        });
     }
-
+    private final   DecimalFormat formatter = new DecimalFormat("#,##0.##");
+    private void setTotalPriceUI(double totalPrice){
+        activityCartPickupBinding.btnPay.setText(formatter.format(totalPrice) + getString(R.string.vndUnit));
+        }
+        private void setPromoPriceUI(double promoPrice){
+            if(promoPrice>0){
+                activityCartPickupBinding.orderDetails.txtPromo.setVisibility(View.VISIBLE);
+                activityCartPickupBinding.orderDetails.txtPromoPricr.setVisibility(View.VISIBLE);
+                activityCartPickupBinding.orderDetails.txtPromoPricr.setText("- "+
+                        formatter.format(promoPrice) + getString(R.string.vndUnit));
+            }else{
+                activityCartPickupBinding.orderDetails.txtPromo.setVisibility(View.GONE);
+                activityCartPickupBinding.orderDetails.txtPromoPricr.setVisibility(View.GONE);
+            }
+        }
     private static final String PLACEORDER="PLACE ORDER";
     private FirebaseFirestore firestore;
     public void placeOrder(){
         try{
             HashMap<String, Object> map=new HashMap<>();
-            map.put("user", Data.instance.userId);
+            map.put("user", AuthRepository.getInstance().getCurrentUser().getId());
             map.put("store", viewModel.getStorePickup().getValue().getId());
+
+            //TODO: put promo
+//            if(viewModel.getCartViewModel().getPromo().getValue()!=null){
+//                map.put("promo", viewModel.getCartViewModel().getPromo().getValue().getPromoCode());
+//            }
 
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
             map.put("dateOrder", format.format(new Date()));
 
             map.put("pickupTime", format.format(viewModel.getTimePickup().getValue()));
-
             List<HashMap<String, Object>> listFoods=new ArrayList<>();
             for (CartFood cf :
                     viewModel.getCartViewModel().getCartFoods().getValue()) {
@@ -235,8 +309,15 @@ public class CartPickupActivity extends AppCompatActivity {
 
             ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
             String json = ow.writeValueAsString(map);
-            Log.d("PLACE ORDER", json);
+//            Log.d(PLACEORDER, json);
             try {
+                LoadingDialog dialog=new LoadingDialog();
+
+                CartPickupActivity.this.runOnUiThread(new Runnable() {
+                    public void run() {
+                        dialog.showDialog(CartPickupActivity.this);
+                    }
+                });
                 post(urlPlaceOrder, json, new Callback() {
                     @Override
                     public void onFailure(@NonNull Call call, @NonNull IOException e) {
@@ -252,15 +333,10 @@ public class CartPickupActivity extends AppCompatActivity {
                                     JSONObject token = new JSONObject(jsonData);
                                     if(token.has("orderID")){
                                         String orderId=token.get("orderID").toString();
-                                        LoadingDialog dialog=new LoadingDialog();
-
-                                        CartPickupActivity.this.runOnUiThread(new Runnable() {
-                                            public void run() {
-                                                dialog.showDialog(CartPickupActivity.this);
-                                            }
-                                        });
                                         firestore = FirebaseFirestore.getInstance();
-                                        firestore.collection("beorders").document(orderId).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                        firestore.collection("beorders")
+                                                .document(orderId)
+                                                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                                             @Override
                                             public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
                                                 //TODO: add listener
@@ -270,7 +346,24 @@ public class CartPickupActivity extends AppCompatActivity {
                                                     } else{
                                                         CartPickupActivity.this.runOnUiThread(new Runnable() {
                                                             public void run() {
+                                                                SqliteHelper repo=new SqliteHelper(CartPickupActivity.this);
+                                                                for (CartFood cf :
+                                                                        viewModel.getCartViewModel().getCartFoods().getValue()) {
+                                                                    repo.deleteCartFood(cf.getId());
+                                                                }
+                                                                viewModel.getCartViewModel().getCartFoods().postValue(new ArrayList<>());
+                                                                NotificationDialog alertDialog=new NotificationDialog(
+                                                                        NotificationDialog.NotificationType.success,
+                                                                        "Đặt hàng thành công",
+                                                                        new View.OnClickListener() {
+                                                                            @Override
+                                                                            public void onClick(View v) {
+                                                                                dialog.dismiss();
+                                                                                onBackPressed();
+                                                                            }
+                                                                        });
                                                                 dialog.dismiss();
+                                                                alertDialog.show(getSupportFragmentManager(), PLACEORDER);
                                                             }
                                                         });
                                                         Log.d(PLACEORDER, "Tạo thành công");
@@ -280,15 +373,40 @@ public class CartPickupActivity extends AppCompatActivity {
                                         });
                                         Log.d(PLACEORDER, "orderID" + orderId);
                                     }else{
+                                        dialog.dismiss();
+                                        NotificationDialog alertDialog=new NotificationDialog(
+                                                NotificationDialog.NotificationType.failed,
+                                                "Đặt hàng không thành công",
+                                                new View.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(View v) {
+                                                        dialog.dismiss();
+                                                        onBackPressed();
+                                                    }
+                                                });
+                                        alertDialog.show(getSupportFragmentManager(), PLACEORDER);
                                         Log.e(PLACEORDER, "Receive json error");
                                     }
                                 } catch (JSONException e) {
+                                    dialog.dismiss();
+                                    NotificationDialog alertDialog=new NotificationDialog(
+                                            NotificationDialog.NotificationType.failed,
+                                            "Đặt hàng không thành công",
+                                            new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View v) {
+                                                    dialog.dismiss();
+                                                    onBackPressed();
+                                                }
+                                            });
+                                    alertDialog.show(getSupportFragmentManager(), PLACEORDER);
                                     Log.e(PLACEORDER, e.getMessage());
                                 }
                             }
                         }
                         else {
                             if(response.code()==400){
+                                dialog.dismiss();
                                 Log.d(PLACEORDER, "Invalid request body");
                             }
                         }

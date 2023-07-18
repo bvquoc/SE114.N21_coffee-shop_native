@@ -42,7 +42,7 @@ public class CartPickupViewModel extends ViewModel {
     private MutableLiveData<Date> timePickup=new MutableLiveData<>();
     private MutableLiveData<List<Date>> dayList=new MutableLiveData<>();
     private MutableLiveData<List<Integer>> hourStartTimeList=new MutableLiveData<>();
-
+    private MutableLiveData<Double> total=new MutableLiveData<>();
     public CartPickupViewModel() {
         cartViewModel=CartViewModel.getInstance();
         CartButtonViewModel.getInstance().getSelectedStore().observeForever(new Observer<Store>() {
@@ -50,12 +50,20 @@ public class CartPickupViewModel extends ViewModel {
             public void onChanged(Store store) {
                 storePickup.setValue(store);
                 initDayTimeList();
+                    if(storePickup.getValue()!=null){
+                        initSelectedDate();
+                    }
             }
         });
-        if(storePickup.getValue()!=null){
-            initSelectedDate();
-        }
+        cartViewModel.getDiscount().observeForever(
+                dis->calculateTotalPrice());
+
+
 //        initDayTimeList();
+    }
+
+    public MutableLiveData<Double> getTotal() {
+        return total;
     }
 
     public CartViewModel getCartViewModel() {
@@ -123,7 +131,7 @@ public class CartPickupViewModel extends ViewModel {
         this.dayList.setValue(listDay);
         this.hourStartTimeList.setValue(listHourStartTime);
     }
-    private void initSelectedDate(){
+    public void initSelectedDate(){
         Date date= getDayList().getValue().get(0);
         int selectedTimeIndex=getHourStartTimeList().getValue().get(0);
         int hour=selectedTimeIndex/2;
@@ -142,11 +150,14 @@ public class CartPickupViewModel extends ViewModel {
         return date.getHourOfDay()
                 * 2 + (date.getMinuteOfHour() > 30 ? 2 : 1);
     }
-
-    public String datetimeToHour(Date dateTime) {
-        int index=dateTimeToHour(dateTime);
-        return indexToTime(index);
+    public Integer dateTimeToHourEqual(Date dateTime) {
+        DateTime date=new DateTime(dateTime);
+        int day=date.getHourOfDay();
+        int minute=date.getMinuteOfHour();
+        return date.getHourOfDay()
+                * 2 + (date.getMinuteOfHour() > 30 ? 1 : 0);
     }
+
     String indexToTime(int index) {
         int hour = (index / 2);
         String hourString= hour < 10 ? "0"+hour : hour+"";
@@ -201,6 +212,10 @@ public class CartPickupViewModel extends ViewModel {
         return hourString+ ":"+minuteString;
     }
     public void calculateTotalPrice(){
-        cartViewModel.calculateTotalFood();
+        double total=cartViewModel.getTotalFood().getValue();
+        if(cartViewModel.getDiscount().getValue()!=null){
+            total=total-cartViewModel.getDiscount().getValue();
+        }
+        this.total.setValue(total);
     }
 }

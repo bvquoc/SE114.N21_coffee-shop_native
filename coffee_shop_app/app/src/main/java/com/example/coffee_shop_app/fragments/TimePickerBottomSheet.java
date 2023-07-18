@@ -69,7 +69,7 @@ public class TimePickerBottomSheet extends BottomSheetDialogFragment {
             @Override
             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
                 selectedTimeIndex=newVal;
-                Log.d("TIME", selectedTimeIndex+"..........");
+//                Log.d("TIME", selectedTimeIndex+"..........");
             }
         });
         int selectedDay=timePickerBottomSheetBinding.np.getValue();
@@ -79,15 +79,37 @@ public class TimePickerBottomSheet extends BottomSheetDialogFragment {
         selectedTimeIndex=minValue;
 
         initNumberPicker();
-        int timeCloseIndex=viewModel.dateTimeToHour(viewModel.getStorePickup().getValue().getTimeClose());
+        int timeCloseIndex=viewModel.dateTimeToHourEqual(viewModel.getStorePickup().getValue().getTimeClose());
         viewModel.getHourStartTimeList().observe(getViewLifecycleOwner(), new Observer<List<Integer>>() {
             @Override
             public void onChanged(List<Integer> integers) {
+//                timePickerBottomSheetBinding.np2.setDisplayedValues(null);
+//                int selectedDay=timePickerBottomSheetBinding.np.getValue();
+//                int minValue=viewModel.getHourStartTimeList().getValue().get(selectedDay);
+//                timePickerBottomSheetBinding.np2
+//                        .setMinValue(minValue);
+//
+//                String[] timeDisplays= viewModel.timeListToArray(minValue, timeCloseIndex);
+//                if(timeDisplays.length!=
+//                        timePickerBottomSheetBinding.np2.getMaxValue() - timePickerBottomSheetBinding.np2.getMinValue() + 1
+//                || timePickerBottomSheetBinding.np2.getMaxValue()<timePickerBottomSheetBinding.np2.getMinValue()){
+//                    initNumberPicker();
+//                } else{
+//                    timePickerBottomSheetBinding.np2.setDisplayedValues(timeDisplays);
+//                }
+
+                timePickerBottomSheetBinding.np2.setDisplayedValues(null);
+
                 int selectedDay=timePickerBottomSheetBinding.np.getValue();
                 int minValue=viewModel.getHourStartTimeList().getValue().get(selectedDay);
                 timePickerBottomSheetBinding.np2
                         .setMinValue(minValue);
-                timePickerBottomSheetBinding.np2.setDisplayedValues(viewModel.timeListToArray(minValue, timeCloseIndex));
+                String[] timeList=viewModel.timeListToArray(minValue, timeCloseIndex);
+                if(timeList.length==0){
+                    timePickerBottomSheetBinding.np2.setDisplayedValues(null);
+                }else{
+                    timePickerBottomSheetBinding.np2.setDisplayedValues(timeList);
+                }
             }
         });
         timePickerBottomSheetBinding.np.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
@@ -99,7 +121,12 @@ public class TimePickerBottomSheet extends BottomSheetDialogFragment {
                 timePickerBottomSheetBinding.np2.setMinValue(minValue);
                 timePickerBottomSheetBinding.np2.setValue(minValue);
                 selectedTimeIndex=minValue;
-                timePickerBottomSheetBinding.np2.setDisplayedValues(viewModel.timeListToArray(minValue, timeCloseIndex));
+                String[] timeList=viewModel.timeListToArray(minValue, timeCloseIndex);
+                if(timeList.length==0){
+                    timePickerBottomSheetBinding.np2.setDisplayedValues(null);
+                }else{
+                    timePickerBottomSheetBinding.np2.setDisplayedValues(timeList);
+                }
             }
         });
 
@@ -119,7 +146,7 @@ public class TimePickerBottomSheet extends BottomSheetDialogFragment {
         });
     }
     public void initNumberPicker(){
-        int timeCloseIndex=viewModel.dateTimeToHour(viewModel.getStorePickup().getValue().getTimeClose());
+        int timeCloseIndex=viewModel.dateTimeToHourEqual(viewModel.getStorePickup().getValue().getTimeClose());
         int minValueDay=0;
         int maxValueDay=viewModel.getDayList().getValue().size()-1;
         timePickerBottomSheetBinding.np.setMinValue(minValueDay);
