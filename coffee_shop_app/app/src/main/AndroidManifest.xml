@@ -80,9 +80,6 @@
             android:name=".activities.MainPageActivity"
             android:exported="true" />
         <activity
-            android:name=".activities.HomeActivity"
-            android:exported="false" />
-        <activity
             android:name=".activities.SearchFoodActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustPan" />
@@ -94,12 +91,6 @@
         <activity
             android:name=".activities.address.AddressListingActivity"
             android:exported="true" />
-        <activity
-            android:name=".activities.PickupMenuActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activities.DeliveryMenuActivity"
-            android:exported="false" />
     </application>
 
 </manifest>
