@@ -26,8 +26,8 @@
         android:label="fragment_manage_store_admin"
         tools:layout="@layout/fragment_manage_user_admin" />
     <fragment
-        android:id="@+id/usersAdminFragment"
-        android:name="com.example.coffee_shop_staff_admin.fragments.UsersAdminFragment"
-        android:label="fragment_users_admin"
-        tools:layout="@layout/fragment_users_admin" />
+        android:id="@+id/profileFragment"
+        android:name="com.example.coffee_shop_staff_admin.fragments.profile.ProfileFragment"
+        android:label="fragment_profile"
+        tools:layout="@layout/fragment_profile" />
 </navigation>
