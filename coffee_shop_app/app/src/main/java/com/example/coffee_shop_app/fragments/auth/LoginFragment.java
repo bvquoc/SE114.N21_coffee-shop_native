@@ -136,6 +136,8 @@ public class LoginFragment extends Fragment {
     private void setOnLoginGoogle() {
         //Google configure
         GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                //if this show an error, just ignore it
+                //it happen because of firebase security method
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
