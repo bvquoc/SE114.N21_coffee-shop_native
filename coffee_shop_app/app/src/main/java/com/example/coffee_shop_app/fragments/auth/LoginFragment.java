@@ -9,6 +9,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
@@ -95,9 +96,6 @@ public class LoginFragment extends Fragment {
         rememberMe = view.findViewById(R.id.checkbox_remember);
         goForgot = view.findViewById(R.id.btn_go_forgot);
 
-//        savedStateHandle = NavHostFragment.findNavController(this).getPreviousBackStackEntry().getSavedStateHandle();
-//        savedStateHandle.set("IS_LOGGED_IN", false);
-
         Toolbar toolbar = view.findViewById(R.id.my_toolbar);
         toolbar.setTitle("");
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -120,15 +118,17 @@ public class LoginFragment extends Fragment {
                     "Loading. Please wait...", true);
             String email = emailEdit.getText().toString();
             String password = passEdit.getText().toString();
-            SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPref.edit();
+
+            //SharedPrefs set
+            SharedPreferences sharedPref = ((AppCompatActivity) requireActivity()).getSharedPreferences("com.example.coffee_shop_app", Context.MODE_PRIVATE);
+
             if(rememberMe.isChecked()){
-                editor.putBoolean(getString(R.string.is_remember_me), true);
+                sharedPref.edit().putBoolean("isRememberMe", true).apply();
             }
             else {
-                editor.putBoolean(getString(R.string.is_remember_me), false);
+                sharedPref.edit().putBoolean("isRememberMe", false).apply();
             }
-            editor.apply();
+            //end set
 
             if (canLogin(email, password)) {
                 authVM.onEmailSignIn(email, password, params -> {
