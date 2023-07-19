@@ -9,10 +9,7 @@ import com.example.coffee_shop_staff_admin.models.Food;
 import com.example.coffee_shop_staff_admin.models.FoodChecker;
 import com.example.coffee_shop_staff_admin.models.Store;
 import com.example.coffee_shop_staff_admin.models.StoreProduct;
-import com.example.coffee_shop_staff_admin.models.Topping;
-import com.example.coffee_shop_staff_admin.repositories.FoodRepository;
 import com.example.coffee_shop_staff_admin.repositories.StoreRepository;
-import com.example.coffee_shop_staff_admin.repositories.ToppingRepository;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,7 +23,7 @@ public class StaffProductDetailViewModel extends BaseObservable {
     StoreRepository storeRepository = StoreRepository.getInstance();
 
     public StaffProductDetailViewModel(StoreProduct product) {
-        currentStore = StoreRepository.getInstance().getCurrentStore();
+        currentStore = StoreRepository.getInstance().getCurrentStoreLiveData();
         this.product = product;
     }
 

@@ -3,17 +3,14 @@ package com.example.coffee_shop_staff_admin.viewmodels.product;
 import androidx.databinding.BaseObservable;
 import androidx.databinding.Bindable;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
 
 import com.example.coffee_shop_staff_admin.BR;
 import com.example.coffee_shop_staff_admin.models.Food;
 import com.example.coffee_shop_staff_admin.models.FoodChecker;
-import com.example.coffee_shop_staff_admin.models.Order;
 import com.example.coffee_shop_staff_admin.models.Store;
 import com.example.coffee_shop_staff_admin.models.StoreProduct;
 import com.example.coffee_shop_staff_admin.models.Topping;
 import com.example.coffee_shop_staff_admin.repositories.FoodRepository;
-import com.example.coffee_shop_staff_admin.repositories.OrderRepository;
 import com.example.coffee_shop_staff_admin.repositories.StoreRepository;
 import com.example.coffee_shop_staff_admin.repositories.ToppingRepository;
 
@@ -21,7 +18,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class ProductOfStoreViewModel extends BaseObservable {
     private static ProductOfStoreViewModel instance;
@@ -41,14 +37,12 @@ public class ProductOfStoreViewModel extends BaseObservable {
         return toppingListLiveData;
     }
 
-    private MutableLiveData<Store> currentStore;
     private final MutableLiveData<List<StoreProduct>> drinkListLiveData = new MutableLiveData<>(new ArrayList<>());
 
     private final MutableLiveData<List<StoreProduct>> toppingListLiveData = new MutableLiveData<>(new ArrayList<>());
     StoreRepository storeRepository = StoreRepository.getInstance();
     public ProductOfStoreViewModel() {
-
-        StoreRepository.getInstance().getCurrentStore().observeForever(store -> {
+        StoreRepository.getInstance().getCurrentStoreLiveData().observeForever(store -> {
             FoodRepository.getInstance().getFoodListMutableLiveData().observeForever(listFood -> {
                 setLoading(true);
 //            turn to FoodChecker and post value
@@ -65,6 +59,7 @@ public class ProductOfStoreViewModel extends BaseObservable {
                 drinkListLiveData.postValue(transList);
                 setLoading(false);
             });
+
             ToppingRepository.getInstance().getToppingListMutableLiveData().observeForever(listTopping -> {
                 setLoading(true);
 //            turn to StoreProduct and post value
@@ -84,7 +79,7 @@ public class ProductOfStoreViewModel extends BaseObservable {
     }
 
     public void onUpdateProduct(StoreProduct product) {
-        Store storeRef = currentStore.getValue();
+        Store storeRef = StoreRepository.getInstance().getCurrentStoreLiveData().getValue();
         if(product instanceof FoodChecker){
 
             Map<String, List<String>> stateFood = storeRef.getStateFood();
@@ -146,8 +141,11 @@ public class ProductOfStoreViewModel extends BaseObservable {
         onUpdateProductByPass(storeRef, product);
     }
     public void onUpdateProductByPass(Store storeRef, StoreProduct product){
+
         storeRepository.updateProduct(storeRef, params -> {
-            currentStore.postValue(storeRef);
+
+            StoreRepository.getInstance().getCurrentStoreLiveData().postValue(storeRef);
+
             List<StoreProduct> newList = new ArrayList<>();
             if(product instanceof FoodChecker) {
                 for (StoreProduct item : drinkListLiveData.getValue()) {
