@@ -2,19 +2,14 @@ package com.example.coffee_shop_app.repository;
 
 import android.util.Log;
 
-import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
 
-import com.example.coffee_shop_app.models.Size;
 import com.example.coffee_shop_app.models.Topping;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class ToppingRepository {
@@ -25,7 +20,7 @@ public class ToppingRepository {
     private ToppingRepository() {
         toppingListMutableLiveData = new MutableLiveData<>();
         //define firestore
-        firestore = FirebaseFirestore.getInstance();
+        fireStore = FirebaseFirestore.getInstance();
     }
     public static synchronized ToppingRepository getInstance() {
         if (instance == null) {
@@ -35,8 +30,8 @@ public class ToppingRepository {
     }
 
     //properties
-    private MutableLiveData<List<Topping>> toppingListMutableLiveData;
-    private FirebaseFirestore firestore;
+    private final MutableLiveData<List<Topping>> toppingListMutableLiveData;
+    private final FirebaseFirestore fireStore;
 
     //Function
     public MutableLiveData<List<Topping>> getToppingListMutableLiveData() {
@@ -48,14 +43,16 @@ public class ToppingRepository {
     }
     void registerSnapshotListener()
     {
-        firestore.collection("Topping").addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                Log.d(TAG, "get toppings started.");
-                getTopping(value);
-                Log.d(TAG, "get toppings finishes.");
-            }
-        });
+        fireStore.collection("Topping")
+                .orderBy("name")
+                .addSnapshotListener((value, error) -> {
+                    Log.d(TAG, "get toppings started.");
+                    if(value!=null)
+                    {
+                        getTopping(value);
+                    }
+                    Log.d(TAG, "get toppings finishes.");
+                });
     }
     void getTopping(QuerySnapshot value)
     {
@@ -65,12 +62,6 @@ public class ToppingRepository {
                 toppingList.add(Topping.fromFireBase(doc));
             }
         }
-        toppingList.sort(new Comparator<Topping>() {
-            @Override
-            public int compare(Topping o1, Topping o2) {
-                return o1.getName().compareTo(o2.getName());
-            }
-        });
         toppingListMutableLiveData.postValue(toppingList);
     }
 }

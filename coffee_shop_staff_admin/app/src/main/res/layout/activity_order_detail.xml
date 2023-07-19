@@ -234,6 +234,15 @@
                                 android:layout_height="wrap_content"
                                 android:text="285 CMT8, D.10, HCM city" />
 
+                            <TextView
+                                android:id="@+id/txtAddressNote"
+                                android:layout_marginTop="@dimen/_4sdp"
+                                style="@style/regularGrey14"
+                                android:layout_toEndOf="@id/icon_location"
+                                android:layout_below="@id/txtToAddress"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="note" />
                         </RelativeLayout>
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>

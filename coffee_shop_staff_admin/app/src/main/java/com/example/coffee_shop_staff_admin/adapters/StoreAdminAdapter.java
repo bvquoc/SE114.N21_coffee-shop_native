@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.coffee_shop_staff_admin.R;
 import com.example.coffee_shop_staff_admin.models.Store;
+import com.example.coffee_shop_staff_admin.utils.CompareHelper;
 import com.example.coffee_shop_staff_admin.utils.interfaces.OnStoreAdminClickListener;
 
 import java.text.DecimalFormat;
@@ -48,8 +49,11 @@ public class StoreAdminAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 } else {
                     List<Store> filteredList = new ArrayList<>();
                     for (Store model : stores) {
-                        if (model.getShortName().toLowerCase().contains(query.toLowerCase()) ||
-                            model.getAddress().getFormattedAddress().toLowerCase().contains(query.toLowerCase())) {
+                        if(
+                            CompareHelper.compareContainTextUnicode(model.getShortName().toLowerCase(), query.toLowerCase()) ||
+                            CompareHelper.compareContainTextUnicode(model.getAddress().getFormattedAddress().toLowerCase(), query.toLowerCase())
+                        )
+                        {
                             filteredList.add(model);
                         }
                     }

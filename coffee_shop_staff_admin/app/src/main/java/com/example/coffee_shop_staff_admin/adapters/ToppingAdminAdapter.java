@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.coffee_shop_staff_admin.R;
 import com.example.coffee_shop_staff_admin.models.Topping;
+import com.example.coffee_shop_staff_admin.utils.CompareHelper;
 import com.example.coffee_shop_staff_admin.utils.interfaces.OnToppingAdminClickListener;
 
 import java.text.DecimalFormat;
@@ -50,7 +51,8 @@ public class ToppingAdminAdapter extends RecyclerView.Adapter implements Filtera
                 } else {
                     List<Topping> filteredList = new ArrayList<>();
                     for (Topping model : toppings) {
-                        if (model.getName().toLowerCase().contains(query.toLowerCase())) {
+                        if(CompareHelper.compareContainTextUnicode(model.getName().toLowerCase(), query.toLowerCase()))
+                        {
                             filteredList.add(model);
                         }
                     }

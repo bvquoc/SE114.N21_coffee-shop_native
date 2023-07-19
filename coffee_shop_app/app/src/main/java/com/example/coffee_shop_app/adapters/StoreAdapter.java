@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.coffee_shop_app.R;
 import com.example.coffee_shop_app.models.Store;
+import com.example.coffee_shop_app.utils.CompareHelper;
 import com.example.coffee_shop_app.utils.LocationHelper;
 import com.example.coffee_shop_app.utils.interfaces.OnStoreClickListener;
 import com.google.android.gms.maps.model.LatLng;
@@ -143,7 +144,11 @@ public class StoreAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 List<Store> filteredList = new ArrayList<>();
                 if (!query.isEmpty()) {
                     for (Store model : stores) {
-                        if (model.getAddress().getFormattedAddress().toLowerCase().contains(query.toLowerCase())) {
+                        if(
+                            CompareHelper.compareContainTextUnicode(model.getShortName().toLowerCase(), query.toLowerCase()) ||
+                            CompareHelper.compareContainTextUnicode(model.getAddress().getFormattedAddress().toLowerCase(), query.toLowerCase())
+                        )
+                        {
                             filteredList.add(model);
                         }
                     }

@@ -10,13 +10,11 @@ import com.example.coffee_shop_app.models.Product;
 import com.example.coffee_shop_app.viewmodels.CartButtonViewModel;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +51,7 @@ public class ProductRepository {
     }
     public void registerSnapshotListener(Map<String, List<String>> stateFood)
     {
-        fireStore.collection("Food").addSnapshotListener((value, error) -> {
+        fireStore.collection("Food").orderBy("name").addSnapshotListener((value, error) -> {
             Log.d(TAG, "get products started.");
             if(value!=null)
             {
@@ -64,7 +62,8 @@ public class ProductRepository {
     }
     void getProduct(QuerySnapshot value, Map<String, List<String>> stateFood)
     {
-        DocumentReference userRef = fireStore.collection("users").document(Objects.requireNonNull(AuthRepository.getInstance().getCurrentUser()).getId());
+        DocumentReference userRef = fireStore.collection("users")
+                .document(Objects.requireNonNull(AuthRepository.getInstance().getCurrentUser()).getId());
         userRef
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
@@ -84,8 +83,6 @@ public class ProductRepository {
                             }
                         }
 
-                        productList.sort(Comparator.comparing(Product::getName));
-
                         productListMutableLiveData.postValue(productList);
                     }
                 })
@@ -94,47 +91,44 @@ public class ProductRepository {
 
     public void updateFavorite(String prdId, boolean isFav){
         fireStore.collection("users")
-                .document(AuthRepository.getInstance().getCurrentUser().getId())
-                .get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        Map<String, Object> map=documentSnapshot.getData();
-                        List<String> favorites=new ArrayList<>();
-                        if(map!=null && map.containsKey("favoriteFoods")){
-                             favorites=(List<String>)(map.get("favoriteFoods"));
-                        }
-
-                        if(favorites.contains(prdId)){
-                            if(!isFav){
-                                favorites.remove(prdId);
-                            }
-                        } else{
-                            if(isFav){
-                                favorites.add(prdId);
-                            }
-                        }
-
-                        fireStore.collection("users")
-                                .document(AuthRepository.getInstance().getCurrentUser().getId())
-                                .update("favoriteFoods", favorites).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void unused) {
-                                      List<Product> tempList=
-                                              ProductRepository.getInstance().getProductListMutableLiveData().getValue();
-                                        if(tempList!=null)
-                                        {
-                                            for (Product prd:tempList) {
-                                                if(prd.getId().equals(prdId))
-                                                {
-                                                    prd.setFavorite(isFav);
-                                                    break;
-                                                }
-                                            }
-                                            ProductRepository.getInstance().getProductListMutableLiveData().setValue(tempList);
-                                        }
-                                    }
-                                });
+                .document(Objects.requireNonNull(AuthRepository.getInstance().getCurrentUser()).getId())
+                .get().addOnSuccessListener(documentSnapshot -> {
+                    Map<String, Object> map=documentSnapshot.getData();
+                    List<String> favorites=new ArrayList<>();
+                    if(map!=null && map.containsKey("favoriteFoods")){
+                         favorites=(List<String>)(map.get("favoriteFoods"));
                     }
+
+                    if(favorites.contains(prdId)){
+                        if(!isFav){
+                            favorites.remove(prdId);
+                        }
+                    } else{
+                        if(isFav){
+                            favorites.add(prdId);
+                        }
+                    }
+
+                    fireStore.collection("users")
+                            .document(AuthRepository.getInstance().getCurrentUser().getId())
+                            .update("favoriteFoods", favorites).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void unused) {
+                                  List<Product> tempList=
+                                          ProductRepository.getInstance().getProductListMutableLiveData().getValue();
+                                    if(tempList!=null)
+                                    {
+                                        for (Product prd:tempList) {
+                                            if(prd.getId().equals(prdId))
+                                            {
+                                                prd.setFavorite(isFav);
+                                                break;
+                                            }
+                                        }
+                                        ProductRepository.getInstance().getProductListMutableLiveData().setValue(tempList);
+                                    }
+                                }
+                            });
                 });
     }
 }

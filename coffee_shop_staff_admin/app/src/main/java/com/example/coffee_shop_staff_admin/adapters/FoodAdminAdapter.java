@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.coffee_shop_staff_admin.R;
 import com.example.coffee_shop_staff_admin.models.Food;
+import com.example.coffee_shop_staff_admin.utils.CompareHelper;
 import com.example.coffee_shop_staff_admin.utils.interfaces.OnFoodAdminClickListener;
 
 import java.text.DecimalFormat;
@@ -52,7 +53,8 @@ public class FoodAdminAdapter extends RecyclerView.Adapter implements Filterable
                 } else {
                     List<Food> filteredList = new ArrayList<>();
                     for (Food model : foods) {
-                        if (model.getName().toLowerCase().contains(query.toLowerCase())) {
+                        if(CompareHelper.compareContainTextUnicode(model.getName().toLowerCase(), query.toLowerCase()))
+                        {
                             filteredList.add(model);
                         }
                     }
