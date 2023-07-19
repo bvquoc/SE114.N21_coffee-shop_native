@@ -21,6 +21,8 @@ import com.example.coffee_shop_staff_admin.R;
 import com.example.coffee_shop_staff_admin.adapters.DeliveryCardAdapter;
 import com.example.coffee_shop_staff_admin.adapters.OrderProdItemAdapter;
 import com.example.coffee_shop_staff_admin.databinding.ActivityOrderDetailBinding;
+import com.example.coffee_shop_staff_admin.fragments.ConfirmDialog;
+import com.example.coffee_shop_staff_admin.fragments.LoadingDialog;
 import com.example.coffee_shop_staff_admin.models.Order;
 import com.example.coffee_shop_staff_admin.repositories.OrderRepository;
 import com.example.coffee_shop_staff_admin.viewmodels.OrderOfStoreViewModel;
@@ -70,48 +72,72 @@ public class OrderDetailActivity extends AppCompatActivity {
         activityOrderDetailBinding.btnChangeStatus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                HashMap<String, String> map=new HashMap<>();
-                map.put("status", activityOrderDetailBinding.statusChange.getText().toString());
-                ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-                try {
-                    String json = ow.writeValueAsString(map);
-                    String url=urlSetStatus+order.getId();
-                    post(url, json, new Callback() {
-                        @Override
-                        public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                            Log.e(TAG, e.getMessage());
-                        }
-
-                        @Override
-                        public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                            if (response.isSuccessful()) {
-                                int code=response.code();
-                                if(response.code()==200){
-                                    try {
-                                        String jsonData = response.body().string();
-                                        JSONObject token = new JSONObject(jsonData);
-                                        if(token.has("orderId")){
-                                            String orderId=token.get("orderId").toString();
-                                            Log.d(TAG, "Set order status successfully: " + orderId);
-                                        }else{
-                                            Log.e(TAG, "Receive json error");
-                                        }
-                                    } catch (JSONException e) {
-                                        Log.e(TAG, e.getMessage());
-                                    }
+                String status=activityOrderDetailBinding.statusChange.getText().toString();
+                if(status.equals(getString(R.string.statusComplete))
+                || status.equals(getString(R.string.statusDelivered))
+                || status.equals(getString(R.string.statusCancelled))
+                || status.equals(getString(R.string.statusDeliveryFailed))){
+                    ConfirmDialog confirmDialog=new ConfirmDialog(
+                            "Xác nhận",
+                            "Trạng thái được chọn là trạng thái cuối cùng, bạn sẽ không thể thay đổi trạng thái đơn hàng nữa ?",
+                            new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    setStatus(status);
                                 }
-                            }
-                            else {
-                                if(response.code()==400){
-                                    Log.d(TAG, "Invalid order ID");
-                                }
-                            }
-                        }
-                    });
-                } catch (JsonProcessingException e) {
-                    Log.d(TAG, "Get json string failed");
+                            }, null);
+                    confirmDialog.show(getSupportFragmentManager(), TAG);
+                }else{
+                    setStatus(status);
                 }
-            }
+
+    }
+    private void setStatus(String status){
+        LoadingDialog loadingDialog=new LoadingDialog();
+        loadingDialog.showDialog(OrderDetailActivity.this);
+        HashMap<String, String> map=new HashMap<>();
+        map.put("status", status);
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        try {
+            String json = ow.writeValueAsString(map);
+            String url=urlSetStatus+order.getId();
+            post(url, json, new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    Log.e(TAG, e.getMessage());
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    loadingDialog.dismiss();
+                    if (response.isSuccessful()) {
+                        int code=response.code();
+                        if(response.code()==200){
+                            try {
+                                String jsonData = response.body().string();
+                                JSONObject token = new JSONObject(jsonData);
+                                if(token.has("orderId")){
+                                    String orderId=token.get("orderId").toString();
+                                    Log.d(TAG, "Set order status successfully: " + orderId);
+                                }else{
+                                    Log.e(TAG, "Receive json error");
+                                }
+                            } catch (JSONException e) {
+                                Log.e(TAG, e.getMessage());
+                            }
+                        }
+                    }
+                    else {
+                        if(response.code()==400){
+                            Log.d(TAG, "Invalid order ID");
+                        }
+                    }
+                }
+            });
+        } catch (JsonProcessingException e) {
+            Log.d(TAG, "Get json string failed");
+        }
+    }
         });
         String orderId = OrderDetailActivity.this.getIntent().getStringExtra("orderId");
         OrderRepository.getInstance().getOrderListMutableLiveData().observe(this, new Observer<List<Order>>() {
@@ -130,7 +156,6 @@ public class OrderDetailActivity extends AppCompatActivity {
             }
         });
     }
-
     DecimalFormat formatter = new DecimalFormat("#,##0.##");
     private void setOrder(){
         boolean isPickup=false;
@@ -145,17 +170,21 @@ public class OrderDetailActivity extends AppCompatActivity {
                 activityOrderDetailBinding.imgOrderStatus.setImageResource(R.drawable.img_preparing);
             }
             activityOrderDetailBinding.txtStatusLabel.setTextColor(ContextCompat.getColor(this, R.color.orange));
+            activityOrderDetailBinding.txtStatusLabel.setBackground(ContextCompat.getDrawable(
+                    OrderDetailActivity.this, R.drawable.order_preparing_round_text));
+
         } else if(order.getStatus().equals(getString(R.string.statusDelivering))
                 ||order.getStatus().equals(getString(R.string.statusReady))){
+            activityOrderDetailBinding.txtStatusLabel.setTextColor(ContextCompat.getColor(this, R.color.blue));
+            activityOrderDetailBinding.txtStatusLabel.setBackground(ContextCompat.getDrawable(
+                    OrderDetailActivity.this, R.drawable.order_delivering_round_text));
             if(isPickup){
                 activityOrderDetailBinding.imgOrderStatus.setImageResource(R.drawable.img_ready_for_pickup);
             }else{
                 activityOrderDetailBinding.imgOrderStatus.setImageResource(R.drawable.img_delivering);
             }
-            activityOrderDetailBinding.txtStatusLabel.setTextColor(ContextCompat.getColor(this, R.color.blue));
-            activityOrderDetailBinding.txtStatusLabel.setBackground(ContextCompat.getDrawable(
-                    OrderDetailActivity.this, R.drawable.order_delivering_round_text));
-        } else if(order.getStatus().equals(getString(R.string.statusDelivered))){
+        } else if(order.getStatus().equals(getString(R.string.statusDelivered))
+        || order.getStatus().equals(getString(R.string.statusComplete))){
             activityOrderDetailBinding.imgOrderStatus.setImageResource(R.drawable.img_delivered);
             activityOrderDetailBinding.txtStatusLabel.setTextColor(ContextCompat.getColor(this, R.color.green));
             activityOrderDetailBinding.txtStatusLabel.setBackground(ContextCompat.getDrawable(

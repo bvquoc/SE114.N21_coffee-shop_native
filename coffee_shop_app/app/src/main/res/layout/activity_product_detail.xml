@@ -228,7 +228,7 @@
                     android:layout_marginTop="@dimen/_8sdp"
                     android:background="@drawable/rounded_button"
                     android:elevation="0dp"
-                    android:text="@{@string/add_to_cart+' '+@string/format(viewModel.cartFood.totalPrice)+' '+'₫'}"
+                    android:text="@{@string/add_to_cart+' '+@string/format(viewModel.cartFood.totalPrice)+' '+'đ'}"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
                     android:textSize="@dimen/font16"
