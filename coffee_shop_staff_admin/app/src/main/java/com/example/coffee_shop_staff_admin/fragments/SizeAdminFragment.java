@@ -97,5 +97,9 @@ public class SizeAdminFragment extends Fragment {
             FoodRepository.getInstance().registerSnapshotListener();
             fragmentSizeAdminBinding.refreshLayout.setRefreshing(false);
         });
+
+        fragmentSizeAdminBinding.editTextFrame.setEndIconOnClickListener(v -> {
+            fragmentSizeAdminBinding.editText.setText("");
+        });
     }
 }

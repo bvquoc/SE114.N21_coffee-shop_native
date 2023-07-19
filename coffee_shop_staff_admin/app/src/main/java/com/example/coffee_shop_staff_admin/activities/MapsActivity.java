@@ -127,6 +127,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 finish();
             }
         });
+
+        activityMapsBinding.editTextFrame.setEndIconOnClickListener(v -> {
+            activityMapsBinding.editText.setText("");
+        });
     }
     @Override
     public void onMapReady(GoogleMap googleMap) {

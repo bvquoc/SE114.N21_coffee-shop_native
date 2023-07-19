@@ -58,6 +58,7 @@ public class FoodAdminFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         FoodRepository.getInstance().getFoodListMutableLiveData().observe(this, foods -> {
             foodAdminViewModel.setLoading(true);
             if(foods != null)
@@ -99,6 +100,9 @@ public class FoodAdminFragment extends Fragment {
             FoodRepository.getInstance().registerSnapshotListener();
             fragmentFoodAdminBinding.refreshLayout.setRefreshing(false);
         });
-        super.onViewCreated(view, savedInstanceState);
+
+        fragmentFoodAdminBinding.editTextFrame.setEndIconOnClickListener(v -> {
+            fragmentFoodAdminBinding.editText.setText("");
+        });
     }
 }

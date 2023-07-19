@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.coffee_shop_staff_admin.R;
 import com.example.coffee_shop_staff_admin.models.Promo;
+import com.example.coffee_shop_staff_admin.utils.CompareHelper;
 import com.example.coffee_shop_staff_admin.utils.interfaces.OnPromoAdminClickListener;
 
 import java.text.DateFormat;
@@ -57,7 +58,7 @@ public class PromoAdminAdapter extends RecyclerView.Adapter implements Filterabl
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof PromoViewHolder) {
-            Promo promo = promos.get(position);
+            Promo promo = promoFilter.get(position);
 
             PromoViewHolder promoViewHolder = (PromoViewHolder) holder;
 
@@ -142,7 +143,8 @@ public class PromoAdminAdapter extends RecyclerView.Adapter implements Filterabl
                 } else {
                     List<Promo> filteredList = new ArrayList<>();
                     for (Promo model : promos) {
-                        if (model.getPromoCode().toLowerCase().contains(query.toLowerCase())) {
+                        if(CompareHelper.compareContainTextUnicode(model.getPromoCode().toLowerCase(), query.toLowerCase()))
+                        {
                             filteredList.add(model);
                         }
                     }

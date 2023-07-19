@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.coffee_shop_staff_admin.R;
 import com.example.coffee_shop_staff_admin.models.Size;
+import com.example.coffee_shop_staff_admin.utils.CompareHelper;
 import com.example.coffee_shop_staff_admin.utils.interfaces.OnSizeAdminClickListener;
 
 import java.text.DecimalFormat;
@@ -49,7 +50,8 @@ public class SizeAdminAdapter extends RecyclerView.Adapter implements Filterable
                 } else {
                     List<Size> filteredList = new ArrayList<>();
                     for (Size model : sizes) {
-                        if (model.getName().toLowerCase().contains(query.toLowerCase())) {
+                        if(CompareHelper.compareContainTextUnicode(model.getName().toLowerCase(), query.toLowerCase()))
+                        {
                             filteredList.add(model);
                         }
                     }

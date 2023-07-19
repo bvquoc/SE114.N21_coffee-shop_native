@@ -56,7 +56,9 @@ public class FoodRepository {
     }
 
     public void registerSnapshotListener() {
-        fireStore.collection("Food").addSnapshotListener((value, error) -> {
+        fireStore.collection("Food")
+                .orderBy("name")
+                .addSnapshotListener((value, error) -> {
             Log.d(TAG, "get foods started.");
             if (value != null) {
                 getFood(value);
@@ -73,8 +75,6 @@ public class FoodRepository {
                 foodList.add(Food.fromFireBase(doc));
             }
         }
-
-        foodList.sort(Comparator.comparing(Food::getName));
 
         foodListMutableLiveData.postValue(foodList);
     }

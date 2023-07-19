@@ -100,5 +100,9 @@ public class PromoAdminFragment extends Fragment {
             FoodRepository.getInstance().registerSnapshotListener();
             fragmentPromoAdminBinding.refreshLayout.setRefreshing(false);
         });
+
+        fragmentPromoAdminBinding.editTextFrame.setEndIconOnClickListener(v -> {
+            fragmentPromoAdminBinding.editText.setText("");
+        });
     }
 }

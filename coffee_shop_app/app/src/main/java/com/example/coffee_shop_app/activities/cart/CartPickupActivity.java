@@ -211,6 +211,13 @@ public class CartPickupActivity extends AppCompatActivity {
             }
         });
         initPickupTime();
+        activityCartPickupBinding.pickupDetailCard.iconStoreChevron.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(CartPickupActivity.this, StoreActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private void initPickupTime(){

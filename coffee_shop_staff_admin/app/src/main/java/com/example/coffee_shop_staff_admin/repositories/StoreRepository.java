@@ -66,7 +66,9 @@ public class StoreRepository {
     }
     public void registerSnapshotListener()
     {
-        fireStore.collection("Store").addSnapshotListener((value, error) -> {
+        fireStore.collection("Store")
+                .orderBy("shortName")
+                .addSnapshotListener((value, error) -> {
             Log.d(TAG, "get stores started.");
             if(value!=null) {
                 getStore(value);
@@ -86,8 +88,6 @@ public class StoreRepository {
                 }
             }
         }
-
-        storeList.sort(Comparator.comparing(Store::getShortName));
 
         storeListMutableLiveData.postValue(storeList);
     }

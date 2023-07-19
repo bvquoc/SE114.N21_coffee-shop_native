@@ -98,10 +98,19 @@ public class OrderDetailActivity extends AppCompatActivity {
         if(isPickup){
             activityOrderDetailBinding.iconLocation.setImageResource(R.drawable.baseline_access_time_filled_24);
             activityOrderDetailBinding.txtAddressName.setVisibility(View.GONE);
+            activityOrderDetailBinding.txtAddressNote.setVisibility(View.GONE);
             activityOrderDetailBinding.txtToAddress.setText(CartPickupViewModel
                     .datetimeToPickup(new DateTime(order.getPickupTime())));
         } else{
             activityOrderDetailBinding.txtAddressName.setText(order.getAddress().getNameReceiver() + " • " +order.getAddress().getPhone());
+            if(order.getAddress().getAddressNote().equals(""))
+            {
+                activityOrderDetailBinding.txtAddressNote.setVisibility(View.GONE);
+            }
+            else
+            {
+                activityOrderDetailBinding.txtAddressNote.setText("Note: " + order.getAddress().getAddressNote());
+            }
             activityOrderDetailBinding.tempShip.setVisibility(View.VISIBLE);
             activityOrderDetailBinding.txtShippingFee.setVisibility(View.VISIBLE);
             activityOrderDetailBinding.txtShippingFee.setText(formatter.format(order.getDeliveryCost()) + getString(R.string.vndUnit));

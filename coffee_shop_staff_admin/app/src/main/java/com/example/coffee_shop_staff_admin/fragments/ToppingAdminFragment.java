@@ -99,5 +99,9 @@ public class ToppingAdminFragment extends Fragment {
             FoodRepository.getInstance().registerSnapshotListener();
             fragmentToppingAdminBinding.refreshLayout.setRefreshing(false);
         });
+
+        fragmentToppingAdminBinding.editTextFrame.setEndIconOnClickListener(v -> {
+            fragmentToppingAdminBinding.editText.setText("");
+        });
     }
 }

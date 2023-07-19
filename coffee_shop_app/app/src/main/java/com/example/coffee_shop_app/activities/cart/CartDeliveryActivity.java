@@ -121,6 +121,13 @@ public class CartDeliveryActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        activityCartDeliveryBinding.shippingDetails.iconStoreChevron.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(CartDeliveryActivity.this, StoreActivity.class);
+                startActivity(intent);
+            }
+        });
         activityCartDeliveryBinding.txtChange.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

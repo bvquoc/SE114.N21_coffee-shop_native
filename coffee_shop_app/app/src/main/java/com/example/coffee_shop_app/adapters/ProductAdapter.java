@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.coffee_shop_app.models.Product;
 import com.example.coffee_shop_app.R;
+import com.example.coffee_shop_app.utils.CompareHelper;
 import com.example.coffee_shop_app.utils.interfaces.OnProductClickListener;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -181,7 +182,8 @@ public class ProductAdapter extends RecyclerView.Adapter implements Filterable {
                 } else {
                     List<Product> filteredList = new ArrayList<>();
                     for (Product model : products) {
-                        if (model.getName().toLowerCase().contains(query.toLowerCase())) {
+                        if(CompareHelper.compareContainTextUnicode(model.getName().toLowerCase(), query.toLowerCase()))
+                        {
                             filteredList.add(model);
                         }
                     }

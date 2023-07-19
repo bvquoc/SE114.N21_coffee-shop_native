@@ -204,9 +204,18 @@ public class OrderDetailActivity extends AppCompatActivity {
             activityOrderDetailBinding.iconStore.setImageResource(R.drawable.ic_clock);
             activityOrderDetailBinding.fromTxt.setText("Thời gian lấy");
             activityOrderDetailBinding.txtToAddress.setText(order.getUserName() + " • " +order.getPhoneNumber());
+            activityOrderDetailBinding.txtAddressNote.setVisibility(View.GONE);
             activityOrderDetailBinding.txtFromStore.setText(DeliveryCardAdapter.datetimeToPickup(new DateTime(order.getPickupTime())));
         } else{
             activityOrderDetailBinding.txtToAddress.setText(order.getAddress().getNameReceiver() + " • " +order.getAddress().getPhone());
+            if(order.getAddress().getAddressNote().equals(""))
+            {
+                activityOrderDetailBinding.txtAddressNote.setVisibility(View.GONE);
+            }
+            else
+            {
+                activityOrderDetailBinding.txtAddressNote.setText("Note: " + order.getAddress().getAddressNote());
+            }
             activityOrderDetailBinding.tempShip.setVisibility(View.VISIBLE);
             activityOrderDetailBinding.txtShippingFee.setVisibility(View.VISIBLE);
             activityOrderDetailBinding.txtShippingFee.setText(formatter.format(order.getDeliveryCost()) + getString(R.string.vndUnit));
