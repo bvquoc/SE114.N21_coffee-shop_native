@@ -8,6 +8,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 import androidx.navigation.NavController;
@@ -51,8 +52,13 @@ public class SplashFragment extends Fragment {
 
         FirebaseUser raw = firebaseAuth.getCurrentUser();
         if (raw != null && currentUser.getValue() == null) {
-            SharedPreferences pref = getActivity().getPreferences(Context.MODE_PRIVATE);
-            Boolean val = pref.getBoolean(getString(R.string.is_remember_me), true);
+
+            //get SharedPrefs
+            SharedPreferences sharedPref = ((AppCompatActivity) requireActivity()).getSharedPreferences("com.example.coffee_shop_app", Context.MODE_PRIVATE);
+
+            Boolean val = sharedPref.getBoolean("isRememberMe", false);
+            //end get
+
             if(!val){
                 AuthRepository.getInstance().signOut();
                 Intent intent = new Intent(getContext(), AuthActivity.class);

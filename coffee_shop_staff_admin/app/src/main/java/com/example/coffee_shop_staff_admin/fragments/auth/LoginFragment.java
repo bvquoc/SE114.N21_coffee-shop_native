@@ -9,6 +9,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
@@ -144,14 +145,18 @@ public class LoginFragment extends Fragment {
 
             String email = emailEdit.getText().toString();
             String password = passEdit.getText().toString();
-            SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPref.edit();
-            if (rememberMe.isChecked()) {
-                editor.putBoolean(getString(R.string.is_remember_me), true);
-            } else {
-                editor.putBoolean(getString(R.string.is_remember_me), false);
+
+
+            //SharedPrefs set
+            SharedPreferences sharedPref = ((AppCompatActivity) requireActivity()).getSharedPreferences("com.example.com.example.coffee_shop_staff_admin", Context.MODE_PRIVATE);
+
+            if(rememberMe.isChecked()){
+                sharedPref.edit().putBoolean("isRememberMe", true).apply();
             }
-            editor.apply();
+            else {
+                sharedPref.edit().putBoolean("isRememberMe", false).apply();
+            }
+            //end set
 
             if (canLogin(email, password)) {
                 authVM.onEmailSignIn(email, password, params -> {
