@@ -1,21 +1,14 @@
 package com.example.coffee_shop_staff_admin.adapters.product;
 
 import android.content.Context;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
-import androidx.core.content.ContextCompat;
 import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.coffee_shop_staff_admin.R;
-import com.example.coffee_shop_staff_admin.databinding.ProductCardBinding;
 import com.example.coffee_shop_staff_admin.databinding.SizeStaffBinding;
 import com.example.coffee_shop_staff_admin.models.Food;
 import com.example.coffee_shop_staff_admin.models.FoodChecker;
@@ -23,7 +16,6 @@ import com.example.coffee_shop_staff_admin.models.Size;
 import com.example.coffee_shop_staff_admin.models.Store;
 import com.example.coffee_shop_staff_admin.repositories.SizeRepository;
 import com.example.coffee_shop_staff_admin.repositories.StoreRepository;
-import com.squareup.picasso.Picasso;
 
 import java.text.DecimalFormat;
 import java.util.HashMap;
@@ -103,7 +95,7 @@ public class StaffSizeAdapter extends RecyclerView.Adapter<StaffSizeAdapter.View
 
             this.sizeCardBinding = sizeCardBinding;
             context = sizeCardBinding.getRoot().getContext();
-            currentStore = StoreRepository.getInstance().getCurrentStore().getValue();
+            currentStore = StoreRepository.getInstance().getCurrentStoreLiveData().getValue();
         }
 
         private void onBindSizeCard(Size size, FoodChecker product) {
