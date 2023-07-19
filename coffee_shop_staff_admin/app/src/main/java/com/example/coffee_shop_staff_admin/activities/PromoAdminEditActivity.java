@@ -317,6 +317,11 @@ public class PromoAdminEditActivity extends AppCompatActivity {
             if(!isValid)
             {
                 promoAdminEditViewModel.setUpdating(false);
+                runOnUiThread(() -> Toast.makeText(
+                        PromoAdminEditActivity.this,
+                        "Vui lòng điền đầy đủ thông tin.",
+                        Toast.LENGTH_SHORT
+                ).show());
                 return null;
             }
 

@@ -163,6 +163,11 @@ public class SizeAdminEditActivity extends AppCompatActivity {
             if(!isValid)
             {
                 sizeAdminEditViewModel.setLoading(false);
+                runOnUiThread(() -> Toast.makeText(
+                        SizeAdminEditActivity.this,
+                        "Vui lòng điền đầy đủ thông tin.",
+                        Toast.LENGTH_SHORT
+                ).show());
                 return null;
             }
             if(sizeAdminEditViewModel.getImageSource().getValue()==null)

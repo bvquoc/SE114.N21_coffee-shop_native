@@ -264,6 +264,11 @@ public class StoreAdminEditActivity extends AppCompatActivity {
             if(!isValid)
             {
                 storeAdminEditViewModel.setLoading(false);
+                runOnUiThread(() -> Toast.makeText(
+                        StoreAdminEditActivity.this,
+                        "Vui lòng điền đầy đủ thông tin.",
+                        Toast.LENGTH_SHORT
+                ).show());
                 return null;
             }
 

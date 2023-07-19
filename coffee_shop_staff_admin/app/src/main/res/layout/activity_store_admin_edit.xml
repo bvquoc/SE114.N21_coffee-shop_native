@@ -163,7 +163,8 @@
                                         android:hint="Giờ mở cửa"
                                         android:textAppearance="@style/regularBlack14"
                                         android:text="@{viewModel.openTimeString}"
-                                        android:enabled="false"/>
+                                        android:focusable="false"
+                                        android:focusableInTouchMode="false"/>
                                 </com.google.android.material.textfield.TextInputLayout>
                                 <Button
                                     android:id="@+id/open_time_picker_button"
@@ -206,7 +207,8 @@
                                         android:hint="Giờ đóng cửa"
                                         android:textAppearance="@style/regularBlack14"
                                         android:text="@{viewModel.closeTimeString}"
-                                        android:enabled="false"/>
+                                        android:focusable="false"
+                                        android:focusableInTouchMode="false"/>
                                 </com.google.android.material.textfield.TextInputLayout>
                                 <Button
                                     android:id="@+id/close_time_picker_button"
@@ -271,7 +273,8 @@
                                         android:hint="Vị trí"
                                         android:textAppearance="@style/regularBlack14"
                                         android:text="@{viewModel.latLng}"
-                                        android:enabled="false"/>
+                                        android:focusableInTouchMode="false"
+                                        android:focusable="false"/>
                                 </com.google.android.material.textfield.TextInputLayout>
                                 <Button
                                     android:id="@+id/address_location_picker_button"

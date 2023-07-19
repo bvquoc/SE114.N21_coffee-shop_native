@@ -165,6 +165,11 @@ public class ToppingAdminEditActivity extends AppCompatActivity {
             if(!isValid)
             {
                 toppingAdminEditViewModel.setLoading(false);
+                runOnUiThread(() -> Toast.makeText(
+                        ToppingAdminEditActivity.this,
+                        "Vui lòng điền đầy đủ thông tin.",
+                        Toast.LENGTH_SHORT
+                ).show());
                 return null;
             }
             if(toppingAdminEditViewModel.getImageSource().getValue()==null)

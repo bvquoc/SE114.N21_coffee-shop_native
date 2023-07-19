@@ -14,7 +14,7 @@
     <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="colorPrimary">@color/blue</item>
         <item name="colorPrimaryDark">@color/blue</item>
-        <item name="colorAccent">@color/blueRipple</item>
+        <item name="colorAccent">@color/blue</item>
     </style>
 
     <style name="roundButtonShape">
@@ -22,10 +22,11 @@
         <item name="cornerSize">50%</item>
     </style>
 
-    <style name="BottomSheetTheme" parent="Theme.Design.BottomSheetDialog">
+    <style name="BottomSheetTheme" parent="Theme.Material3.Light.BottomSheetDialog">
         <item name="bottomSheetStyle">@style/BottomSheetStyle</item>
         <item name="android:windowIsFloating">false</item>
         <item name="android:windowSoftInputMode">adjustResize</item>
+        <item name="theme">@style/AppTheme</item>
     </style>
     <style name="BottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
         <item name="android:background">@android:color/transparent</item>
