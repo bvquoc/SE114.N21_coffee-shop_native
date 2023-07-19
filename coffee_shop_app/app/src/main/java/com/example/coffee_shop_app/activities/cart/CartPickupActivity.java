@@ -133,7 +133,7 @@ public class CartPickupActivity extends AppCompatActivity {
                 if(viewModel.getCartViewModel().getNotAvailableCartFoods().getValue().size()>0){
                     NotificationDialog notAvaiDialog=new NotificationDialog(
                             NotificationDialog.NotificationType.failed,
-                            "Có sản phầm không hợp lệ trong giỏ hàng !", null);
+                            "Có sản phẩm không hợp lệ trong giỏ hàng !", null);
                     notAvaiDialog.show(getSupportFragmentManager(), PLACEORDER);
                 }else{
                     ConfirmDialog dialog=new ConfirmDialog(
