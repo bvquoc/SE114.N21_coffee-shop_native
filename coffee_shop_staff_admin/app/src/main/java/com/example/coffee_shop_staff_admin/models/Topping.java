@@ -4,9 +4,10 @@ import android.net.Uri;
 
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.io.Serializable;
 import java.util.Map;
 
-public class Topping {
+public class Topping implements Serializable {
     private String id;
     private String name;
     private double price;

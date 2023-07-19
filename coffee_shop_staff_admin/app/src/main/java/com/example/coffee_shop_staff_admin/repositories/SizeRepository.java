@@ -55,7 +55,7 @@ public class SizeRepository {
         }
         return sizeListMutableLiveData;
     }
-    void registerSnapshotListener()
+    public void registerSnapshotListener()
     {
         firestore.collection("Size").addSnapshotListener((value, error) -> {
             Log.d(TAG, "get sizes started.");

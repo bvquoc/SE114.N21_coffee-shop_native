@@ -55,7 +55,7 @@ public class ToppingRepository {
         }
         return toppingListMutableLiveData;
     }
-    void registerSnapshotListener()
+    public void registerSnapshotListener()
     {
         fireStore.collection("Topping").addSnapshotListener((value, error) -> {
             Log.d(TAG, "get toppings started.");

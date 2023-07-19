@@ -4,6 +4,8 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import org.checkerframework.checker.units.qual.A;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -20,6 +22,14 @@ public class Store {
     private List<String> images;
     private Map<String, List<String>> stateFood;
     private List<String> stateTopping;
+
+    public void setStateFood(Map<String, List<String>> stateFood) {
+        this.stateFood = stateFood;
+    }
+
+    public void setStateTopping(List<String> stateTopping) {
+        this.stateTopping = stateTopping;
+    }
 
     public Store(String id, String shortName, MLocation address, String phone, Date timeOpen, Date timeClose, List<String> images, Map<String, List<String>> stateFood, List<String> stateTopping) {
         this.id = id;
@@ -69,8 +79,34 @@ public class Store {
         return stateTopping;
     }
 
-    public static Store fromFireBase(DocumentSnapshot doc)
-    {
+    public static Map<String, Object> toFireStore(Store store){
+
+        Map<String, Object> data = new HashMap<String, Object>();
+        Map<String, Object> stateFoodTemp = toStateFoodMap(store.stateFood);
+        data.put("stateToppings", store.stateTopping);
+
+        data.put("stateFood", stateFoodTemp);
+        return  data;
+    }
+
+    public static Map<String, Object> toStateFoodMap(Map<String, List<String>> stateFood){
+        Map<String, Object> stateFoodTemp = new HashMap<>();
+
+        for(Map.Entry<String, List<String>> entry : stateFood.entrySet() ){
+            if (entry.getValue() == null) {
+                continue;
+            }
+
+            if(entry.getValue().isEmpty()){
+                stateFoodTemp.put(entry.getKey(), false);
+            }
+            else {
+                stateFoodTemp.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return stateFoodTemp;
+    }
+    public static Store fromFireBase(DocumentSnapshot doc) {
         String id = doc.getId();
 
         Map<String, Object> map = doc.getData();
