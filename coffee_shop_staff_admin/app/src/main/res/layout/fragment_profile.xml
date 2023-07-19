@@ -90,7 +90,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_10sdp"
                 android:gravity="center"
-                android:textSize="@dimen/_15sdp" />
+                android:textSize="@dimen/font18" />
+            <TextView
+                android:id="@+id/txt_store_profile"
+                style="@style/regularGrey14"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:gravity="center" />
 
             <include
                 android:id="@+id/btn_goto_support"
@@ -138,7 +145,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
                     android:layout_marginBottom="@dimen/_12sdp"
-
+style="@style/regularGrey14"
                     android:text="Phiên bản 1.0.0" />
             </RelativeLayout>
 

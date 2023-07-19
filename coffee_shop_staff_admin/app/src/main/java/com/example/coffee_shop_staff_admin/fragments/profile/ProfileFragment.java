@@ -1,5 +1,7 @@
 package com.example.coffee_shop_staff_admin.fragments.profile;
 
+import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -21,6 +23,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -29,8 +33,10 @@ import com.example.coffee_shop_staff_admin.activities.AuthActivity;
 import com.example.coffee_shop_staff_admin.activities.profile.ImageViewActivity;
 import com.example.coffee_shop_staff_admin.activities.profile.ProfileSettingActivity;
 import com.example.coffee_shop_staff_admin.databinding.FragmentProfileBinding;
+import com.example.coffee_shop_staff_admin.models.Store;
 import com.example.coffee_shop_staff_admin.models.User;
 import com.example.coffee_shop_staff_admin.repositories.AuthRepository;
+import com.example.coffee_shop_staff_admin.repositories.StoreRepository;
 import com.example.coffee_shop_staff_admin.viewmodels.ProfileSettingViewModel;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
@@ -42,6 +48,7 @@ public class ProfileFragment extends Fragment {
     TextView nameText;
 
     MutableLiveData<User> currentUser;
+    MutableLiveData<Store> currentStore;
 
     ProfileSettingViewModel viewModel;
 
@@ -52,6 +59,7 @@ public class ProfileFragment extends Fragment {
         super.onCreate(savedInstanceState);
         currentUser = AuthRepository.getInstance().getCurrentUserLiveData();
         viewModel = new ViewModelProvider(requireActivity()).get(ProfileSettingViewModel.class);
+        currentStore = StoreRepository.getInstance().getCurrentStore();
         createImageResultLauncher();
 
     }
@@ -91,6 +99,7 @@ public class ProfileFragment extends Fragment {
                 .into(imgCover);
 
         nameText.setText(currentUser.getValue().getName());
+        fragmentProfileBinding.txtStoreProfile.setText("Store: " + currentStore.getValue().getShortName());
 
         currentUser.observe(getViewLifecycleOwner(), new Observer<User>() {
             @Override
@@ -123,6 +132,27 @@ public class ProfileFragment extends Fragment {
         Snackbar snackbar = Snackbar
                 .make(view, msg, Snackbar.LENGTH_LONG);
         snackbar.show();
+    }
+
+    public void showDialog(Activity activity, String msg){
+        final Dialog dialog = new Dialog(activity);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(false);
+        dialog.setContentView(R.layout.dialog);
+
+        TextView text = (TextView) dialog.findViewById(R.id.text_dialog);
+        text.setText(msg);
+
+        Button dialogButton = (Button) dialog.findViewById(R.id.btn_dialog);
+        dialogButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+
     }
 
     public void onGoSettings(View view) {
