@@ -17,17 +17,23 @@ import android.view.ViewGroup;
 import com.example.coffee_shop_staff_admin.R;
 import com.example.coffee_shop_staff_admin.activities.AuthActivity;
 import com.example.coffee_shop_staff_admin.activities.MainPageAdminActivity;
+import com.example.coffee_shop_staff_admin.activities.StaffProductDetailActivity;
 import com.example.coffee_shop_staff_admin.activities.StoreManageActivity;
+import com.example.coffee_shop_staff_admin.models.Store;
 import com.example.coffee_shop_staff_admin.models.User;
 import com.example.coffee_shop_staff_admin.repositories.AuthRepository;
+import com.example.coffee_shop_staff_admin.repositories.StoreRepository;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
+
+import java.util.List;
 
 
 public class SplashFragment extends Fragment {
 
     MutableLiveData<User> currentUser;
+    MutableLiveData<Store> currentStore;
     FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
 
 
@@ -40,6 +46,7 @@ public class SplashFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         currentUser = AuthRepository.getInstance().getCurrentUserLiveData();
+        currentStore = StoreRepository.getInstance().getCurrentStore();
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_splash, container, false);
     }
@@ -70,6 +77,17 @@ public class SplashFragment extends Fragment {
                     }
                     else {
                         currentUser.postValue(temp);
+
+                        if(temp.getStore() != null && !temp.getStore().isEmpty()){
+                            List<Store> storeList = StoreRepository.getInstance().getStoreListMutableLiveData().getValue();
+                            for(Store item : storeList){
+                                if(item.getId().equals(temp.getStore())){
+                                    currentStore.postValue(item);
+                                    break;
+                                }
+                            }
+                        }
+
                         AuthRepository.getInstance().getIsLoggedInLiveData().postValue(true);
                         Intent intent = new Intent(getContext(), temp.isAdmin() ? MainPageAdminActivity.class : StoreManageActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

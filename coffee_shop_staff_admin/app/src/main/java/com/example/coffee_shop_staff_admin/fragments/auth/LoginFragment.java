@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.SavedStateHandle;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -29,8 +30,10 @@ import com.example.coffee_shop_staff_admin.R;
 import com.example.coffee_shop_staff_admin.activities.AuthActivity;
 import com.example.coffee_shop_staff_admin.activities.MainPageAdminActivity;
 import com.example.coffee_shop_staff_admin.activities.StoreManageActivity;
+import com.example.coffee_shop_staff_admin.models.Store;
 import com.example.coffee_shop_staff_admin.models.User;
 import com.example.coffee_shop_staff_admin.repositories.AuthRepository;
+import com.example.coffee_shop_staff_admin.repositories.StoreRepository;
 import com.example.coffee_shop_staff_admin.utils.StringConverter;
 import com.example.coffee_shop_staff_admin.utils.interfaces.Validate;
 import com.example.coffee_shop_staff_admin.utils.validation.EmailValidate;
@@ -43,6 +46,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.Calendar;
+import java.util.List;
 
 public class LoginFragment extends Fragment {
 
@@ -55,12 +59,14 @@ public class LoginFragment extends Fragment {
     private NavController navController;
     private SavedStateHandle savedStateHandle;
     private BottomSheetDialog bottomSheetDialog;
+    private MutableLiveData<Store> currentStore;
 
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         authVM = new ViewModelProvider(requireActivity()).get(AuthViewModel.class);
+        currentStore = StoreRepository.getInstance().getCurrentStore();
 
     }
 
@@ -143,7 +149,7 @@ public class LoginFragment extends Fragment {
                         if (temp.getPhoneNumber().equals("No Phone Number")) {
                             openChangeInfoDialog(view, temp);
                         } else {
-                            onGoToMainPage(temp.isAdmin());
+                            onGoToMainPage(temp);
                         }
                     }
                 }, params -> {
@@ -195,7 +201,7 @@ public class LoginFragment extends Fragment {
             temp.setPhoneNumber(phone.getText().toString());
             authVM.onUpdate(temp, params -> {
                 bottomSheetDialog.dismiss();
-                onGoToMainPage(temp.isAdmin());
+                onGoToMainPage(temp);
             }, params -> {
                 String msg = "Đã có lỗi xảy ra, vui lòng thử lại sau!";
                 Snackbar snackbar = Snackbar
@@ -229,10 +235,19 @@ public class LoginFragment extends Fragment {
         }
         return true;
     }
-    private void onGoToMainPage(Boolean isAdmin){
+    private void onGoToMainPage(User user){
+        if(user.getStore() != null && !user.getStore().isEmpty()){
+            List<Store> storeList = StoreRepository.getInstance().getStoreListMutableLiveData().getValue();
+            for(Store item : storeList){
+                if(item.getId().equals(user.getStore())){
+                    currentStore.postValue(item);
+                    break;
+                }
+            }
+        }
         //need to adjust
         NavHostFragment.findNavController(this).popBackStack();
-        Intent intent = new Intent(getContext(), isAdmin ? MainPageAdminActivity.class : StoreManageActivity.class);
+        Intent intent = new Intent(getContext(), user.isAdmin() ? MainPageAdminActivity.class : StoreManageActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }
