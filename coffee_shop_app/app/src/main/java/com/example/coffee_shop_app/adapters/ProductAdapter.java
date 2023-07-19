@@ -74,13 +74,13 @@ public class ProductAdapter extends RecyclerView.Adapter implements Filterable {
             Product product = productFilter.get(position);
 
             productItemViewHolder.nameTextView.setText(product.getName());
-            productItemViewHolder.nameTextView.setAlpha(product.isAvailable()?1.0f:0.15f);
+            productItemViewHolder.nameTextView.setAlpha(product.isAvailable() ? 1.0f : 0.15f);
 
             DecimalFormat formatter = new DecimalFormat("#,##0.##");
             String formattedPrice = formatter.format(product.getPrice());
 
             productItemViewHolder.priceTextView.setText(formattedPrice + "đ");
-            productItemViewHolder.priceTextView.setAlpha(product.isAvailable()?1.0f:0.15f);
+            productItemViewHolder.priceTextView.setAlpha(product.isAvailable() ? 1.0f : 0.15f);
 
             Glide.with(holder.itemView.getContext())
                     .load(Uri.parse(product.getImages().get(0)))
@@ -88,17 +88,17 @@ public class ProductAdapter extends RecyclerView.Adapter implements Filterable {
                     .error(R.drawable.img_placeholder)
                     .fitCenter()
                     .into(productItemViewHolder.productImageView);
-            productItemViewHolder.productImageView.setAlpha(product.isAvailable()?1.0f:0.4f);
+            productItemViewHolder.productImageView.setAlpha(product.isAvailable() ? 1.0f : 0.4f);
 
-            productItemViewHolder.statusNotAvailableTextView.setVisibility(product.isAvailable()?View.GONE:View.VISIBLE);
+            productItemViewHolder.statusNotAvailableTextView.setVisibility(product.isAvailable() ? View.GONE : View.VISIBLE);
 
-            long diffInMillis =  (new Date()).getTime() - product.getDateRegister().getTime();
+            long diffInMillis = (new Date()).getTime() - product.getDateRegister().getTime();
             long diffInDays = Math.round((double) diffInMillis / (24 * 60 * 60 * 1000));
-            productItemViewHolder.statusNewTextView.setAlpha(diffInDays < 7?(product.isAvailable()?1.0f:0.4f):0);
+            productItemViewHolder.statusNewTextView.setAlpha(diffInDays < 7 ? (product.isAvailable() ? 1.0f : 0.4f) : 0);
 
-            if(product.isAvailable())
-            {
-                productItemViewHolder.itemView.setOnClickListener(v -> {
+            productItemViewHolder.itemView.setOnClickListener(v -> {
+                if(product.isAvailable())
+                {
                     SharedPreferences prefs =
                             productItemViewHolder.itemView.getContext().getSharedPreferences(
                                     "recentProducts",
@@ -111,22 +111,19 @@ public class ProductAdapter extends RecyclerView.Adapter implements Filterable {
 
                     List<String> recentProducts;
 
-                    if(json == null)
-                    {
+                    if (json == null) {
                         recentProducts = new ArrayList<>();
-                    }
-                    else
-                    {
-                        Type type = new TypeToken<ArrayList<String>>() {}.getType();
+                    } else {
+                        Type type = new TypeToken<ArrayList<String>>() {
+                        }.getType();
                         recentProducts = gson.fromJson(json, type);
                     }
 
-                    if(!recentProducts.contains(product.getId())){
-                        if (recentProducts.size() > 8){
+                    if (!recentProducts.contains(product.getId())) {
+                        if (recentProducts.size() > 8) {
                             recentProducts.remove(0);
                         }
-                    }
-                    else{
+                    } else {
                         recentProducts.remove(product.getId());
                     }
                     recentProducts.add(product.getId());
@@ -136,12 +133,11 @@ public class ProductAdapter extends RecyclerView.Adapter implements Filterable {
                     SharedPreferences.Editor editor = prefs.edit();
                     editor.putString("recentProducts", jsonDone);
                     editor.apply();
-                    if(onProductClickListener!=null)
-                    {
+                    if (onProductClickListener != null) {
                         onProductClickListener.onProductClick(product.getId());
                     }
-                });
-            }
+                }
+            });
         }
     }
 

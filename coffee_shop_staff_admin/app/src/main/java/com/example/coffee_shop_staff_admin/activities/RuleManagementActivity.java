@@ -17,6 +17,7 @@ import com.bumptech.glide.Glide;
 import com.example.coffee_shop_staff_admin.R;
 import com.example.coffee_shop_staff_admin.databinding.ActivityRuleManagementBinding;
 import com.example.coffee_shop_staff_admin.models.User;
+import com.example.coffee_shop_staff_admin.repositories.AuthRepository;
 import com.example.coffee_shop_staff_admin.repositories.UserRepository;
 import com.example.coffee_shop_staff_admin.viewmodels.ChooseStoreViewModel;
 import com.example.coffee_shop_staff_admin.viewmodels.RuleManagementViewModel;
@@ -129,8 +130,20 @@ public class RuleManagementActivity extends AppCompatActivity {
                     ruleManagementViewModel.setStaff(user.isStaff());
                     ruleManagementViewModel.setAdmin(user.isAdmin());
 
+                    if(AuthRepository.getInstance().getCurrentUser()!=null)
+                    {
+                        ruleManagementViewModel.setCanEditAdminAccess(
+                                !AuthRepository.getInstance().getCurrentUser().getId().equals(
+                                        user.getId()
+                                )
+                        );
+                    }
+
+
                     Glide.with(getApplicationContext())
                             .load(user.getAvatarUrl())
+                            .placeholder(R.drawable.img_placeholder)
+                            .error(R.drawable.img_placeholder)
                             .into(activityRuleManagementBinding.imageView);
 
                     ruleManagementViewModel.setCanFind(true);

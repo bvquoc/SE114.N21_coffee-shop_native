@@ -152,4 +152,18 @@ public class RuleManagementViewModel extends BaseObservable {
         this.adminText = adminText;
         notifyPropertyChanged(BR.adminText);
     }
+
+
+
+    @Bindable
+    private boolean canEditAdminAccess = true;
+
+    public boolean isCanEditAdminAccess() {
+        return canEditAdminAccess;
+    }
+
+    public void setCanEditAdminAccess(boolean canEditAdminAccess) {
+        this.canEditAdminAccess = canEditAdminAccess;
+        notifyPropertyChanged(BR.canEditAdminAccess);
+    }
 }

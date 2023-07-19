@@ -2,6 +2,7 @@ package com.example.coffee_shop_app.fragments.Dialog;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.InsetDrawable;
@@ -19,16 +20,17 @@ import androidx.appcompat.app.AppCompatDialogFragment;
 
 import com.example.coffee_shop_app.R;
 
+import java.util.Objects;
 
 public class NotificationDialog  extends AppCompatDialogFragment {
     private final NotificationType notificationType;
     private final String title;
     private final String content;
-    private final View.OnClickListener onClickListener;
+    private final DialogInterface.OnDismissListener dismissListener;
     public NotificationDialog(
             NotificationType notificationType,
             String content,
-            View.OnClickListener onClickListener) {
+            DialogInterface.OnDismissListener dismissListener) {
         this.notificationType = notificationType;
         if(notificationType == NotificationType.success)
         {
@@ -39,17 +41,17 @@ public class NotificationDialog  extends AppCompatDialogFragment {
             this.title = "Thất bại";
         }
         this.content = content;
-        this.onClickListener = onClickListener;
+        this.dismissListener = dismissListener;
     }
     public NotificationDialog(
             NotificationType notificationType,
             String title,
             String content,
-            View.OnClickListener onClickListener) {
+            DialogInterface.OnDismissListener dismissListener) {
         this.notificationType = notificationType;
         this.title = title;
         this.content = content;
-        this.onClickListener = onClickListener;
+        this.dismissListener = dismissListener;
     }
 
     @NonNull
@@ -75,19 +77,7 @@ public class NotificationDialog  extends AppCompatDialogFragment {
             contentTextView.setText(content);
         }
 
-        if(onClickListener == null)
-        {
-            okButton.setOnClickListener(v -> {
-                dismiss(); // Close the dialog
-            });
-        }
-        else
-        {
-            okButton.setOnClickListener(v->{
-                dismiss();
-                onClickListener.onClick(v);
-            });
-        }
+        okButton.setOnClickListener(v -> dismiss());
 
         if(notificationType == NotificationType.success)
         {
@@ -100,7 +90,11 @@ public class NotificationDialog  extends AppCompatDialogFragment {
 
         builder.setView(view);
 
-        return builder.create();
+        Dialog dialog = builder.create();
+
+        dialog.setCanceledOnTouchOutside(false);
+
+        return dialog;
     }
 
     @Override
@@ -112,12 +106,27 @@ public class NotificationDialog  extends AppCompatDialogFragment {
             Window window = dialog.getWindow();
 
             ColorDrawable back = new ColorDrawable(Color.TRANSPARENT);
-            InsetDrawable inset = new InsetDrawable(back, 32);
+            InsetDrawable inset = new InsetDrawable(back, 120);
 
             window.setBackgroundDrawable(inset);
         }
 
-        return inflater.inflate(R.layout.notification_dialog, container, false);
+        return null;
+    }
+
+    @Override
+    public void onDismiss(@NonNull DialogInterface dialog) {
+        super.onDismiss(dialog);
+        if(dismissListener!=null)
+        {
+            dismissListener.onDismiss(dialog);
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Objects.requireNonNull(getDialog()).setCancelable(false);
     }
 
     public enum NotificationType{

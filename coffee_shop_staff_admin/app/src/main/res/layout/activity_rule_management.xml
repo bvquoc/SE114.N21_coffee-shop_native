@@ -184,7 +184,8 @@
                                 android:textAllCaps="false"
                                 android:textAppearance="@style/regularWhite16"
                                 android:stateListAnimator="@null"
-                                android:backgroundTint="@{viewModel.active?@color/red:@color/green}"
+                                android:backgroundTint="@null"
+                                android:backgroundColor="@{viewModel.active?@color/red:@color/green}"
                                 android:text="@{viewModel.normalUserText}"/>
                         </LinearLayout>
                         <View
@@ -209,7 +210,8 @@
                                 android:textAllCaps="false"
                                 android:textAppearance="@style/regularWhite16"
                                 android:stateListAnimator="@null"
-                                android:backgroundTint="@{viewModel.staff?@color/red:@color/green}"
+                                android:backgroundTint="@null"
+                                android:backgroundColor="@{viewModel.staff?@color/red:@color/green}"
                                 android:text="@{viewModel.staffText}"/>
                         </LinearLayout>
                         <View
@@ -234,8 +236,10 @@
                                 android:textAllCaps="false"
                                 android:textAppearance="@style/regularWhite16"
                                 android:stateListAnimator="@null"
-                                android:backgroundTint="@{viewModel.admin?@color/red:@color/green}"
-                                android:text="@{viewModel.adminText}"/>
+                                android:backgroundTint="@null"
+                                android:backgroundColor="@{viewModel.admin?@color/red:@color/green}"
+                                android:text="@{viewModel.adminText}"
+                                android:enabled="@{viewModel.canEditAdminAccess}"/>
                         </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>

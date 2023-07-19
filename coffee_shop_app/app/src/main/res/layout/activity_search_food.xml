@@ -4,6 +4,9 @@
         <variable
             name="viewModel"
             type="com.example.coffee_shop_app.viewmodels.ProductSearchViewModel" />
+        <variable
+            name="cartButtonViewModel"
+            type="com.example.coffee_shop_app.viewmodels.CartButtonViewModel" />
     </data>
   <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -35,20 +38,17 @@
               android:paddingVertical="@dimen/_8sdp"
               android:layout_width="match_parent"
               android:layout_height="wrap_content">
-              <TextView
-                  android:layout_width="wrap_content"
-                  android:layout_height="wrap_content"
-                  android:text="store"
-                  android:fontFamily="@font/font_awesome_free_solid_900"
-                  android:textSize="@dimen/_24sdp"
-                  android:textColor="@color/grey_icon"/>
+              <ImageView
+                  android:layout_width="@dimen/_20sdp"
+                  android:layout_height="@dimen/_20sdp"
+                  android:src="@drawable/ic_store_24"/>
               <Space
                   android:layout_width="@dimen/_8sdp"
                   android:layout_height="match_parent"/>
               <TextView
                   android:layout_width="wrap_content"
                   android:layout_height="match_parent"
-                  android:text="SB Han Thuyen, 113 Han Thuyen, D.1, Hdsadsasdsadsads"
+                  android:text="@{cartButtonViewModel.storeAddress}"
                   style="@style/regularBlack14"
                   android:gravity="center_vertical"
                   android:maxLines="1"
@@ -66,7 +66,7 @@
               android:paddingVertical="@dimen/_8sdp"
               android:paddingHorizontal="@dimen/_16sdp"
               android:drawableStart="@drawable/ic_search_blue_24"
-              android:hint="What are you craving for?"
+              android:hint="Bạn đang tìm kiếm gì?"
               android:inputType="text"
               android:maxLines="1"
               style="@style/regularBlack14"
@@ -76,22 +76,6 @@
               android:paddingStart="8dp"
               android:textCursorDrawable="@color/blue"
               android:background="@drawable/border_edit_text"/>
-          <TextView
-              android:id="@+id/clear_button"
-              app:layout_constraintTop_toTopOf="@id/search_edit_text"
-              app:layout_constraintBottom_toBottomOf="@id/search_edit_text"
-              app:layout_constraintRight_toRightOf="@id/search_edit_text"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:text="x"
-              android:fontFamily="@font/font_awesome_free_solid_900"
-              android:textColor="@color/blue"
-              android:paddingHorizontal="@dimen/_4sdp"
-              android:paddingVertical="@dimen/_4sdp"
-              android:textSize="@dimen/_16sdp"
-              android:lineSpacingMultiplier="1.5"
-              android:visibility="gone"
-              android:layout_marginHorizontal="@dimen/_8sdp"/>
           <androidx.core.widget.NestedScrollView
               app:layout_constraintTop_toBottomOf="@id/search_edit_text"
               app:layout_constraintLeft_toLeftOf="parent"
@@ -100,21 +84,14 @@
               android:layout_width="match_parent"
               android:layout_height="0dp"
               android:layout_marginTop="@dimen/_16sdp"
-              android:paddingHorizontal="@dimen/_16sdp"
               android:scrollbarStyle="outsideOverlay"
               android:fillViewport="true">
               <LinearLayout
                   android:layout_width="match_parent"
                   android:layout_height="wrap_content"
                   android:orientation="vertical"
-                  android:paddingBottom="16dp">
-                  <TextView
-                      android:id="@+id/introduce_text_view"
-                      android:layout_width="match_parent"
-                      android:layout_height="wrap_content"
-                      android:layout_marginBottom="@dimen/_12sdp"
-                      android:text="Popular drinks and food"
-                      style="@style/boldBlack16"/>
+                  android:paddingBottom="@dimen/_16sdp"
+                  android:layout_marginHorizontal="@dimen/_16sdp">
                   <androidx.recyclerview.widget.RecyclerView
                       android:id="@+id/search_product_recyclerview"
                       android:layout_width="match_parent"
