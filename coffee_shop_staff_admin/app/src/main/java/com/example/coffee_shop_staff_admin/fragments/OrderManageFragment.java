@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.Observer;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.view.LayoutInflater;
@@ -17,6 +18,9 @@ import android.view.ViewGroup;
 import com.example.coffee_shop_staff_admin.R;
 import com.example.coffee_shop_staff_admin.adapters.OrderViewPagerAdapter;
 import com.example.coffee_shop_staff_admin.databinding.FragmentOrderManageBinding;
+import com.example.coffee_shop_staff_admin.models.Store;
+import com.example.coffee_shop_staff_admin.repositories.OrderRepository;
+import com.example.coffee_shop_staff_admin.repositories.StoreRepository;
 import com.example.coffee_shop_staff_admin.viewmodels.OrderOfStoreViewModel;
 import com.google.android.material.tabs.TabLayout;
 
@@ -52,6 +56,12 @@ public class OrderManageFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         FragmentManager fragmentManager=getChildFragmentManager();
 
+        StoreRepository.getInstance().getCurrentStore().observe(getViewLifecycleOwner(), new Observer<Store>() {
+            @Override
+            public void onChanged(Store store) {
+                OrderRepository.getInstance().registerSnapshotListener();
+            }
+        });
         fragmentOrderManageBinding.tabLayoutOrder
                 .addTab(fragmentOrderManageBinding
                         .tabLayoutOrder
