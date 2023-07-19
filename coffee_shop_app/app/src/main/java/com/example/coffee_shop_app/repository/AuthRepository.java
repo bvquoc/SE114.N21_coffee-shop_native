@@ -157,4 +157,25 @@ public class AuthRepository {
             Log.e("auth repository", "push user failed.");
         });
     }
+
+    public void sendForgotPassword(String email, CallBack onSuccess, CallBack onFailed) {
+        firebaseAuth.fetchSignInMethodsForEmail(email)
+                .addOnSuccessListener(v -> {
+                    if (v.getSignInMethods().isEmpty()) {
+                        onFailed.invoke();
+                    } else {
+                        firebaseAuth.sendPasswordResetEmail(email)
+                                .addOnSuccessListener(d -> {
+                                    onSuccess.invoke();
+                                })
+                                .addOnFailureListener(d -> {
+                                    onFailed.invoke();
+                                });
+                    }
+                })
+                .addOnFailureListener(v -> {
+                    onFailed.invoke();
+                });
+
+    }
 }

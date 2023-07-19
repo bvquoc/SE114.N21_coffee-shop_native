@@ -84,14 +84,14 @@
                         android:textSize="@dimen/_12sdp" />
 
                     <TextView
-                        style="@style/regularBlack10"
+                        android:id="@+id/btn_go_forgot" style="@style/regularBlack10"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
                         android:layout_marginTop="12dp"
                         android:text="Quên mật khẩu?"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/_12sdp" />
+                        android:textSize="@dimen/font14" />
                 </RelativeLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
