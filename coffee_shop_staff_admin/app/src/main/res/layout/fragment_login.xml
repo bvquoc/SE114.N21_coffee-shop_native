@@ -29,7 +29,7 @@
                     android:layout_marginTop="@dimen/_16sdp"
                     android:text="Đăng nhập"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/_30sdp" />
+                    android:textSize="@dimen/_28sdp" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/txt_email_layout_login"
@@ -44,6 +44,7 @@
                         android:id="@+id/txt_email_login"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:textSize="@dimen/font14"
                         android:maxLines="1" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -61,6 +62,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="textPassword"
+                        android:textSize="@dimen/font14"
                         android:maxLines="1" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -78,9 +80,10 @@
                         android:buttonTint="@color/blue"
                         android:enabled="true"
                         android:text="Ghi nhớ tôi"
-                        android:textSize="@dimen/_12sdp" />
+                        android:textSize="@dimen/font14" />
 
                     <TextView
+                        android:id="@+id/btn_go_forgot"
                         style="@style/regularBlack10"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -88,7 +91,7 @@
                         android:layout_marginTop="12dp"
                         android:text="Quên mật khẩu?"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/_12sdp" />
+                        android:textSize="@dimen/font14" />
                 </RelativeLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -100,10 +103,9 @@
                         android:id="@+id/btn_login"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="20dp"
+                        android:layout_marginHorizontal="@dimen/_18sdp"
                         android:background="@drawable/rounded_button"
                         android:text="Đăng Nhập"
-                        app:layout_constraintHorizontal_bias="0.498"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintRight_toRightOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
