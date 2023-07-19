@@ -16,7 +16,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.coffee_shop_app.Data;
 import com.example.coffee_shop_app.R;
@@ -148,17 +147,17 @@ public class PromoActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_promo);
 
         activityPromoBinding = DataBindingUtil.setContentView(this, R.layout.activity_promo);
+
+        Toolbar toolbar = findViewById(R.id.my_toolbar);
+        toolbar.setTitle("Mã khuyến mãi");
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
 
         init();
     }
 
     private void init() {
-        Toolbar toolbar = findViewById(R.id.my_toolbar);
-        toolbar.setTitle("Mã khuyến mãi");
-        toolbar.setNavigationOnClickListener(v -> onBackPressed());
         promoAdapter.setOnPromoClickListener(listener);
 
         activityPromoBinding.findPromosRecyclerView.setLayoutManager(new LinearLayoutManager(this));

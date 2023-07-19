@@ -10,6 +10,9 @@
         <variable
             name="cartButtonViewModel"
             type="com.example.coffee_shop_app.viewmodels.CartButtonViewModel" />
+        <variable
+            name="notiViewModel"
+            type="com.example.coffee_shop_app.viewmodels.NotificationViewModel" />
     </data>
     <FrameLayout
         android:layout_width="match_parent"
@@ -69,6 +72,44 @@
                                 android:text="Coffee Shop"
                                 style="@style/boldBlack14"/>
                         </LinearLayout>
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/notification_button"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                style="@style/Widget.Material3.Button.Icon"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:icon="@drawable/ic_notifications_none_24"
+                                app:iconGravity="textStart"
+                                app:iconPadding="0dp"
+                                android:elevation="@dimen/_6sdp"
+                                android:paddingHorizontal="@dimen/_8sdp"
+                                android:paddingVertical="@dimen/_8sdp"
+                                android:layout_marginTop="@dimen/_2sdp"
+                                android:layout_marginEnd="@dimen/_2sdp"/>
+                            <TextView
+                                android:layout_height="@dimen/_16sdp"
+                                android:layout_width="@dimen/_16sdp"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                android:padding="@dimen/_1sdp"
+                                android:layout_gravity="center_vertical"
+                                android:gravity="center"
+                                android:textColor="@color/blue"
+                                android:fontFamily="@font/inter_medium"
+                                android:autoSizeTextType="uniform"
+                                android:autoSizeMaxTextSize="@dimen/_12sdp"
+                                android:autoSizeMinTextSize="@dimen/_4sdp"
+                                android:autoSizeStepGranularity="@dimen/_2sdp"
+                                android:text="@{notiViewModel.numberNotiNotReadString}"
+                                android:visibility="@{notiViewModel.numberNotiNotRead==0?View.GONE:View.VISIBLE}"
+                                android:background="@drawable/button_border_1a94ff_ffffff"/>
+                        </androidx.constraintlayout.widget.ConstraintLayout>
                     </LinearLayout>
                     <LinearLayout
                         android:layout_width="match_parent"
