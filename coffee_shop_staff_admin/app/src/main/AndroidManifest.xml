@@ -13,6 +13,29 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".activities.StaffProductDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.profile.ProfileSettingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.profile.ImageViewActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.MainActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustPan">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activities.AuthActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
             android:name=".activities.OrderDetailActivity"
             android:exported="false" />
         <activity
@@ -38,7 +61,7 @@
         <activity
             android:name=".activities.StoreManageActivity"
             android:exported="false"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -74,15 +97,7 @@
         <activity
             android:name=".activities.MainPageAdminActivity"
             android:exported="true"
-            android:windowSoftInputMode="adjustPan">
-
-             <intent-filter>
-             <action android:name="android.intent.action.MAIN" />
-
-
-             <category android:name="android.intent.category.LAUNCHER" />
-             </intent-filter>
-        </activity>
+            android:windowSoftInputMode="adjustPan"></activity>
     </application>
 
 </manifest>

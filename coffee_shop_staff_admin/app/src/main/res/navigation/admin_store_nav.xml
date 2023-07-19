@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/staff_nav"
+    app:startDestination="@id/orderManageFragment">
+
+    <fragment
+        android:id="@+id/orderManageFragment"
+        android:name="com.example.coffee_shop_staff_admin.fragments.OrderManageFragment"
+        android:label="fragment_order_manage"
+        tools:layout="@layout/fragment_order_manage" />
+    <fragment
+        android:id="@+id/productManageFragment"
+        android:name="com.example.coffee_shop_staff_admin.fragments.product.ProductManageFragment"
+        android:label="fragment_product_manage"
+        tools:layout="@layout/fragment_product_manage" />
+</navigation>

@@ -225,6 +225,11 @@ public class FoodAdminEditActivity extends AppCompatActivity {
             if(!isValid)
             {
                 foodAdminEditViewModel.setUpdating(false);
+                runOnUiThread(() -> Toast.makeText(
+                        FoodAdminEditActivity.this,
+                        "Vui lòng điền đầy đủ thông tin.",
+                        Toast.LENGTH_SHORT
+                ).show());
                 return null;
             }
 

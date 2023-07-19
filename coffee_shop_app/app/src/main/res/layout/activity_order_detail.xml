@@ -245,6 +245,8 @@
                                 android:layout_height="wrap_content"
                                 android:text="285 CMT8, D.10, HCM city" />
 
+
+
                             <TextView
                                 android:id="@+id/txtAddressName"
                                 android:layout_marginTop="@dimen/_4sdp"
@@ -254,6 +256,16 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Nick • 0969696969" />
+
+                            <TextView
+                                android:id="@+id/txtAddressNote"
+                                android:layout_marginTop="@dimen/_4sdp"
+                                style="@style/regularGrey12"
+                                android:layout_toEndOf="@id/icon_location"
+                                android:layout_below="@id/txtAddressName"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="note" />
 
                         </RelativeLayout>
                     </LinearLayout>

@@ -12,7 +12,7 @@
     <item android:title="Quản lý"
         android:icon="@drawable/ic_gear_24"
         android:id="@+id/manageStoreAdminFragment"/>
-    <item android:title="Người dùng"
-        android:icon="@drawable/ic_supervisor_account_24"
-        android:id="@+id/usersAdminFragment"/>
+    <item android:title="Cá nhân"
+        android:icon="@drawable/ic_outline_profile_24"
+        android:id="@+id/profileFragment"/>
 </menu>

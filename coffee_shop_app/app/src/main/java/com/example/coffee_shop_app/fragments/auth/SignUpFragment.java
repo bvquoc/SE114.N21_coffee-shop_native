@@ -1,5 +1,6 @@
 package com.example.coffee_shop_app.fragments.auth;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -64,39 +65,18 @@ public class SignUpFragment extends Fragment {
         signUpButton = view.findViewById(R.id.btn_signup);
         navController = Navigation.findNavController(view);
 
-        Validate emailValidate = new EmailValidate();
-        Validate passValidate = new PasswordValidate();
 
-        signUpButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String email = emailEdit.getText().toString();
-                String password = passEdit.getText().toString();
-                String repass = confirmPassEdit.getText().toString();
-                if(canSignUp(email, password, repass)) {
-                    authVM.onSignUp(email, password, params -> {
-                        navController.navigate(R.id.action_signUpFragment_to_loginFragment);
-                    }, params -> {
-                        Snackbar snackbar = Snackbar
-                                .make(view, "Đã có lỗi xảy ra, vui lòng thử lại!", Snackbar.LENGTH_LONG);
-                        snackbar.show();
-                    });
-                }
-                else {
-                    String msg;
-                    if (email.isEmpty() || password.isEmpty() || repass.isEmpty()) {
-                        msg = "Vui lòng điền đầy đủ các trường";
-                    }
-                    else {
-                        msg = "Có gì đó không ổn, hãy thử lại!";
-                    }
-                    Snackbar snackbar = Snackbar
-                            .make(view, msg, Snackbar.LENGTH_LONG);
-                    snackbar.show();
-                }
-            }
+        moveToLoginText.setOnClickListener(v -> {
+            navController.navigate(R.id.action_signUpFragment_to_loginFragment);
         });
 
+        setOnSignUp(view);
+        setValidation();
+    }
+
+    private void setValidation(){
+        Validate emailValidate = new EmailValidate();
+        Validate passValidate = new PasswordValidate();
         emailEdit.addTextChangedListener(new TextValidator(emailEdit) {
             @Override
             public void validate(TextView textView, String text) {
@@ -130,9 +110,42 @@ public class SignUpFragment extends Fragment {
                 }
             }
         });
+    }
 
-        moveToLoginText.setOnClickListener(v -> {
-            navController.navigate(R.id.action_signUpFragment_to_loginFragment);
+    private void setOnSignUp(View view){
+        signUpButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ProgressDialog loadingDialog = ProgressDialog.show(getContext(), "",
+                        "Loading. Please wait...", true);
+                String email = emailEdit.getText().toString();
+                String password = passEdit.getText().toString();
+                String repass = confirmPassEdit.getText().toString();
+                if(canSignUp(email, password, repass)) {
+                    authVM.onSignUp(email, password, params -> {
+                        loadingDialog.dismiss();
+                        navController.navigate(R.id.action_signUpFragment_to_loginFragment);
+                    }, params -> {
+                        loadingDialog.dismiss();
+                        Snackbar snackbar = Snackbar
+                                .make(view, "Tài khoản đã tồn tại hoặc đã có lỗi xảy ra, vui lòng thử lại!", Snackbar.LENGTH_LONG);
+                        snackbar.show();
+                    });
+                }
+                else {
+                    loadingDialog.dismiss();
+                    String msg;
+                    if (email.isEmpty() || password.isEmpty() || repass.isEmpty()) {
+                        msg = "Vui lòng điền đầy đủ các trường";
+                    }
+                    else {
+                        msg = "Có gì đó không ổn, hãy thử lại!";
+                    }
+                    Snackbar snackbar = Snackbar
+                            .make(view, msg, Snackbar.LENGTH_LONG);
+                    snackbar.show();
+                }
+            }
         });
     }
 

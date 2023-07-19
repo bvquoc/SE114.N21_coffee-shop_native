@@ -9,15 +9,20 @@ import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import com.example.coffee_shop_app.R;
+import com.example.coffee_shop_app.activities.address.AddressListingActivity;
 import com.example.coffee_shop_app.activities.promo.PromoActivity;
+import com.example.coffee_shop_app.activities.store.StoreActivity;
 import com.example.coffee_shop_app.adapters.OrderDetailAdapter;
 import com.example.coffee_shop_app.databinding.ActivityCartPickupBinding;
+import com.example.coffee_shop_app.databinding.OrderTypeBottomSheetBinding;
 import com.example.coffee_shop_app.fragments.Dialog.ConfirmDialog;
 import com.example.coffee_shop_app.fragments.Dialog.NotificationDialog;
 import com.example.coffee_shop_app.fragments.LoadingDialog;
@@ -30,9 +35,13 @@ import com.example.coffee_shop_app.models.Store;
 import com.example.coffee_shop_app.repository.AuthRepository;
 import com.example.coffee_shop_app.repository.ProductRepository;
 import com.example.coffee_shop_app.utils.SqliteHelper;
+import com.example.coffee_shop_app.viewmodels.CartButtonViewModel;
 import com.example.coffee_shop_app.viewmodels.CartPickupViewModel;
+import com.example.coffee_shop_app.viewmodels.OrderType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -49,6 +58,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -89,7 +99,8 @@ public class CartPickupActivity extends AppCompatActivity {
         super.onResume();
 //        init();
     }
-
+    private BottomSheetDialog changeOrderTypeBottomSheet;
+    private OrderDetailAdapter adapter;
     private void init() {
         activityCartPickupBinding.orderDetails.recyclerOrderDetails.setNestedScrollingEnabled(false);
         activityCartPickupBinding.orderDetails.recyclerOrderDetails.setLayoutManager(new LinearLayoutManager(this));
@@ -109,31 +120,82 @@ public class CartPickupActivity extends AppCompatActivity {
         ProductRepository.getInstance().getProductListMutableLiveData().observe(this, new Observer<List<Product>>() {
             @Override
             public void onChanged(List<Product> products) {
-                //TODO: get the user properly
                 cartFoods = repo.getCartFood(AuthRepository.getInstance().getCurrentUser().getId());
                 setUICartFood();
             }
         });
         viewModel = new CartPickupViewModel();
         activityCartPickupBinding.setViewModel(viewModel);
+
         activityCartPickupBinding.btnPay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: place order
-                ConfirmDialog dialog=new ConfirmDialog(
-                        "Lưu ý",
-                        "Bạn sẽ không được huỷ đơn nếu xác nhận đặt hàng",
-                        new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                placeOrder();
-                            }
-                        },
-                        null);
-                dialog.show(getSupportFragmentManager(), PLACEORDER);
+                if(viewModel.getCartViewModel().getNotAvailableCartFoods().getValue().size()>0){
+                    NotificationDialog notAvaiDialog=new NotificationDialog(
+                            NotificationDialog.NotificationType.failed,
+                            "Có sản phẩm không hợp lệ trong giỏ hàng !", null);
+                    notAvaiDialog.show(getSupportFragmentManager(), PLACEORDER);
+                }else{
+                    ConfirmDialog dialog=new ConfirmDialog(
+                            "Lưu ý",
+                            "Bạn sẽ không được huỷ đơn nếu xác nhận đặt hàng",
+                            new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    placeOrder();
+                                }
+                            },
+                            null);
+                    dialog.show(getSupportFragmentManager(), PLACEORDER);
+                }
             }
         });
+        activityCartPickupBinding.txtChange.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeOrderTypeBottomSheet = new BottomSheetDialog(CartPickupActivity.this, R.style.BottomSheetTheme);
+                OrderTypeBottomSheetBinding orderTypeBottomSheetBinding =
+                        OrderTypeBottomSheetBinding
+                                .inflate(LayoutInflater.from(CartPickupActivity.this), null, false);
+                orderTypeBottomSheetBinding.setViewModel(CartButtonViewModel.getInstance());
 
+                orderTypeBottomSheetBinding.closeButton.setOnClickListener(view1 -> changeOrderTypeBottomSheet.dismiss());
+
+                orderTypeBottomSheetBinding.pickUpEditButton.setOnClickListener(view12 -> {
+                    changeOrderTypeBottomSheet.dismiss();
+                    Intent intent = new Intent(CartPickupActivity.this, StoreActivity.class);
+                    startActivity(intent);
+                });
+
+                orderTypeBottomSheetBinding.deliveryEditButton.setOnClickListener(view13 -> {
+                    changeOrderTypeBottomSheet.dismiss();
+                    Intent intent = new Intent(CartPickupActivity.this, AddressListingActivity.class);
+                    startActivity(intent);
+                });
+
+                orderTypeBottomSheetBinding.deliveryLayout.setOnClickListener(view14 -> {
+                    CartButtonViewModel.getInstance().getSelectedOrderType().postValue(OrderType.Delivery);
+                    changeOrderTypeBottomSheet.dismiss();
+                    Intent intent = new Intent(CartPickupActivity.this,CartDeliveryActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_TASK_ON_HOME);
+                    startActivity(intent);
+                    CartPickupActivity.this.finish();
+                });
+                orderTypeBottomSheetBinding.pickUpLayout.setOnClickListener(view15 -> {
+                    CartButtonViewModel.getInstance().getSelectedOrderType().postValue(OrderType.StorePickUp);
+                    changeOrderTypeBottomSheet.dismiss();
+                });
+
+                changeOrderTypeBottomSheet.setContentView(orderTypeBottomSheetBinding.getRoot());
+                // Set the behavior to STATE_EXPANDED
+                View bottomSheetInternal = changeOrderTypeBottomSheet
+                        .findViewById(com.google.android.material.R.id.design_bottom_sheet);
+                if (bottomSheetInternal != null) {
+                    BottomSheetBehavior.from(bottomSheetInternal).setState(BottomSheetBehavior.STATE_EXPANDED);
+                    changeOrderTypeBottomSheet.show();
+                }
+            }
+        });
 
         viewModel.getTimePickup().observe(this, new Observer<Date>() {
             @Override
@@ -149,6 +211,13 @@ public class CartPickupActivity extends AppCompatActivity {
             }
         });
         initPickupTime();
+        activityCartPickupBinding.pickupDetailCard.iconStoreChevron.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(CartPickupActivity.this, StoreActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private void initPickupTime(){
@@ -219,8 +288,9 @@ public class CartPickupActivity extends AppCompatActivity {
     }
 
     private void setUICartFood(){
+        setStoreListener();
 
-        OrderDetailAdapter adapter = new OrderDetailAdapter(cartFoods);
+        adapter = new OrderDetailAdapter(cartFoods);
         adapter.setOnCartQuantityUpdate(new OrderDetailAdapter.OnCartQuantityUpdate() {
             @Override
             public void onItemClick(CartFood cartFood, boolean isRemoved) {
@@ -283,18 +353,82 @@ public class CartPickupActivity extends AppCompatActivity {
                 activityCartPickupBinding.orderDetails.txtPromoPricr.setVisibility(View.GONE);
             }
         }
+    private void setStoreListener(){
+        CartButtonViewModel.getInstance().getSelectedStore()
+                .observe(CartPickupActivity.this ,new Observer<Store>() {
+                    @Override
+                    public void onChanged(Store store) {
+                        for (CartFood cf:
+                                viewModel.getCartViewModel().getCartFoods().getValue()) {
+                            List<Integer> notAvaiTempList=viewModel.getCartViewModel().
+                                    getNotAvailableCartFoods().getValue();
+                            boolean isAvailable=!viewModel.getCartViewModel()
+                                    .getNotAvailableCartFoods().getValue().contains(cf.getId());
+                            boolean isCurrent=true;
+                            String prdId= cf.getProduct().getId();
+                            if(store.getStateFood().containsKey(cf.getProduct().getId())
+                                    && store.getStateFood().get(prdId)!=null){
+                                if(store.getStateFood().get(prdId).contains(cf.getSize())){
+                                    isCurrent=false;
+                                }
+                                if(Objects.requireNonNull(store.getStateFood().get(cf.getProduct().getId())).isEmpty()){
+                                    isCurrent=false;
+                                }
+                            }
+                            if(store.getStateTopping()!=null && store.getStateTopping().size()>0){
+                                if(cf.getTopping()!=null && !cf.getTopping().isEmpty()){
+                                    for (String storeTopping :
+                                            store.getStateTopping()) {
+                                        if(cf.getTopping().contains(storeTopping)){
+                                            isCurrent=false;
+                                        }
+                                    }
+                                }
+                            }
+
+                            if(isAvailable && !isCurrent){
+                                notAvaiTempList.add((Integer) cf.getId());
+                                viewModel.getCartViewModel()
+                                        .getNotAvailableCartFoods().postValue(notAvaiTempList);
+                            }
+
+                            if(!isAvailable && isCurrent){
+                                notAvaiTempList.remove((Integer) cf.getId());
+                                viewModel.getCartViewModel()
+                                        .getNotAvailableCartFoods().postValue(notAvaiTempList);
+                            }
+                        }
+                    }
+                });
+        viewModel.getCartViewModel().getNotAvailableCartFoods().observe(CartPickupActivity.this, new Observer<List<Integer>>() {
+            @Override
+            public void onChanged(List<Integer> integers) {
+                if(adapter!=null && adapter.getItemCount()>0){
+                    adapter.notifyDataSetChanged();
+                }
+            }
+        });
+    }
     private static final String PLACEORDER="PLACE ORDER";
     private FirebaseFirestore firestore;
-    public void placeOrder(){
+    private void placeOrder(){
         try{
             HashMap<String, Object> map=new HashMap<>();
             map.put("user", AuthRepository.getInstance().getCurrentUser().getId());
+            DateTime now=DateTime.now();
+            if(viewModel.getStorePickup().getValue()==null){
+                NotificationDialog alertDialog=new NotificationDialog(
+                        NotificationDialog.NotificationType.failed,
+                        "Chưa có thông tin cửa hàng",
+                        null);
+                alertDialog.show(getSupportFragmentManager(), PLACEORDER);
+                return;
+            }
             map.put("store", viewModel.getStorePickup().getValue().getId());
 
-            //TODO: put promo
-//            if(viewModel.getCartViewModel().getPromo().getValue()!=null){
-//                map.put("promo", viewModel.getCartViewModel().getPromo().getValue().getPromoCode());
-//            }
+            if(viewModel.getCartViewModel().getPromo().getValue()!=null){
+                map.put("promo", viewModel.getCartViewModel().getPromo().getValue().getPromoCode());
+            }
 
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
             map.put("dateOrder", format.format(new Date()));
@@ -339,7 +473,6 @@ public class CartPickupActivity extends AppCompatActivity {
                                                 .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                                             @Override
                                             public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
-                                                //TODO: add listener
                                                 if(value.contains("status")){
                                                     if(value.get("status").toString().equals("Đã tạo")){
                                                         Log.d(PLACEORDER, "Đã tạo");
@@ -352,15 +485,12 @@ public class CartPickupActivity extends AppCompatActivity {
                                                                     repo.deleteCartFood(cf.getId());
                                                                 }
                                                                 viewModel.getCartViewModel().getCartFoods().postValue(new ArrayList<>());
+                                                                viewModel.getCartViewModel().getPromo().postValue(null);
                                                                 NotificationDialog alertDialog=new NotificationDialog(
                                                                         NotificationDialog.NotificationType.success,
                                                                         "Đặt hàng thành công",
-                                                                        new View.OnClickListener() {
-                                                                            @Override
-                                                                            public void onClick(View v) {
-                                                                                dialog.dismiss();
-                                                                                onBackPressed();
-                                                                            }
+                                                                        dialog1 -> {
+                                                                            onBackPressed();
                                                                         });
                                                                 dialog.dismiss();
                                                                 alertDialog.show(getSupportFragmentManager(), PLACEORDER);
@@ -377,13 +507,7 @@ public class CartPickupActivity extends AppCompatActivity {
                                         NotificationDialog alertDialog=new NotificationDialog(
                                                 NotificationDialog.NotificationType.failed,
                                                 "Đặt hàng không thành công",
-                                                new View.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View v) {
-                                                        dialog.dismiss();
-                                                        onBackPressed();
-                                                    }
-                                                });
+                                                null);
                                         alertDialog.show(getSupportFragmentManager(), PLACEORDER);
                                         Log.e(PLACEORDER, "Receive json error");
                                     }
@@ -392,13 +516,7 @@ public class CartPickupActivity extends AppCompatActivity {
                                     NotificationDialog alertDialog=new NotificationDialog(
                                             NotificationDialog.NotificationType.failed,
                                             "Đặt hàng không thành công",
-                                            new View.OnClickListener() {
-                                                @Override
-                                                public void onClick(View v) {
-                                                    dialog.dismiss();
-                                                    onBackPressed();
-                                                }
-                                            });
+                                            null);
                                     alertDialog.show(getSupportFragmentManager(), PLACEORDER);
                                     Log.e(PLACEORDER, e.getMessage());
                                 }

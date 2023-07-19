@@ -4,16 +4,38 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 public class User {
     private final String id;
-    private final String name;
-    private final String avatarUrl;
-    private final String coverUrl;
-    private final Date dob;
+    private String name;
+    private String avatarUrl;
+    private String coverUrl;
+    private Date dob;
     private final String email;
-    private final String phoneNumber;
+    private String phoneNumber;
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
+    }
+
+    public void setCoverUrl(String coverUrl) {
+        this.coverUrl = coverUrl;
+    }
+
+    public void setDob(Date dob) {
+        this.dob = dob;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
     private boolean isActive;
     private boolean isAdmin;
     private boolean isStaff;
@@ -112,6 +134,21 @@ public class User {
             return new User(id, name, avatarUrl, coverUrl, dob, email, phoneNumber, isActive, isAdmin, isStaff, store);
         }
         return null;
+    }
+
+    public static Map<String, Object> toFireStore(User user){
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put("name", user.name);
+        data.put("isActive", user.isActive);
+        data.put("email", user.email);
+        data.put("dob", user.dob);
+        data.put("avatarUrl", user.avatarUrl);
+        data.put("coverUrl", user.coverUrl);
+        data.put("phoneNumber", user.phoneNumber);
+        data.put("isStaff", user.isStaff);
+        data.put("isAdmin", user.isAdmin);
+        data.put("store", user.store);
+        return  data;
     }
     private static String nullableConvertString(Object object)
     {

@@ -81,8 +81,7 @@
             android:exported="true" />
         <activity
             android:name=".activities.SearchFoodActivity"
-            android:exported="false"
-            android:windowSoftInputMode="adjustPan" />
+            android:exported="false"/>
         <activity
             android:name=".activities.address.EditDeliveryAddressActivity"
             android:exported="false"

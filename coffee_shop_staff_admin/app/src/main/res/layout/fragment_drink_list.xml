@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/refreshLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingHorizontal="@dimen/_16sdp"
+    tools:context=".fragments.product.DrinkListFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!--No Product-->
+        <LinearLayout
+            android:id="@+id/noProductView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_24sdp"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/statusView">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_150sdp"
+                android:src="@drawable/img_no_order" />
+
+            <TextView
+                style="@style/boldBlack16"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_16sdp"
+                android:text="Chưa có sản phẩm nào" />
+        </LinearLayout>
+
+        <!--Filter-->
+        <LinearLayout
+            android:orientation="vertical"
+            android:id="@+id/statusView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_8sdp"
+            android:background="@color/white"
+            android:paddingHorizontal="@dimen/_16sdp"
+            android:paddingTop="@dimen/_16sdp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/edit_text_frame"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:startIconDrawable="@drawable/ic_search_24"
+                app:startIconTint="@color/blue"
+                app:endIconMode="clear_text"
+                app:endIconDrawable="@drawable/ic_clear_white_24"
+                app:endIconTint="@color/blue"
+                app:boxStrokeColor="@color/black"
+                app:boxCornerRadiusBottomEnd="@dimen/_4sdp"
+                app:boxCornerRadiusBottomStart="@dimen/_4sdp"
+                app:boxCornerRadiusTopEnd="@dimen/_4sdp"
+                app:boxCornerRadiusTopStart="@dimen/_4sdp"
+                app:startIconMinSize="@dimen/_38sdp"
+                app:hintAnimationEnabled="false"
+                app:hintEnabled="false">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/txt_search_product"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="@dimen/_8sdp"
+                    android:paddingHorizontal="0dp"
+                    android:maxLines="1"
+                    android:inputType="text"
+                    android:hint="Tìm kiếm sản phẩm"
+                    app:hintTextAppearance="@style/regularGrey14"
+                    style="@style/regularBlack14"/>
+            </com.google.android.material.textfield.TextInputLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <CheckBox
+                    android:layout_weight="0.33"
+                    android:id="@+id/product_stocking_check"
+                    style="@style/regularBlack10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@color/blue"
+                    android:enabled="true"
+                    android:text="Còn hàng"
+                    android:textSize="@dimen/font14" />
+                <CheckBox
+                    android:layout_weight="0.33"
+                    android:id="@+id/product_unstocking_check"
+                    style="@style/regularBlack10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@color/blue"
+                    android:enabled="true"
+                    android:text="Hết hàng"
+                    android:textSize="@dimen/font14" />
+                <CheckBox
+                    android:layout_weight="0.33"
+                    android:id="@+id/product_incomplete_check"
+                    style="@style/regularBlack10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@color/blue"
+                    android:text="Thiếu hàng"
+                    android:textSize="@dimen/font14" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!--List product-->
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="@dimen/_8sdp"
+            android:scrollbars="none"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/statusView">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_8sdp" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerDrinkCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_72sdp" />
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

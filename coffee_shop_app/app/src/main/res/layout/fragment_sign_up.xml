@@ -32,7 +32,7 @@
                     android:layout_marginTop="@dimen/_16sdp"
                     android:text="Đăng ký"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/_30sdp" />
+                    android:textSize="@dimen/_28sdp" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/txt_email_layout_signup"
@@ -42,12 +42,15 @@
                     android:layout_marginHorizontal="@dimen/_16sdp"
                     android:layout_marginTop="@dimen/_16sdp"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    >
+                    app:hintTextAppearance="@style/regularBlue14"
+                    app:errorTextAppearance="@style/regularRed14">
 
                     <EditText
                         android:id="@+id/txt_email_signup"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:textAppearance="@style/regularBlack14"
+                        android:inputType="textEmailAddress"
                         android:maxLines="1"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -59,13 +62,15 @@
                     android:layout_marginHorizontal="@dimen/_16sdp"
                     android:layout_marginTop="@dimen/_16sdp"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    >
+                    app:hintTextAppearance="@style/regularBlue14"
+                    app:errorTextAppearance="@style/regularRed14">
 
                     <EditText
                         android:id="@+id/txt_password_signup"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="textPassword"
+                        android:textAppearance="@style/regularBlack14"
                         android:maxLines="1"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -76,13 +81,15 @@
                     android:hint="Nhập lại mật khẩu"
                     android:layout_marginHorizontal="@dimen/_16sdp"
                     android:layout_marginTop="@dimen/_16sdp"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    >
+                    app:hintTextAppearance="@style/regularBlue14"
+                    app:errorTextAppearance="@style/regularRed14"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
                     <EditText
                         android:id="@+id/txt_repassword_signup"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="textPassword"
+                        android:textAppearance="@style/regularBlack14"
                         android:maxLines="1"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -93,14 +100,13 @@
                     android:layout_marginVertical="8dp">
                     <TextView
                         android:id="@+id/btn_move_to_login"
-                        style="@style/regularBlack10"
+                        style="@style/regularBlack14"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
                         android:layout_marginTop="12dp"
                         android:text="Bạn đã có tài khoản?"
-                        android:textColor="@color/black"
-                        android:textSize="@dimen/_12sdp" />
+                        android:textColor="@color/black" />
                 </RelativeLayout>
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"

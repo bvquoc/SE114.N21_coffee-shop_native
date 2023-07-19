@@ -30,8 +30,8 @@ public class SizeRepository {
     private static SizeRepository instance;
     private SizeRepository() {
         sizeListMutableLiveData = new MutableLiveData<>();
-        //define firestore
-        firestore = FirebaseFirestore.getInstance();
+        //define fireStore
+        fireStore = FirebaseFirestore.getInstance();
         //define storage
         storageRef = FirebaseStorage.getInstance().getReference();
     }
@@ -44,7 +44,7 @@ public class SizeRepository {
 
     //properties
     private final MutableLiveData<List<Size>> sizeListMutableLiveData;
-    private final FirebaseFirestore firestore;
+    private final FirebaseFirestore fireStore;
     private final StorageReference storageRef;
 
     //Function
@@ -55,9 +55,11 @@ public class SizeRepository {
         }
         return sizeListMutableLiveData;
     }
-    void registerSnapshotListener()
+    public void registerSnapshotListener()
     {
-        firestore.collection("Size").addSnapshotListener((value, error) -> {
+        fireStore.collection("Size")
+                .orderBy("price")
+                .addSnapshotListener((value, error) -> {
             Log.d(TAG, "get sizes started.");
             if(value!=null)
             {
@@ -74,12 +76,11 @@ public class SizeRepository {
                 sizeList.add(Size.fromFireBase(doc));
             }
         }
-        sizeList.sort(Comparator.comparingDouble(Size::getPrice));
         sizeListMutableLiveData.postValue(sizeList);
     }
     public void updateSize(Size size, UpdateDataListener listener)
     {
-        DocumentReference sizeRef = firestore.collection("Size").document(size.getId());
+        DocumentReference sizeRef = fireStore.collection("Size").document(size.getId());
         Map<String, Object> newData = new HashMap<>();
         Uri uriSize = Uri.parse(size.getImage());
         String scheme = uriSize.getScheme();
@@ -122,7 +123,7 @@ public class SizeRepository {
 
     public void insertSize(Size size, UpdateDataListener listener)
     {
-        CollectionReference collectionSizeRef = firestore.collection("Size");
+        CollectionReference collectionSizeRef = fireStore.collection("Size");
         Map<String, Object> newData = new HashMap<>();
         String imageId = UUID.randomUUID().toString().replace("-", "");
         StorageReference imageRef = storageRef.child("size/" + imageId);
@@ -148,7 +149,7 @@ public class SizeRepository {
     }
     public void deleteSize(String sizeId, UpdateDataListener listener)
     {
-        DocumentReference sizeRef = firestore.collection("Size").document(sizeId);
+        DocumentReference sizeRef = fireStore.collection("Size").document(sizeId);
         sizeRef.delete()
                 .addOnSuccessListener(taskSnapshot -> listener.onUpdateData(true, ""))
                 .addOnFailureListener(exception -> listener.onUpdateData(false, exception.getMessage()));

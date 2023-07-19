@@ -151,7 +151,8 @@
                     android:layout_alignParentBottom="true"
                     android:layout_marginBottom="@dimen/_12sdp"
 
-                    android:text="Phiên bản 1.0.0" />
+                    android:text="Phiên bản 1.0.0"
+                    style="@style/regularGrey14"/>
             </RelativeLayout>
 
         </LinearLayout>

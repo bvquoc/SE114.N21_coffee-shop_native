@@ -4,10 +4,13 @@ import com.example.coffee_shop_staff_admin.utils.interfaces.OnRequestUserDataLis
 import com.example.coffee_shop_staff_admin.utils.interfaces.UpdateDataListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.Filter;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,21 +30,35 @@ public class UserRepository{
     }
 
     public void getUserByEmailFromFireStore(String email, OnRequestUserDataListener listener) {
-        Query query = fireStore.collection("users").whereEqualTo("email", email);
+        Query query =
+                fireStore.collection("users")
+                        .whereEqualTo("email", email);
 
         query.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 QuerySnapshot querySnapshot = task.getResult();
                 if (querySnapshot != null && !querySnapshot.isEmpty()) {
                     DocumentSnapshot document = querySnapshot.getDocuments().get(0);
-                    User user = User.fromFireBase(document);
-                    listener.onRequestUserData(user);
-                } else {
-                    listener.onRequestUserData(null);
+                    try
+                    {
+                        if(document.get("isSuperAdmin") instanceof Boolean && ((Boolean) document.get("isSuperAdmin")))
+                        {
+                            listener.onRequestUserData(null);
+                        }
+                        else{
+                            User user = User.fromFireBase(document);
+                            listener.onRequestUserData(user);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        User user = User.fromFireBase(document);
+                        listener.onRequestUserData(user);
+                    }
+                    return;
                 }
-            } else {
-                listener.onRequestUserData(null);
             }
+            listener.onRequestUserData(null);
         });
     }
     public void updateUserActiveAccess(String userId, boolean isActive, UpdateDataListener listener)

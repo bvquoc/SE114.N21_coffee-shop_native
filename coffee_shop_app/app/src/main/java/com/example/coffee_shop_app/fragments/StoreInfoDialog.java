@@ -22,6 +22,9 @@ public class StoreInfoDialog {
         ImageView imgView= (ImageView) dialog.findViewById(R.id.imgView);
         Glide.with(imgView.getContext())
                 .load(store.getImages().get(0))
+                .placeholder(R.drawable.img_placeholder)
+                .error(R.drawable.img_placeholder)
+                .fitCenter()
                 .into(imgView);
 
         TextView txtSb= (TextView)dialog.findViewById(R.id.txtSb);

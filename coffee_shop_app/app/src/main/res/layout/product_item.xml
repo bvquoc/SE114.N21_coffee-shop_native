@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@drawable/border_ffffff_8">
+    android:background="@drawable/border_ffffff_8"
+    android:layout_marginBottom="@dimen/_2sdp">
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/product_image_layout"
         app:layout_constraintLeft_toLeftOf="parent"

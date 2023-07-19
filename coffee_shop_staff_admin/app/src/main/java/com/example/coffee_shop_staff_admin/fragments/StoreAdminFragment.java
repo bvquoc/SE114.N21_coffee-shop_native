@@ -101,5 +101,9 @@ public class StoreAdminFragment extends Fragment {
             FoodRepository.getInstance().registerSnapshotListener();
             fragmentStoreAdminBinding.refreshLayout.setRefreshing(false);
         });
+
+        fragmentStoreAdminBinding.editTextFrame.setEndIconOnClickListener(v -> {
+            fragmentStoreAdminBinding.editText.setText("");
+        });
     }
 }

@@ -66,11 +66,11 @@ public class PromoRepository {
         promoList.sort((o1, o2) -> {
             if(o1.isForNewCustomer() && !o2.isForNewCustomer())
             {
-                return 1;
+                return -1;
             }
             else if (!o1.isForNewCustomer()&& o2.isForNewCustomer())
             {
-                return -1;
+                return 1;
             }
             else
             {

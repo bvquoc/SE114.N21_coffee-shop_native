@@ -8,7 +8,7 @@
         android:icon="@drawable/ic_outline_coffee_24"
         android:id="@+id/productManageFragment"/>
 
-    <item android:title="Topping"
-        android:icon="@drawable/ic_topping"
-        android:id="@+id/toppingManageFragment"/>
+    <item android:title="Cá nhân"
+        android:icon="@drawable/ic_supervisor_account_24"
+        android:id="@+id/profileFragment2"/>
 </menu>

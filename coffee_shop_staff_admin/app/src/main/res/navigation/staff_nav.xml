@@ -12,12 +12,12 @@
         tools:layout="@layout/fragment_order_manage" />
     <fragment
         android:id="@+id/productManageFragment"
-        android:name="com.example.coffee_shop_staff_admin.fragments.ProductManageFragment"
+        android:name="com.example.coffee_shop_staff_admin.fragments.product.ProductManageFragment"
         android:label="fragment_product_manage"
         tools:layout="@layout/fragment_product_manage" />
     <fragment
-        android:id="@+id/toppingManageFragment"
-        android:name="com.example.coffee_shop_staff_admin.fragments.ToppingManageFragment"
-        android:label="fragment_topping_manage"
-        tools:layout="@layout/fragment_topping_manage" />
+        android:id="@+id/profileFragment2"
+        android:name="com.example.coffee_shop_staff_admin.fragments.profile.ProfileFragment"
+        android:label="fragment_profile"
+        tools:layout="@layout/fragment_profile" />
 </navigation>

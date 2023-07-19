@@ -1,6 +1,7 @@
 package com.example.coffee_shop_app.fragments.auth;
 
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,6 +9,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
@@ -32,6 +34,7 @@ import com.example.coffee_shop_app.activities.MainPageActivity;
 import com.example.coffee_shop_app.activities.profile.ProfileSettingActivity;
 import com.example.coffee_shop_app.models.User;
 import com.example.coffee_shop_app.repository.AuthRepository;
+import com.example.coffee_shop_app.repository.StoreRepository;
 import com.example.coffee_shop_app.utils.StringConverter;
 import com.example.coffee_shop_app.utils.interfaces.CallBack;
 import com.example.coffee_shop_app.utils.interfaces.Validate;
@@ -62,6 +65,8 @@ public class LoginFragment extends Fragment {
     private NavController navController;
     private SavedStateHandle savedStateHandle;
     private BottomSheetDialog bottomSheetDialog;
+    private TextView goForgot;
+
 
 
     @Override
@@ -89,9 +94,7 @@ public class LoginFragment extends Fragment {
         signInButton = view.findViewById(R.id.btn_login);
         navController = Navigation.findNavController(view);
         rememberMe = view.findViewById(R.id.checkbox_remember);
-
-//        savedStateHandle = NavHostFragment.findNavController(this).getPreviousBackStackEntry().getSavedStateHandle();
-//        savedStateHandle.set("IS_LOGGED_IN", false);
+        goForgot = view.findViewById(R.id.btn_go_forgot);
 
         Toolbar toolbar = view.findViewById(R.id.my_toolbar);
         toolbar.setTitle("");
@@ -102,52 +105,85 @@ public class LoginFragment extends Fragment {
             }
         });
 
-        Validate emailValidate = new EmailValidate();
-        Validate passValidate = new PasswordValidate();
+        setValidation();
 
+        setOnSignIn(view);
+        setOnGoForgot();
+
+    }
+
+    private void setOnSignIn(View view){
         signInButton.setOnClickListener(v -> {
+            ProgressDialog loadingDialog = ProgressDialog.show(getContext(), "",
+                    "Loading. Please wait...", true);
             String email = emailEdit.getText().toString();
             String password = passEdit.getText().toString();
-            SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPref.edit();
+
+            //SharedPrefs set
+            SharedPreferences sharedPref = ((AppCompatActivity) requireActivity()).getSharedPreferences("com.example.coffee_shop_app", Context.MODE_PRIVATE);
+
             if(rememberMe.isChecked()){
-                editor.putBoolean(getString(R.string.is_remember_me), true);
+                sharedPref.edit().putBoolean("isRememberMe", true).apply();
             }
             else {
-                editor.putBoolean(getString(R.string.is_remember_me), false);
+                sharedPref.edit().putBoolean("isRememberMe", false).apply();
             }
-            editor.apply();
+            //end set
 
             if (canLogin(email, password)) {
                 authVM.onEmailSignIn(email, password, params -> {
+                    loadingDialog.dismiss();
                     User temp = (User) params[0];
-                    if(temp.getPhoneNumber().equals("No Phone Number")){
-                        openChangeInfoDialog(view, temp);
-                    }
-                    else {
-                        onGoToMainPage();
+                    if(!temp.getActive()){
+                        String msg = "Tài khoản của bạn đã bị chặn";
+                        Snackbar snackbar = Snackbar
+                                .make(view, msg, Snackbar.LENGTH_LONG);
+                        snackbar.show();
+                        authVM.onSignOut();
+                    } else {
+                        if (temp.getPhoneNumber().equals("No Phone Number")) {
+                            openChangeInfoDialog(view, temp);
+                        } else {
+                            onGoToMainPage();
+                        }
                     }
                 }, params -> {
+                    loadingDialog.dismiss();
                     String msg = "Email hoặc mật khẩu sai";
                     Snackbar snackbar = Snackbar
                             .make(view, msg, Snackbar.LENGTH_LONG);
                     snackbar.show();
                 });
             } else {
+                loadingDialog.dismiss();
                 String msg = "Vui lòng điền đầy đủ các trường";
                 Snackbar snackbar = Snackbar
                         .make(view, msg, Snackbar.LENGTH_LONG);
                 snackbar.show();
             }
         });
+    }
+
+    private void setOnGoForgot() {
+        goForgot.setOnClickListener(v -> {
+            navController.navigate(R.id.action_loginFragment_to_forgotPasswordFragment);
+        });
+    }
+    private void setValidation() {
+        Validate emailValidate = new EmailValidate();
+        Validate passValidate = new PasswordValidate();
 
         emailEdit.addTextChangedListener(new TextValidator(emailEdit) {
             @Override
             public void validate(TextView textView, String text) {
-                if (!emailValidate.validate(text)) {
-                    emailLayout.setError(emailValidate.validator(text));
-                } else {
+                if (text == null || text.isEmpty()) {
                     emailLayout.setError(null);
+                } else {
+                    if (!emailValidate.validate(text)) {
+                        emailLayout.setError(emailValidate.validator(text));
+                    } else {
+                        emailLayout.setError(null);
+                    }
                 }
             }
         });
@@ -155,16 +191,20 @@ public class LoginFragment extends Fragment {
         passEdit.addTextChangedListener(new TextValidator(passEdit) {
             @Override
             public void validate(TextView textView, String text) {
-                if (!passValidate.validate(text)) {
-                    passLayout.setError(passValidate.validator(text));
-                } else {
+                if (text == null || text.isEmpty()) {
                     passLayout.setError(null);
+                } else {
+                    if (!passValidate.validate(text)) {
+                        passLayout.setError(passValidate.validator(text));
+                    } else {
+                        passLayout.setError(null);
+                    }
                 }
             }
         });
     }
-
     private void openChangeInfoDialog(View view, User temp){
+
         bottomSheetDialog = new BottomSheetDialog(getContext(), R.style.BottomSheetTheme);
 
         bottomSheetDialog.setContentView(R.layout.change_info_bottom_sheet);
@@ -192,13 +232,17 @@ public class LoginFragment extends Fragment {
 
         Button changeButton = bottomSheetDialog.findViewById(R.id.btn_accept_change_info);
         changeButton.setOnClickListener(v -> {
+            ProgressDialog loadingDialog = ProgressDialog.show(getContext(), "",
+                    "Loading. Please wait...", true);
             temp.setDob(StringConverter.StringToDate(dob.getText().toString()));
             temp.setName(name.getText().toString());
             temp.setPhoneNumber(phone.getText().toString());
             authVM.onUpdate(temp, params -> {
+                loadingDialog.dismiss();
                 bottomSheetDialog.dismiss();
                 onGoToMainPage();
             }, params -> {
+                loadingDialog.dismiss();
                 String msg = "Đã có lỗi xảy ra, vui lòng thử lại sau!";
                 Snackbar snackbar = Snackbar
                         .make(view, msg, Snackbar.LENGTH_LONG);

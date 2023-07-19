@@ -10,7 +10,8 @@
     <string name="statusComplete">Hoàn thành</string>
     <string name="statusCancelled">Đã huỷ</string>
     <string name="statusAll">Tất cả</string>
-    <string name="vndUnit">\ ₫\</string>
+    <string name="vndUnit">\ đ\</string>
     <string name="size_text">Size: </string>
     <string name="topping_text">Topping: </string>
+    <string name="is_remember_me" />
 </resources>

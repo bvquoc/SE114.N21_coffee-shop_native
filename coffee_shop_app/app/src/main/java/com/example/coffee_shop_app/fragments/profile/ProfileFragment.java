@@ -1,6 +1,7 @@
 package com.example.coffee_shop_app.fragments.profile;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -15,6 +16,8 @@ import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
@@ -27,6 +30,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -38,6 +42,9 @@ import com.example.coffee_shop_app.databinding.FragmentProfileBinding;
 import com.example.coffee_shop_app.models.User;
 import com.example.coffee_shop_app.repository.AuthRepository;
 import com.example.coffee_shop_app.viewmodels.ProfileSettingViewModel;
+import com.google.android.material.bottomappbar.BottomAppBar;
+import com.google.android.material.bottomnavigation.BottomNavigationItemView;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.squareup.picasso.Picasso;
@@ -65,12 +72,15 @@ public class ProfileFragment extends Fragment {
         currentUser = AuthRepository.getInstance().getCurrentUserLiveData();
         viewModel = new ViewModelProvider(requireActivity()).get(ProfileSettingViewModel.class);
         createImageResultLauncher();
+        setToolBarTitle("Trang cá nhân");
 
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        setButtonListener();
     }
 
     @Override
@@ -81,7 +91,6 @@ public class ProfileFragment extends Fragment {
 
         fragmentProfileBinding.setLifecycleOwner(this);
 
-        setButtonListener();
 
         imgAvatar = fragmentProfileBinding.imgAvatar;
         imgCover = fragmentProfileBinding.imgCover;
@@ -130,19 +139,31 @@ public class ProfileFragment extends Fragment {
         return fragmentProfileBinding.getRoot();
     }
 
+    public void setToolBarTitle(String title) {
+        Toolbar toolbar = ((AppCompatActivity) requireActivity()).findViewById(R.id.my_toolbar);
+        toolbar.setTitle(title);
+    }
 
     public void onGoOrder(View view) {
-        String msg = "Nav to order";
-        Snackbar snackbar = Snackbar
-                .make(view, msg, Snackbar.LENGTH_LONG);
-        snackbar.show();
+        BottomNavigationView bottomNav = getActivity().findViewById(R.id.bottomNavView);
+        bottomNav.setSelectedItemId(R.id.orderFragment);
     }
 
     public void onGoSupport(View view) {
-        String msg = "Nav to support";
-        Snackbar snackbar = Snackbar
-                .make(view, msg, Snackbar.LENGTH_LONG);
-        snackbar.show();
+        final Dialog dialog = new Dialog(getActivity());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(false);
+        dialog.setContentView(R.layout.support_dialog);
+
+        ImageView closeBtn = (ImageView) dialog.findViewById(R.id.close_button);
+        closeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
     }
 
     public void onGoSettings(View view) {
@@ -260,7 +281,7 @@ public class ProfileFragment extends Fragment {
     }
 
     private void onOpenPickImage(Boolean type) {
-        if(type) {
+        if (type) {
             coverLauncher.launch(new PickVisualMediaRequest.Builder().build());
         } else {
             avaLaucher.launch(new PickVisualMediaRequest.Builder().build());

@@ -55,9 +55,11 @@ public class ToppingRepository {
         }
         return toppingListMutableLiveData;
     }
-    void registerSnapshotListener()
+    public void registerSnapshotListener()
     {
-        fireStore.collection("Topping").addSnapshotListener((value, error) -> {
+        fireStore.collection("Topping")
+                .orderBy("name")
+                .addSnapshotListener((value, error) -> {
             Log.d(TAG, "get toppings started.");
             if(value!=null)
             {
@@ -74,7 +76,6 @@ public class ToppingRepository {
                 toppingList.add(Topping.fromFireBase(doc));
             }
         }
-        toppingList.sort(Comparator.comparing(Topping::getName));
         toppingListMutableLiveData.postValue(toppingList);
     }
 

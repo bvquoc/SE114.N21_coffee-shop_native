@@ -13,9 +13,11 @@ import com.example.coffee_shop_app.models.CartFood;
 import com.example.coffee_shop_app.models.Product;
 import com.example.coffee_shop_app.repository.AuthRepository;
 import com.example.coffee_shop_app.repository.ProductRepository;
+import com.example.coffee_shop_app.viewmodels.CartViewModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class SqliteHelper extends SQLiteOpenHelper {
     public static final int DATABASE_VERSION = 1;
@@ -109,8 +111,20 @@ public class SqliteHelper extends SQLiteOpenHelper {
                 cartFood.setNote(item.get("note").toString());
             }
             cartFoods.add(cartFood);
-        }
-        return cartFoods;
+
+            List<Integer> tempList= CartViewModel.getInstance().getNotAvailableCartFoods().getValue();
+            if(!prd.isAvailable()){
+                if(!tempList.contains(cartFood.getId())){
+                    tempList.add(cartFood.getId());
+                    CartViewModel.getInstance().getNotAvailableCartFoods().postValue(tempList);
+                }
+            }else{
+                if(tempList.contains(cartFood.getId())){
+                    tempList.remove((Integer) cartFood.getId());
+                    CartViewModel.getInstance().getNotAvailableCartFoods().postValue(tempList);
+                }
+            }
+        }return cartFoods;
     }
 
     public long updateCartFood(CartFood cartFood) {

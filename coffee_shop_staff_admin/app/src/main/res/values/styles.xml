@@ -14,11 +14,39 @@
     <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="colorPrimary">@color/blue</item>
         <item name="colorPrimaryDark">@color/blue</item>
-        <item name="colorAccent">@color/blueRipple</item>
+        <item name="colorAccent">@color/blue</item>
     </style>
 
     <style name="roundButtonShape">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
+    </style>
+
+    <style name="BottomSheetTheme" parent="Theme.Material3.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/BottomSheetStyle</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
+        <item name="theme">@style/AppTheme</item>
+    </style>
+    <style name="BottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+
+    <style name="DialogTheme" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorAccent">@color/blue</item>           <!-- Header Background -->
+        <item name="android:colorAccent">@color/blue</item>
+        <item name="android:textColor">@color/blue</item>
+        <item name="android:buttonBarPositiveButtonStyle">@style/DialogButtonStyled</item>
+        <item name="android:buttonBarNegativeButtonStyle">@style/DialogButtonStyled</item>
+        <item name="android:buttonBarNeutralButtonStyle">@style/DialogButtonStyled</item>
+        <item name="android:colorControlActivated">#4971AC</item>        <!--selected day-->
+        <!--        <item name="android:textColorPrimary">#89B5F6</item> &lt;!&ndash;days of the month&ndash;&gt;-->
+        <!--        <item name="android:textColorSecondary">#0E3E85</item>    &lt;!&ndash;days of the week&ndash;&gt;-->
+    </style>
+
+    <style name="DialogButtonStyled" parent="Theme.MaterialComponents.Light">
+        <item name="android:textColor">@color/blue</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:textSize">15dp</item>
     </style>
 </resources>

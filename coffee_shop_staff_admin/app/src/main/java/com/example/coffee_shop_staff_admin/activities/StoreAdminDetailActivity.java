@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.example.coffee_shop_staff_admin.R;
@@ -116,7 +117,14 @@ public class StoreAdminDetailActivity extends AppCompatActivity {
             }
         });
 
-        activityStoreAdminDetailBinding.manageButton.setOnClickListener(v -> Toast.makeText(StoreAdminDetailActivity.this, "Nav to manage store", Toast.LENGTH_SHORT).show());
+        activityStoreAdminDetailBinding.manageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                StoreRepository.getInstance().getCurrentStore().setValue(selectedStore);
+                Intent intent=new Intent(StoreAdminDetailActivity.this, StoreManageActivity.class);
+                startActivity(intent);
+            }
+        });
 
 
         activityStoreAdminDetailBinding.editButton.setOnClickListener(v -> {

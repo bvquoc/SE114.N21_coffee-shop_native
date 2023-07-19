@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -14,37 +13,24 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
-import android.util.TypedValue;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.TextView;
 
-import com.example.coffee_shop_app.Data;
 import com.example.coffee_shop_app.R;
-import com.example.coffee_shop_app.activities.store.StoreDetailActivity;
-import com.example.coffee_shop_app.adapters.StoreAdapter;
+import com.example.coffee_shop_app.activities.store.StoreActivity;
 import com.example.coffee_shop_app.databinding.ActivitySearchFoodBinding;
-import com.example.coffee_shop_app.databinding.ActivityStoreSearchBinding;
-import com.example.coffee_shop_app.models.Store;
 import com.example.coffee_shop_app.utils.interfaces.OnProductClickListener;
-import com.example.coffee_shop_app.utils.interfaces.OnStoreClickListener;
-import com.example.coffee_shop_app.utils.styles.RecyclerViewGapDecoration;
 import com.example.coffee_shop_app.adapters.ProductAdapter;
-import com.example.coffee_shop_app.models.Product;
+import com.example.coffee_shop_app.viewmodels.CartButtonViewModel;
 import com.example.coffee_shop_app.viewmodels.ProductSearchViewModel;
-import com.example.coffee_shop_app.viewmodels.StoreSearchViewModel;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class SearchFoodActivity extends AppCompatActivity {
-    private static final String TAG = "SearchFoodActivity";
     private ActivitySearchFoodBinding activitySearchFoodBinding;
     private ProductAdapter productAdapter;
     private final Handler handler = new Handler();
     private Runnable searchRunnable;
-    private final int MILISECOND_DELAY_SEARCH  = 300;
+    private final int MILLISECOND_DELAY_SEARCH = 300;
     private OnProductClickListener listener;
     private final ActivityResultLauncher<Intent> activitySeeProductDetailResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -57,8 +43,6 @@ public class SearchFoodActivity extends AppCompatActivity {
                         setResult(RESULT_OK, intent);
                         finish();
                     }
-                } else {
-                    //User do nothing
                 }
             }
     );
@@ -70,28 +54,20 @@ public class SearchFoodActivity extends AppCompatActivity {
         activitySearchFoodBinding = DataBindingUtil.setContentView(this, R.layout.activity_search_food);
 
         Toolbar toolbar = findViewById(R.id.my_toolbar);
-        toolbar.setTitle("Tìm kiếm cửa hàng");
+        toolbar.setTitle("Tìm kiếm món ăn");
         setSupportActionBar(toolbar);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
-        listener = new OnProductClickListener() {
-            @Override
-            public void onProductClick(String productId) {
-                Intent intent = new Intent(getApplicationContext(), ProductDetailActivity.class);
-                intent.putExtra("productId", productId);
-                activitySeeProductDetailResultLauncher.launch(intent);
-            }
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
+        listener = productId -> {
+            Intent intent = new Intent(getApplicationContext(), ProductDetailActivity.class);
+            intent.putExtra("productId", productId);
+            activitySeeProductDetailResultLauncher.launch(intent);
         };
 
         init();
     }
     private void init() {
         ProductSearchViewModel productSearchViewModel = new ProductSearchViewModel();
-        productAdapter = new ProductAdapter(new ArrayList<Product>(), true);
+        productAdapter = new ProductAdapter(new ArrayList<>(), true);
         productAdapter.setOnProductClickListener(listener);
         activitySearchFoodBinding.searchProductRecyclerview.setAdapter(productAdapter);
         productSearchViewModel.getLiveProductData().observe(this, productList -> {
@@ -113,6 +89,7 @@ public class SearchFoodActivity extends AppCompatActivity {
                 activitySearchFoodBinding.shimmerLayout.stopShimmer();
             }
         });
+        activitySearchFoodBinding.setCartButtonViewModel(CartButtonViewModel.getInstance());
         activitySearchFoodBinding.setViewModel(productSearchViewModel);
         activitySearchFoodBinding.searchProductRecyclerview.setLayoutManager(new LinearLayoutManager(this));
         activitySearchFoodBinding.searchEditText.addTextChangedListener(new TextWatcher() {
@@ -124,20 +101,19 @@ public class SearchFoodActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 handler.removeCallbacks(searchRunnable);
-                searchRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        productAdapter.getFilter().filter(s);
-                    }
-
-                };
-                handler.postDelayed(searchRunnable, MILISECOND_DELAY_SEARCH);
+                searchRunnable = () -> productAdapter.getFilter().filter(s);
+                handler.postDelayed(searchRunnable, MILLISECOND_DELAY_SEARCH);
             }
 
             @Override
             public void afterTextChanged(Editable s) {
 
             }
+        });
+
+        activitySearchFoodBinding.storeSelectLinearLayout.setOnClickListener(v -> {
+            Intent intent = new Intent(SearchFoodActivity.this, StoreActivity.class);
+            startActivity(intent);
         });
     }
 }

@@ -102,7 +102,7 @@ public class ConfirmDialog extends AppCompatDialogFragment {
             Window window = dialog.getWindow();
 
             ColorDrawable back = new ColorDrawable(Color.TRANSPARENT);
-            InsetDrawable inset = new InsetDrawable(back, 32);
+            InsetDrawable inset = new InsetDrawable(back, 120);
 
             window.setBackgroundDrawable(inset);
         }

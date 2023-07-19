@@ -4,6 +4,8 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
@@ -57,6 +59,10 @@ public class OrderDeliveryListFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        Toolbar toolbar = ((AppCompatActivity)requireActivity()).findViewById(R.id.my_toolbar);
+        toolbar.setTitle("Đơn hàng");
+
         txtStatusLabel=view.findViewById(R.id.txtStatusLabel);
         recyclerView= view.findViewById(R.id.recyclerDeliveryCard);
         noOrderView=view.findViewById(R.id.noOrderView);
