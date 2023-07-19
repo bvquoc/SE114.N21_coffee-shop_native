@@ -12,6 +12,8 @@ import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
@@ -61,12 +63,14 @@ public class ProfileFragment extends Fragment {
         viewModel = new ViewModelProvider(requireActivity()).get(ProfileSettingViewModel.class);
         currentStore = StoreRepository.getInstance().getCurrentStore();
         createImageResultLauncher();
+        setToolBarTitle("Trang cá nhân");
 
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
     }
 
     @Override
@@ -99,7 +103,7 @@ public class ProfileFragment extends Fragment {
                 .into(imgCover);
 
         nameText.setText(currentUser.getValue().getName());
-        if(currentStore.getValue() != null) {
+        if (currentStore.getValue() != null) {
             fragmentProfileBinding.txtStoreProfile.setText("Store: " + currentStore.getValue().getShortName());
         }
 
@@ -127,6 +131,11 @@ public class ProfileFragment extends Fragment {
 
         // Inflate the layout for this fragment
         return fragmentProfileBinding.getRoot();
+    }
+
+    public void setToolBarTitle(String title) {
+        Toolbar toolbar = ((AppCompatActivity) requireActivity()).findViewById(R.id.my_toolbar);
+        toolbar.setTitle(title);
     }
 
     public void onGoSupport(View view) {
@@ -258,7 +267,7 @@ public class ProfileFragment extends Fragment {
     }
 
     private void onOpenPickImage(Boolean type) {
-        if(type) {
+        if (type) {
             coverLauncher.launch(new PickVisualMediaRequest.Builder().build());
         } else {
             avaLaucher.launch(new PickVisualMediaRequest.Builder().build());
