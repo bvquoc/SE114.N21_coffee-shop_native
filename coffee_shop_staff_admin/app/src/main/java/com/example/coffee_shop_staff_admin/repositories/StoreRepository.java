@@ -79,7 +79,11 @@ public class StoreRepository {
         List<Store> storeList = new ArrayList<>();
         for (QueryDocumentSnapshot doc : value) {
             if (doc != null) {
-                storeList.add(Store.fromFireBase(doc));
+                Store store = Store.fromFireBase(doc);
+                storeList.add(store);
+                if(currentStoreLiveData.getValue() != null && store.getId().equals(currentStoreLiveData.getValue().getId())){
+                    currentStoreLiveData.postValue(store);
+                }
             }
         }
 
