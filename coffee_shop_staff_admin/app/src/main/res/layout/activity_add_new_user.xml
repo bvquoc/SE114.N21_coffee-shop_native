@@ -184,7 +184,8 @@
                                         android:hint="Nhân viên của"
                                         android:textAppearance="@style/regularBlack14"
                                         android:text="@{viewModel.storeName}"
-                                        android:enabled="false"/>
+                                        android:focusable="false"
+                                        android:focusableInTouchMode="false"/>
                                 </com.google.android.material.textfield.TextInputLayout>
                                 <Button
                                     android:id="@+id/store_picker_button"

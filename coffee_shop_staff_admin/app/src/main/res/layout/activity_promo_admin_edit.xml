@@ -90,7 +90,8 @@
                                     android:textAppearance="@style/regularBlack14"
                                     android:text="@{viewModel.promoCode}"
                                     android:maxLength="20"
-                                    android:enabled="@{viewModel.canEditPromoCode}"
+                                    android:focusable="@{viewModel.canEditPromoCode}"
+                                    android:focusableInTouchMode="@{viewModel.canEditPromoCode}"
                                     android:onTextChanged="@{viewModel::onPromoCodeChanged}"/>
                             </com.google.android.material.textfield.TextInputLayout>
 
@@ -270,7 +271,8 @@
                                         android:hint="Ngày bắt đầu"
                                         android:textAppearance="@style/regularBlack14"
                                         android:text="@{viewModel.startDateString}"
-                                        android:enabled="false"/>
+                                        android:focusable="false"
+                                        android:focusableInTouchMode="false"/>
                                 </com.google.android.material.textfield.TextInputLayout>
                                 <Button
                                     android:id="@+id/start_date_picker_button"
@@ -313,7 +315,8 @@
                                         android:hint="Giờ bắt đầu"
                                         android:textAppearance="@style/regularBlack14"
                                         android:text="@{viewModel.startTimeString}"
-                                        android:enabled="false"/>
+                                        android:focusable="false"
+                                        android:focusableInTouchMode="false"/>
                                 </com.google.android.material.textfield.TextInputLayout>
                                 <Button
                                     android:id="@+id/start_time_picker_button"
@@ -378,7 +381,8 @@
                                         android:hint="Ngày kết thúc"
                                         android:textAppearance="@style/regularBlack14"
                                         android:text="@{viewModel.closeDateString}"
-                                        android:enabled="false"/>
+                                        android:focusable="false"
+                                        android:focusableInTouchMode="false"/>
                                 </com.google.android.material.textfield.TextInputLayout>
                                 <Button
                                     android:id="@+id/close_date_picker_button"
@@ -421,7 +425,8 @@
                                         android:hint="Giờ kết thúc"
                                         android:textAppearance="@style/regularBlack14"
                                         android:text="@{viewModel.closeTimeString}"
-                                        android:enabled="false"/>
+                                        android:focusable="false"
+                                        android:focusableInTouchMode="false"/>
                                 </com.google.android.material.textfield.TextInputLayout>
                                 <Button
                                     android:id="@+id/close_time_picker_button"
