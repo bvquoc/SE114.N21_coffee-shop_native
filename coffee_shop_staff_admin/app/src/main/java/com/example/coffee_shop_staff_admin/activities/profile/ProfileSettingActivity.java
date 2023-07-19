@@ -53,8 +53,12 @@ public class ProfileSettingActivity extends AppCompatActivity {
             }
         });
         activityProfileSettingBinding.setViewModel(viewModel);
+        setFunctionButton();
+        setOnChangeInfo();
+        setOnChangePassword();
+    }
 
-
+    private void setOnChangeInfo(){
         DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker datePicker, int i, int i1, int i2) {
@@ -68,7 +72,7 @@ public class ProfileSettingActivity extends AppCompatActivity {
 
         activityProfileSettingBinding.btnChangeInfo.setOnClickListener((view) -> {
             activityProfileSettingBinding.txtName.setFocusableInTouchMode(true);
-            activityProfileSettingBinding.txtName.setFocusableInTouchMode(true);
+            activityProfileSettingBinding.txtPhone.setFocusableInTouchMode(true);
 
             activityProfileSettingBinding.ctnChangeInfo.setVisibility(View.VISIBLE);
             activityProfileSettingBinding.btnChangeInfo.setVisibility(View.GONE);
@@ -79,21 +83,9 @@ public class ProfileSettingActivity extends AppCompatActivity {
 
             }));
         });
+    }
 
-        activityProfileSettingBinding.btnCancelInfo.setOnClickListener(view -> {
-            //UI
-            setUIOnChangedInfo();
-            //Logic
-            onCancel();
-        });
-
-        activityProfileSettingBinding.btnSaveInfo.setOnClickListener(view -> {
-            //UI
-            setUIOnChangedInfo();
-            //Logic
-            onSave();
-        });
-
+    private void setOnChangePassword(){
         activityProfileSettingBinding.btnChangePassword.btnProfileFunction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -133,7 +125,22 @@ public class ProfileSettingActivity extends AppCompatActivity {
                 bottomSheetDialog.show();
             }
         });
+    }
 
+    private void setFunctionButton(){
+        activityProfileSettingBinding.btnCancelInfo.setOnClickListener(view -> {
+            //UI
+            setUIOnChangedInfo();
+            //Logic
+            onCancel();
+        });
+
+        activityProfileSettingBinding.btnSaveInfo.setOnClickListener(view -> {
+            //UI
+            setUIOnChangedInfo();
+            //Logic
+            onSave();
+        });
     }
     private void updateDob(){
         String myFormat="dd/MM/yyyy";
@@ -143,7 +150,7 @@ public class ProfileSettingActivity extends AppCompatActivity {
 
     private void setUIOnChangedInfo(){
         activityProfileSettingBinding.txtName.setFocusable(false);
-        activityProfileSettingBinding.txtName.setFocusable(false);
+        activityProfileSettingBinding.txtPhone.setFocusable(false);
 
         activityProfileSettingBinding.ctnChangeInfo.setVisibility(View.GONE);
         activityProfileSettingBinding.btnChangeInfo.setVisibility(View.VISIBLE);

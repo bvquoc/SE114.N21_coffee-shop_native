@@ -32,7 +32,7 @@
                     android:layout_marginTop="@dimen/_16sdp"
                     android:text="Đăng ký"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/_30sdp" />
+                    android:textSize="@dimen/_28sdp" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/txt_email_layout_signup"
@@ -93,14 +93,13 @@
                     android:layout_marginVertical="8dp">
                     <TextView
                         android:id="@+id/btn_move_to_login"
-                        style="@style/regularBlack10"
+                        style="@style/regularBlack14"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
                         android:layout_marginTop="12dp"
                         android:text="Bạn đã có tài khoản?"
-                        android:textColor="@color/black"
-                        android:textSize="@dimen/_12sdp" />
+                        android:textColor="@color/black" />
                 </RelativeLayout>
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"

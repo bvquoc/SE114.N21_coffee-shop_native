@@ -65,11 +65,18 @@ public class SignUpFragment extends Fragment {
         signUpButton = view.findViewById(R.id.btn_signup);
         navController = Navigation.findNavController(view);
 
+
+        moveToLoginText.setOnClickListener(v -> {
+            navController.navigate(R.id.action_signUpFragment_to_loginFragment);
+        });
+
+        setOnSignUp(view);
+        setValidation();
+    }
+
+    private void setValidation(){
         Validate emailValidate = new EmailValidate();
         Validate passValidate = new PasswordValidate();
-
-
-
         emailEdit.addTextChangedListener(new TextValidator(emailEdit) {
             @Override
             public void validate(TextView textView, String text) {
@@ -103,12 +110,6 @@ public class SignUpFragment extends Fragment {
                 }
             }
         });
-
-        moveToLoginText.setOnClickListener(v -> {
-            navController.navigate(R.id.action_signUpFragment_to_loginFragment);
-        });
-
-        setOnSignUp(view);
     }
 
     private void setOnSignUp(View view){
