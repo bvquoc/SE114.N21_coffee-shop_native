@@ -6,6 +6,8 @@ import android.util.Log;
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.coffee_shop_staff_admin.models.Store;
+import com.example.coffee_shop_staff_admin.models.User;
+import com.example.coffee_shop_staff_admin.utils.interfaces.CallBack;
 import com.example.coffee_shop_staff_admin.utils.interfaces.UpdateDataListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -33,6 +35,7 @@ public class StoreRepository {
         //define fireStore
         fireStore = FirebaseFirestore.getInstance();
         storageRef = FirebaseStorage.getInstance().getReference();
+        currentStoreLiveData = new MutableLiveData<>();
     }
     public static synchronized StoreRepository getInstance() {
         if (instance == null) {
@@ -43,6 +46,13 @@ public class StoreRepository {
 
     //properties
     private final MutableLiveData<List<Store>> storeListMutableLiveData;
+
+    private MutableLiveData<Store> currentStoreLiveData;
+
+    public MutableLiveData<Store> getCurrentStore() {
+        return currentStoreLiveData;
+    }
+
     private final FirebaseFirestore fireStore;
 
     //get stores from firebase fireStore
@@ -135,6 +145,30 @@ public class StoreRepository {
         }
     }
 
+    public void updateProduct(Store store, CallBack onSuccess, CallBack onFailed){
+        currentStoreLiveData.postValue(store);
+
+        List<Store> storeList = storeListMutableLiveData.getValue();
+        List<Store> newList = new ArrayList<>();
+
+        for(Store item : storeList){
+            if(item.getId() == store.getId()){
+                newList.add(store);
+            }
+            else {
+                newList.add(item);
+            }
+        }
+        storeListMutableLiveData.postValue(newList);
+
+        fireStore.collection("Store").document(store.getId()).update(Store.toFireStore(store)).addOnSuccessListener((temp) -> {
+
+            onSuccess.invoke();
+        }).addOnFailureListener(e -> {
+            Log.e("auth repository", "update user failed.");
+            onFailed.invoke();
+        });;
+    }
     public void insertStore(Store store, UpdateDataListener listener)
     {
         CollectionReference collectionStoreRef = fireStore.collection("Store");

@@ -3,11 +3,12 @@ package com.example.coffee_shop_staff_admin.models;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-public class Food {
+public class Food implements Serializable {
     private String id;
     private String name;
     private double price;

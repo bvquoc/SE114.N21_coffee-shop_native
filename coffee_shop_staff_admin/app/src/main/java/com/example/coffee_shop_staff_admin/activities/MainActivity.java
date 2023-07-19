@@ -11,6 +11,10 @@ import android.location.Location;
 import android.os.Bundle;
 
 import com.example.coffee_shop_staff_admin.R;
+import com.example.coffee_shop_staff_admin.repositories.FoodRepository;
+import com.example.coffee_shop_staff_admin.repositories.SizeRepository;
+import com.example.coffee_shop_staff_admin.repositories.StoreRepository;
+import com.example.coffee_shop_staff_admin.repositories.ToppingRepository;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
 
@@ -53,7 +57,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        StoreRepository.getInstance().registerSnapshotListener();
+        FoodRepository.getInstance().registerSnapshotListener();
+        ToppingRepository.getInstance().registerSnapshotListener();
+        SizeRepository.getInstance().registerSnapshotListener();
 //        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 //        if (isPermissionGranted()) {
 //            getCurrentLocation();
