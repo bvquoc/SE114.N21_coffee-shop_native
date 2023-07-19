@@ -8,7 +8,7 @@
     <string name="statusDeliveryFailed">Giao hàng thất bại</string>
     <string name="statusReady">Đã chuẩn bị</string>
     <string name="statusComplete">Hoàn thành</string>
-    <string name="statusCancelled">Đã huỷ</string>
+    <string name="statusCancelled">Đã hủy</string>
     <string name="statusAll">Tất cả</string>
     <string name="vndUnit">\ đ\</string>
     <string name="size_text">Size: </string>

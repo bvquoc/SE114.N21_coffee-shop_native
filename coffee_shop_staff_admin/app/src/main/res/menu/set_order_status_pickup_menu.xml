@@ -12,6 +12,6 @@
         android:title="Hoàn thành"
         android:id="@+id/orderDelivered"/>
     <item
-        android:title="Đã huỷ"
+        android:title="Đã hủy"
         android:id="@+id/orderCancelled"/>
 </menu>
