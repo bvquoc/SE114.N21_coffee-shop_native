@@ -137,8 +137,12 @@ public class StoreAdminEditActivity extends AppCompatActivity {
         });
 
         activityStoreAdminEditBinding.openTimePickerButton.setOnClickListener(v -> {
-            // Get the current time
-            final Calendar c = Calendar.getInstance();
+            Calendar c = Calendar.getInstance();
+            if(storeAdminEditViewModel.getOpenTime().getValue() != null)
+            {
+                Date date = storeAdminEditViewModel.getOpenTime().getValue();
+                c.setTime(date);
+            }
             int hour = c.get(Calendar.HOUR_OF_DAY);
             int minute = c.get(Calendar.MINUTE);
 
@@ -158,8 +162,12 @@ public class StoreAdminEditActivity extends AppCompatActivity {
         });
 
         activityStoreAdminEditBinding.closeTimePickerButton.setOnClickListener(v -> {
-            // Get the current time
-            final Calendar c = Calendar.getInstance();
+            Calendar c = Calendar.getInstance();
+            if(storeAdminEditViewModel.getCloseTime().getValue() != null)
+            {
+                Date date = storeAdminEditViewModel.getCloseTime().getValue();
+                c.setTime(date);
+            }
             int hour = c.get(Calendar.HOUR_OF_DAY);
             int minute = c.get(Calendar.MINUTE);
 

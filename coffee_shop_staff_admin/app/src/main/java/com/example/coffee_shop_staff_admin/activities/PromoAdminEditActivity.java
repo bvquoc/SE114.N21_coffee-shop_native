@@ -132,6 +132,11 @@ public class PromoAdminEditActivity extends AppCompatActivity {
 
         activityPromoAdminEditBinding.startDatePickerButton.setOnClickListener(v -> {
             Calendar c = Calendar.getInstance();
+            if(promoAdminEditViewModel.getStartDate().getValue() != null)
+            {
+                Date date = promoAdminEditViewModel.getStartDate().getValue();
+                c.setTime(date);
+            }
             int year = c.get(Calendar.YEAR);
             int month = c.get(Calendar.MONTH);
             int dayOfMonth = c.get(Calendar.DAY_OF_MONTH);
@@ -151,8 +156,12 @@ public class PromoAdminEditActivity extends AppCompatActivity {
         });
 
         activityPromoAdminEditBinding.startTimePickerButton.setOnClickListener(v -> {
-            // Get the current time
-            final Calendar c = Calendar.getInstance();
+            Calendar c = Calendar.getInstance();
+            if(promoAdminEditViewModel.getStartTime().getValue() != null)
+            {
+                Date date = promoAdminEditViewModel.getStartTime().getValue();
+                c.setTime(date);
+            }
             int hour = c.get(Calendar.HOUR_OF_DAY);
             int minute = c.get(Calendar.MINUTE);
 
@@ -172,6 +181,11 @@ public class PromoAdminEditActivity extends AppCompatActivity {
 
         activityPromoAdminEditBinding.closeDatePickerButton.setOnClickListener(v -> {
             Calendar c = Calendar.getInstance();
+            if(promoAdminEditViewModel.getCloseDate().getValue() != null)
+            {
+                Date date = promoAdminEditViewModel.getCloseDate().getValue();
+                c.setTime(date);
+            }
             int year = c.get(Calendar.YEAR);
             int month = c.get(Calendar.MONTH);
             int dayOfMonth = c.get(Calendar.DAY_OF_MONTH);
@@ -191,8 +205,12 @@ public class PromoAdminEditActivity extends AppCompatActivity {
         });
 
         activityPromoAdminEditBinding.closeTimePickerButton.setOnClickListener(v -> {
-            // Get the current time
-            final Calendar c = Calendar.getInstance();
+            Calendar c = Calendar.getInstance();
+            if(promoAdminEditViewModel.getCloseTime().getValue() != null)
+            {
+                Date date = promoAdminEditViewModel.getCloseTime().getValue();
+                c.setTime(date);
+            }
             int hour = c.get(Calendar.HOUR_OF_DAY);
             int minute = c.get(Calendar.MINUTE);
 
