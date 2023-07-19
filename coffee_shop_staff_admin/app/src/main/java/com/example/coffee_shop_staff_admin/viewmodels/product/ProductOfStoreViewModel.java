@@ -47,39 +47,39 @@ public class ProductOfStoreViewModel extends BaseObservable {
     private final MutableLiveData<List<StoreProduct>> toppingListLiveData = new MutableLiveData<>(new ArrayList<>());
     StoreRepository storeRepository = StoreRepository.getInstance();
     public ProductOfStoreViewModel() {
-        currentStore = StoreRepository.getInstance().getCurrentStore();
-        FoodRepository.getInstance().getFoodListMutableLiveData().observeForever(listFood -> {
-            setLoading(true);
+
+        StoreRepository.getInstance().getCurrentStore().observeForever(store -> {
+            FoodRepository.getInstance().getFoodListMutableLiveData().observeForever(listFood -> {
+                setLoading(true);
 //            turn to FoodChecker and post value
-            Store store = currentStore.getValue();
-            Map<String, List<String>> stateFood = store.getStateFood();
-            List<StoreProduct> transList = new ArrayList<>();
-            for (Food item : listFood) {
-                List<String> itemState = stateFood.get(item.getId());
-                Boolean isStocking = true;
-                if (itemState != null) {
-                    isStocking = !itemState.isEmpty() && itemState.size() < item.getToppings().size();
+                Map<String, List<String>> stateFood = store.getStateFood();
+                List<StoreProduct> transList = new ArrayList<>();
+                for (Food item : listFood) {
+                    List<String> itemState = stateFood.get(item.getId());
+                    Boolean isStocking = true;
+                    if (itemState != null) {
+                        isStocking = !itemState.isEmpty() && itemState.size() < item.getToppings().size();
+                    }
+                    transList.add(new FoodChecker(item, isStocking, store.getId(), item.getId(), itemState));
                 }
-                transList.add(new FoodChecker(item, isStocking, store.getId(), item.getId(), itemState));
-            }
-            drinkListLiveData.postValue(transList);
-            setLoading(false);
-        });
-        ToppingRepository.getInstance().getToppingListMutableLiveData().observeForever(listTopping -> {
-            setLoading(true);
+                drinkListLiveData.postValue(transList);
+                setLoading(false);
+            });
+            ToppingRepository.getInstance().getToppingListMutableLiveData().observeForever(listTopping -> {
+                setLoading(true);
 //            turn to StoreProduct and post value
-            Store store = currentStore.getValue();
-            List<String> stateTopping = store.getStateTopping();
-            List<StoreProduct> transList = new ArrayList<>();
-            for (Topping item : listTopping) {
-                Boolean isStocking = true;
-                if (stateTopping != null) {
-                    isStocking = !stateTopping.stream().anyMatch(it -> it.equals(item.getId()));
+                List<String> stateTopping = store.getStateTopping();
+                List<StoreProduct> transList = new ArrayList<>();
+                for (Topping item : listTopping) {
+                    Boolean isStocking = true;
+                    if (stateTopping != null) {
+                        isStocking = !stateTopping.stream().anyMatch(it -> it.equals(item.getId()));
+                    }
+                    transList.add(new StoreProduct(item, isStocking, store.getId()));
                 }
-                transList.add(new StoreProduct(item, isStocking, store.getId()));
-            }
-            toppingListLiveData.postValue(transList);
-            setLoading(false);
+                toppingListLiveData.postValue(transList);
+                setLoading(false);
+            });
         });
     }
 
