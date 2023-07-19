@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 
 import com.example.coffee_shop_staff_admin.R;
 import com.example.coffee_shop_staff_admin.activities.AddNewUserActivity;
+import com.example.coffee_shop_staff_admin.activities.NotificationActivity;
 import com.example.coffee_shop_staff_admin.activities.RuleManagementActivity;
 import com.example.coffee_shop_staff_admin.databinding.FragmentManageUserAdminBinding;
 
@@ -48,6 +49,9 @@ public class ManageUserAdminFragment extends Fragment {
             startActivity(intent);
         });
 
-        //fragmentManageUserAdminBinding.notificationCardView.setOnClickListener(v -> Toast.makeText(getContext(), "Nav to notification", Toast.LENGTH_SHORT).show());
+        fragmentManageUserAdminBinding.notificationCardView.setOnClickListener(v->{
+            Intent intent = new Intent(getContext(), NotificationActivity.class);
+            startActivity(intent);
+        });
     }
 }

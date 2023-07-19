@@ -2,11 +2,15 @@ package com.example.coffee_shop_app.fragments;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,6 +25,7 @@ import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
 import com.example.coffee_shop_app.R;
+import com.example.coffee_shop_app.activities.NotificationActivity;
 import com.example.coffee_shop_app.activities.ProductDetailActivity;
 import com.example.coffee_shop_app.activities.address.AddressListingActivity;
 import com.example.coffee_shop_app.activities.cart.CartDeliveryActivity;
@@ -29,12 +34,14 @@ import com.example.coffee_shop_app.activities.store.StoreActivity;
 import com.example.coffee_shop_app.adapters.ProductAdapter;
 import com.example.coffee_shop_app.databinding.FragmentHomeBinding;
 import com.example.coffee_shop_app.databinding.OrderTypeBottomSheetBinding;
+import com.example.coffee_shop_app.models.MLocation;
 import com.example.coffee_shop_app.models.Product;
 import com.example.coffee_shop_app.models.User;
 import com.example.coffee_shop_app.repository.AuthRepository;
 import com.example.coffee_shop_app.repository.ProductRepository;
 import com.example.coffee_shop_app.viewmodels.CartButtonViewModel;
 import com.example.coffee_shop_app.viewmodels.HomeViewModel;
+import com.example.coffee_shop_app.viewmodels.NotificationViewModel;
 import com.example.coffee_shop_app.viewmodels.OrderType;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
@@ -44,6 +51,7 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -74,6 +82,19 @@ public class HomeFragment extends Fragment {
         }
     };
 
+    private final ActivityResultLauncher<Intent> activityNotificationResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                Date date = new Date();
+                NotificationViewModel.getInstance().getLastTimeSeeNotification().postValue(date);
+
+                SharedPreferences preferences = getContext().getSharedPreferences("lastTimeSeeNoti", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putLong("lastTimeSeeNoti", date.getTime()); // Convert Date to long and save it
+                editor.apply();
+            }
+    );
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -86,6 +107,8 @@ public class HomeFragment extends Fragment {
         fragmentHomeBinding.setHomeViewModel(homeViewModel);
 
         fragmentHomeBinding.setCartButtonViewModel(CartButtonViewModel.getInstance());
+
+        fragmentHomeBinding.setNotiViewModel(NotificationViewModel.getInstance());
 
         fragmentHomeBinding.cartButton.setOnClickListener(view -> {
             bottomSheetDialog = new BottomSheetDialog(requireContext(), R.style.BottomSheetTheme);
@@ -295,6 +318,11 @@ public class HomeFragment extends Fragment {
         fragmentHomeBinding.gettingStartedButton.setOnClickListener(v -> {
             BottomNavigationView bottomNavigationView = requireActivity().findViewById(R.id.bottomNavView);
             bottomNavigationView.setSelectedItemId(R.id.menuFragment);
+        });
+
+        fragmentHomeBinding.notificationButton.setOnClickListener(v -> {
+            Intent intent = new Intent(getContext(), NotificationActivity.class);
+            activityNotificationResultLauncher.launch(intent);
         });
     }
 

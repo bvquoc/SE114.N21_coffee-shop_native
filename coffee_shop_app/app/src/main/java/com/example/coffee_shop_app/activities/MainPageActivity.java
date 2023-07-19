@@ -12,6 +12,7 @@ import androidx.navigation.ui.NavigationUI;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.location.Location;
@@ -31,6 +32,7 @@ import com.example.coffee_shop_app.repository.StoreRepository;
 import com.example.coffee_shop_app.utils.LocationHelper;
 import com.example.coffee_shop_app.utils.SqliteHelper;
 import com.example.coffee_shop_app.viewmodels.CartViewModel;
+import com.example.coffee_shop_app.viewmodels.NotificationViewModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -38,6 +40,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class MainPageActivity extends AppCompatActivity {
@@ -107,7 +110,15 @@ public class MainPageActivity extends AppCompatActivity {
                 CartViewModel.getInstance().getCartFoods().setValue(items);
             }
         });
+        Date lastTimeSeeNoti = getLastTimeSeeNoti();
+        NotificationViewModel.getInstance().getLastTimeSeeNotification().postValue(lastTimeSeeNoti);
+    }
 
+    private Date getLastTimeSeeNoti()
+    {
+        SharedPreferences preferences = getApplicationContext().getSharedPreferences("lastTimeSeeNoti", Context.MODE_PRIVATE);
+        long savedTime = preferences.getLong("lastTimeSeeNoti", 0);
+        return new Date(savedTime);
     }
 
     @Override
