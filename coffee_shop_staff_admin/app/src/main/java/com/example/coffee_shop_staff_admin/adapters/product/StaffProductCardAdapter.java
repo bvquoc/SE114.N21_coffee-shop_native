@@ -3,6 +3,7 @@ package com.example.coffee_shop_staff_admin.adapters.product;
 import android.content.Context;
 import android.content.Intent;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -26,6 +27,8 @@ import com.squareup.picasso.Picasso;
 
 import java.text.DecimalFormat;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class StaffProductCardAdapter extends RecyclerView.Adapter<StaffProductCardAdapter.ViewHolder> {
     private LayoutInflater layoutInflater;
@@ -79,15 +82,14 @@ public class StaffProductCardAdapter extends RecyclerView.Adapter<StaffProductCa
         }
 
         private void onBindOrderCard(StoreProduct product) {
-            if(product instanceof FoodChecker){
+            if (product instanceof FoodChecker) {
                 onBindDrink(product);
-            }
-            else {
+            } else {
                 onBindTopping(product);
             }
         }
 
-        private void onBindDrink(StoreProduct product){
+        private void onBindDrink(StoreProduct product) {
             DecimalFormat formatter = new DecimalFormat("#,##0.##");
 
             FoodChecker drink = (FoodChecker) product;
@@ -117,11 +119,15 @@ public class StaffProductCardAdapter extends RecyclerView.Adapter<StaffProductCa
             });
             btnProductCard.setOnClickListener(v -> {
                 drink.setStocking(!drink.getStocking());
-
-                viewModel.onUpdateProduct(drink);
-
-                setStockUI(drink.getStocking());
                 peformSwipe();
+                setStockUI(drink.getStocking());
+                new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        viewModel.onUpdateProduct(drink);
+                    }
+                }, 500);
+
             });
             cardContainer.setOnClickListener(v -> {
                 Intent intent = new Intent(context, StaffProductDetailActivity.class);
@@ -129,7 +135,8 @@ public class StaffProductCardAdapter extends RecyclerView.Adapter<StaffProductCa
                 context.startActivity(intent);
             });
         }
-        private void onBindTopping(StoreProduct product){
+
+        private void onBindTopping(StoreProduct product) {
             DecimalFormat formatter = new DecimalFormat("#,##0.##");
 
             Topping item = (Topping) product.getProduct();
@@ -155,11 +162,17 @@ public class StaffProductCardAdapter extends RecyclerView.Adapter<StaffProductCa
 
             btnProductCard.setOnClickListener(v -> {
                 product.setStocking(!product.getStocking());
-                viewModel.onUpdateProduct(product);
-                setStockUI(product.getStocking());
                 peformSwipe();
+                setStockUI(product.getStocking());
+                new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        viewModel.onUpdateProduct(product);
+                    }
+                }, 500);
             });
         }
+
         private void peformSwipe() {
             isOpen = !isOpen;
             float cardWidth = cardContainer.getWidth();
@@ -175,6 +188,7 @@ public class StaffProductCardAdapter extends RecyclerView.Adapter<StaffProductCa
                 btnProductCard.animate().x(cardWidth).setDuration(500).start();
             }
         }
+
         private void setStockUI(Boolean isStocking) {
             if (!isStocking) {
                 productCardBinding.btnProductCardIcon.setImageResource(R.drawable.ic_add_shopping_cart);
