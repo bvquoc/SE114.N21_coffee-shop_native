@@ -9,6 +9,9 @@ import androidx.databinding.DataBindingUtil;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -55,8 +58,6 @@ public class AddNewUserActivity extends AppCompatActivity {
                         addNewUserViewModel.setStoreName(data.getStringExtra("storeName"));
                         addNewUserViewModel.setStoreID(data.getStringExtra("storeId"));
                     }
-                } else {
-                    //User do nothing
                 }
             }
     );
@@ -181,7 +182,13 @@ public class AddNewUserActivity extends AppCompatActivity {
                             AlertDialog alertDialog = new AlertDialog.Builder(AddNewUserActivity.this)
                                     .setTitle("Mật khẩu")
                                     .setMessage("Mật khẩu của bạn là: " + password)
-                                    .setPositiveButton("OK", (dialog, which) -> finish()).create();
+                                    .setPositiveButton("COPY TO CLIPBOARD", (dialog, which) -> {
+                                        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                                        ClipData clip = ClipData.newPlainText("password", password);
+                                        clipboard.setPrimaryClip(clip);
+                                        finish();
+                                    })
+                                    .setNegativeButton("OK", (dialog, which) -> finish()) .create();
                             addNewUserViewModel.setLoading(false);
                             alertDialog.show();
                         });
