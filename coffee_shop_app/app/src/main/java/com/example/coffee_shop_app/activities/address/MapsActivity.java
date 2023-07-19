@@ -98,6 +98,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             setResult(RESULT_OK, intent);
             finish();
         });
+
+        activityMapsBinding.editTextFrame.setEndIconOnClickListener(v -> {
+          activityMapsBinding.editText.setText("");
+        });
     }
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
