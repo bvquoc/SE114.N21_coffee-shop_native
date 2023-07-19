@@ -10,7 +10,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.SavedStateHandle;
@@ -29,7 +28,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.coffee_shop_staff_admin.R;
-import com.example.coffee_shop_staff_admin.activities.AuthActivity;
 import com.example.coffee_shop_staff_admin.activities.MainPageAdminActivity;
 import com.example.coffee_shop_staff_admin.activities.StoreManageActivity;
 import com.example.coffee_shop_staff_admin.models.Store;
@@ -68,7 +66,7 @@ public class LoginFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         authVM = new ViewModelProvider(requireActivity()).get(AuthViewModel.class);
-        currentStore = StoreRepository.getInstance().getCurrentStore();
+        currentStore = StoreRepository.getInstance().getCurrentStoreLiveData();
 
     }
 
@@ -148,7 +146,7 @@ public class LoginFragment extends Fragment {
 
 
             //SharedPrefs set
-            SharedPreferences sharedPref = ((AppCompatActivity) requireActivity()).getSharedPreferences("com.example.com.example.coffee_shop_staff_admin", Context.MODE_PRIVATE);
+            SharedPreferences sharedPref = ((AppCompatActivity) requireActivity()).getSharedPreferences("com.example.coffee_shop_staff_admin", Context.MODE_PRIVATE);
 
             if(rememberMe.isChecked()){
                 sharedPref.edit().putBoolean("isRememberMe", true).apply();
@@ -276,7 +274,8 @@ public class LoginFragment extends Fragment {
             List<Store> storeList = StoreRepository.getInstance().getStoreListMutableLiveData().getValue();
             for (Store item : storeList) {
                 if (item.getId().equals(user.getStore())) {
-                    currentStore.postValue(item);
+                    StoreRepository.getInstance().getCurrentStoreLiveData().postValue(item);
+//                    currentStore.postValue(item);
                     break;
                 }
             }
