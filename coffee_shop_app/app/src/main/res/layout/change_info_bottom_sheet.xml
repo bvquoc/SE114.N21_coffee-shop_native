@@ -46,14 +46,17 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/_16sdp"
             android:layout_marginTop="@dimen/_16sdp"
-            android:hint="Họ và tên">
+            android:hint="Họ và tên"
+            app:hintTextAppearance="@style/regularBlue14"
+            app:errorTextAppearance="@style/regularRed14">
 
             <EditText
                 android:id="@+id/txt_name_change"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="@color/black"
-                android:maxLines="1" />
+                android:maxLines="1"
+                android:textAppearance="@style/regularBlack14"/>
         </com.google.android.material.textfield.TextInputLayout>
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/txt_dob_layout_change"
@@ -65,7 +68,9 @@
             android:layout_marginTop="@dimen/_16sdp"
             android:hint="Ngày sinh"
             app:endIconDrawable="@drawable/ic_calendar"
-            app:endIconMode="custom">
+            app:endIconMode="custom"
+            app:hintTextAppearance="@style/regularBlue14"
+            app:errorTextAppearance="@style/regularRed14">
 
             <EditText
                 android:id="@+id/txt_dob_change"
@@ -73,7 +78,8 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/black"
                 android:focusable="false"
-                android:maxLines="1" />
+                android:maxLines="1"
+                android:textAppearance="@style/regularBlack14"/>
         </com.google.android.material.textfield.TextInputLayout>
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/txt_phone_layout_change"
@@ -82,14 +88,18 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/_16sdp"
             android:layout_marginTop="@dimen/_16sdp"
-            android:hint="Số điện thoại">
+            android:hint="Số điện thoại"
+            app:hintTextAppearance="@style/regularBlue14"
+            app:errorTextAppearance="@style/regularRed14">
 
             <EditText
                 android:id="@+id/txt_phone_change"
                 android:layout_width="match_parent"
                 android:textColor="@color/black"
                 android:layout_height="wrap_content"
-                android:maxLines="1" />
+                android:maxLines="1"
+                android:inputType="phone"
+                android:textAppearance="@style/regularBlack14"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button

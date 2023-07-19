@@ -42,12 +42,15 @@
                     android:layout_marginHorizontal="@dimen/_16sdp"
                     android:layout_marginTop="@dimen/_16sdp"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    >
+                    app:hintTextAppearance="@style/regularBlue14"
+                    app:errorTextAppearance="@style/regularRed14">
 
                     <EditText
                         android:id="@+id/txt_email_signup"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:textAppearance="@style/regularBlack14"
+                        android:inputType="textEmailAddress"
                         android:maxLines="1"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -59,13 +62,15 @@
                     android:layout_marginHorizontal="@dimen/_16sdp"
                     android:layout_marginTop="@dimen/_16sdp"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    >
+                    app:hintTextAppearance="@style/regularBlue14"
+                    app:errorTextAppearance="@style/regularRed14">
 
                     <EditText
                         android:id="@+id/txt_password_signup"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="textPassword"
+                        android:textAppearance="@style/regularBlack14"
                         android:maxLines="1"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -76,13 +81,15 @@
                     android:hint="Nhập lại mật khẩu"
                     android:layout_marginHorizontal="@dimen/_16sdp"
                     android:layout_marginTop="@dimen/_16sdp"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    >
+                    app:hintTextAppearance="@style/regularBlue14"
+                    app:errorTextAppearance="@style/regularRed14"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
                     <EditText
                         android:id="@+id/txt_repassword_signup"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="textPassword"
+                        android:textAppearance="@style/regularBlack14"
                         android:maxLines="1"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
