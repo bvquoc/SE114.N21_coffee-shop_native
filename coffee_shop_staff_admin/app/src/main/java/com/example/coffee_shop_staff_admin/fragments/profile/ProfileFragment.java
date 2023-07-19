@@ -99,7 +99,9 @@ public class ProfileFragment extends Fragment {
                 .into(imgCover);
 
         nameText.setText(currentUser.getValue().getName());
-        fragmentProfileBinding.txtStoreProfile.setText("Store: " + currentStore.getValue().getShortName());
+        if(currentStore.getValue() != null) {
+            fragmentProfileBinding.txtStoreProfile.setText("Store: " + currentStore.getValue().getShortName());
+        }
 
         currentUser.observe(getViewLifecycleOwner(), new Observer<User>() {
             @Override
@@ -128,23 +130,13 @@ public class ProfileFragment extends Fragment {
     }
 
     public void onGoSupport(View view) {
-        String msg = "Nav to support";
-        Snackbar snackbar = Snackbar
-                .make(view, msg, Snackbar.LENGTH_LONG);
-        snackbar.show();
-    }
-
-    public void showDialog(Activity activity, String msg){
-        final Dialog dialog = new Dialog(activity);
+        final Dialog dialog = new Dialog(getActivity());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCancelable(false);
-        dialog.setContentView(R.layout.dialog);
+        dialog.setContentView(R.layout.support_dialog);
 
-        TextView text = (TextView) dialog.findViewById(R.id.text_dialog);
-        text.setText(msg);
-
-        Button dialogButton = (Button) dialog.findViewById(R.id.btn_dialog);
-        dialogButton.setOnClickListener(new View.OnClickListener() {
+        ImageView closeBtn = (ImageView) dialog.findViewById(R.id.close_button);
+        closeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
@@ -152,7 +144,6 @@ public class ProfileFragment extends Fragment {
         });
 
         dialog.show();
-
     }
 
     public void onGoSettings(View view) {
