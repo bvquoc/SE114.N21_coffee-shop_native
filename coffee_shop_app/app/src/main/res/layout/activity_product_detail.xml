@@ -231,7 +231,7 @@
                     android:text="@{@string/add_to_cart+' '+@string/format(viewModel.cartFood.totalPrice)+' '+'₫'}"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/_16sdp"
+                    android:textSize="@dimen/font16"
                     app:backgroundTint="@null" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
