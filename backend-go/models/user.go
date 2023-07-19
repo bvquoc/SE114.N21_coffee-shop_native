@@ -6,8 +6,8 @@ type User struct {
 	ID           string `json:"id"`
 	Email        string `json:"email"`
 	Name         string `json:"name"`
-	AvatarURL    string `json:"avatarURL"`
-	CoverURL     string `json:"coverURL"`
+	AvatarURL    string `json:"avatarUrl"`
+	CoverURL     string `json:"coverUrl"`
 	IsSuperAdmin bool   `json:"isSuperAdmin"`
 	IsAdmin      bool   `json:"isAdmin"`
 	IsStaff      bool   `json:"isStaff"`

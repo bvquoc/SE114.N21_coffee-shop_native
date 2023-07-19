@@ -25,7 +25,7 @@ func UserCreateUser(c *gin.Context) {
 		return
 	}
 
-	if newUser.Role == constants.ROLE_STAFF && newUser.StaffOf == "" {
+	if newUser.Role == constants.ROLE_STAFF && newUser.StaffOf == "" && newUser.Name == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request body, missing store field"})
 		return
 	}
@@ -69,6 +69,7 @@ func UserCreateUser(c *gin.Context) {
 		delete(data, "role")
 		delete(data, "id")
 		data["createAt"] = firestore.ServerTimestamp
+		data["isActive"] = true
 		app_context.App.CreateDocumentWithId(constants.CLT_USER, acc.UID, data)
 	}()
 }
