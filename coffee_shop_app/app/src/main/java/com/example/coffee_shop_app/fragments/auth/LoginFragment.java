@@ -1,5 +1,6 @@
 package com.example.coffee_shop_app.fragments.auth;
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -7,10 +8,15 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.SavedStateHandle;
@@ -43,10 +49,17 @@ import com.example.coffee_shop_app.utils.validation.EmailValidate;
 import com.example.coffee_shop_app.utils.validation.PasswordValidate;
 import com.example.coffee_shop_app.utils.validation.TextValidator;
 import com.example.coffee_shop_app.viewmodels.AuthViewModel;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -67,15 +80,13 @@ public class LoginFragment extends Fragment {
     private SavedStateHandle savedStateHandle;
     private BottomSheetDialog bottomSheetDialog;
     private TextView goForgot;
-    private ImageView googleBtn, facebookBtn;
-
-
+    private CardView googleBtn, facebookBtn;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         authVM = new ViewModelProvider(requireActivity()).get(AuthViewModel.class);
-
+        setGoogleLauncher();
     }
 
     @Override
@@ -117,11 +128,100 @@ public class LoginFragment extends Fragment {
         setOnLoginFacebook();
     }
 
-    private void setOnLoginFacebook() {
+
+    //Google
+    private GoogleSignInClient googleSignInClient;
+    ActivityResultLauncher<Intent> googleResultLauncher;
+    static final String TAG = "GOOGLE";
+    private void setOnLoginGoogle() {
+        //Google configure
+        GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        googleSignInClient = GoogleSignIn.getClient(getActivity(), googleSignInOptions);
+        googleBtn.setOnClickListener(v -> {
+            googleSignInClient.signOut().addOnCompleteListener(e -> {
+                Log.e(TAG, "setOnLoginGoogle: go");
+                Intent intent = googleSignInClient.getSignInIntent();
+                googleResultLauncher.launch(intent);
+            });
+        });
     }
 
-    private void setOnLoginGoogle() {
+    private void setGoogleLauncher(){
+        googleResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        if(result.getData().getExtras() != null){
+                            Intent data = result.getData();
+                            onGoogleSignInEnd(data);
+                        }
+                    }
+                }
+        );
+    }
+
+    private void onGoogleSignInEnd(Intent data){
+        Task<GoogleSignInAccount> accountTask = GoogleSignIn.getSignedInAccountFromIntent(data);
+//        ProgressDialog loadingDialog = ProgressDialog.show(getContext(), "",
+//                "Loading. Please wait...", true);
+        try {
+            setRememberMe();
+            GoogleSignInAccount account = accountTask.getResult();
+            authVM.onGoogleSignIn(account, params -> {
+                Log.e(TAG, "onGoogleSignInEnd: SUCCESS");
+//                loadingDialog.dismiss();
+                User temp = (User) params[0];
+                if(!temp.getActive()){
+                    String msg = "Tài khoản của bạn đã bị chặn";
+                    Snackbar snackbar = Snackbar
+                            .make(getView(), msg, Snackbar.LENGTH_LONG);
+                    snackbar.show();
+                    authVM.onSignOut();
+                } else {
+                    if (temp.getPhoneNumber().equals("No Phone Number")) {
+                        openChangeInfoDialog(getView(), temp);
+                    } else {
+                        onGoToMainPage();
+                    }
+                }
+            }, params -> {
+                Log.e(TAG, "onGoogleSignInEnd: Failed");
+//                loadingDialog.dismiss();
+                String msg = "Đã có lỗi xảy ra, vui lòng thử lại sau";
+                Snackbar snackbar = Snackbar
+                        .make(getView(), msg, Snackbar.LENGTH_LONG);
+                snackbar.show();
+            });
+        } catch (Exception e){
+            Log.e(TAG, "onGoogleSignInEnd: Failed VM");
+//            loadingDialog.dismiss();
+            String msg = "Đã có lỗi xảy ra, vui lòng thử lại sau";
+            Snackbar snackbar = Snackbar
+                    .make(getView(), msg, Snackbar.LENGTH_LONG);
+            snackbar.show();
+        }
+    }
+
+
+    private void setOnLoginFacebook() {
         
+    }
+
+    private void setRememberMe(){
+        //SharedPrefs set
+        SharedPreferences sharedPref = ((AppCompatActivity) requireActivity()).getSharedPreferences("com.example.coffee_shop_app", Context.MODE_PRIVATE);
+
+        if(rememberMe.isChecked()){
+            sharedPref.edit().putBoolean("isRememberMe", true).apply();
+        }
+        else {
+            sharedPref.edit().putBoolean("isRememberMe", false).apply();
+        }
+        //end set
     }
 
     private void setOnSignIn(View view){
@@ -132,14 +232,7 @@ public class LoginFragment extends Fragment {
             String password = passEdit.getText().toString();
 
             //SharedPrefs set
-            SharedPreferences sharedPref = ((AppCompatActivity) requireActivity()).getSharedPreferences("com.example.coffee_shop_app", Context.MODE_PRIVATE);
-
-            if(rememberMe.isChecked()){
-                sharedPref.edit().putBoolean("isRememberMe", true).apply();
-            }
-            else {
-                sharedPref.edit().putBoolean("isRememberMe", false).apply();
-            }
+            setRememberMe();
             //end set
 
             if (canLogin(email, password)) {
@@ -225,6 +318,10 @@ public class LoginFragment extends Fragment {
         EditText dob = bottomSheetDialog.findViewById(R.id.txt_dob_change);
         EditText phone = bottomSheetDialog.findViewById(R.id.txt_phone_change);
         TextInputLayout dobLayout = bottomSheetDialog.findViewById(R.id.txt_dob_layout_change);
+
+        if(temp.getName() != "No Name"){
+            name.setText(temp.getName());
+        }
 
         final Calendar calendar = Calendar.getInstance();
         DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {

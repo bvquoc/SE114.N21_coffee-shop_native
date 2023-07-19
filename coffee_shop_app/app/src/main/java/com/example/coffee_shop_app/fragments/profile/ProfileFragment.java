@@ -23,6 +23,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavHostController;
 import androidx.navigation.fragment.NavHostFragment;
 
 import android.provider.MediaStore;
@@ -39,6 +40,7 @@ import com.example.coffee_shop_app.activities.AuthActivity;
 import com.example.coffee_shop_app.activities.profile.ImageViewActivity;
 import com.example.coffee_shop_app.activities.profile.ProfileSettingActivity;
 import com.example.coffee_shop_app.databinding.FragmentProfileBinding;
+import com.example.coffee_shop_app.fragments.auth.SignUpFragment;
 import com.example.coffee_shop_app.models.User;
 import com.example.coffee_shop_app.repository.AuthRepository;
 import com.example.coffee_shop_app.viewmodels.ProfileSettingViewModel;
@@ -174,6 +176,7 @@ public class ProfileFragment extends Fragment {
     public void onLogout(View view) {
         NavHostFragment.findNavController(this).popBackStack();
         Intent intent = new Intent(getContext(), AuthActivity.class);
+        intent.putExtra("GO_LOGIN", true);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         AuthRepository.getInstance().signOut();

@@ -68,7 +68,10 @@ public class SignUpFragment extends Fragment {
         signUpButton = view.findViewById(R.id.btn_signup);
         navController = Navigation.findNavController(view);
 
-
+        if (getActivity().getIntent().getExtras() != null
+        ) {
+            navController.navigate(R.id.action_signUpFragment_to_loginFragment);
+        }
         moveToLoginText.setOnClickListener(v -> {
             navController.navigate(R.id.action_signUpFragment_to_loginFragment);
         });
@@ -85,7 +88,8 @@ public class SignUpFragment extends Fragment {
     private void setOnLoginGoogle() {
 
     }
-    private void setValidation(){
+
+    private void setValidation() {
         Validate emailValidate = new EmailValidate();
         Validate passValidate = new PasswordValidate();
         emailEdit.addTextChangedListener(new TextValidator(emailEdit) {
@@ -123,7 +127,7 @@ public class SignUpFragment extends Fragment {
         });
     }
 
-    private void setOnSignUp(View view){
+    private void setOnSignUp(View view) {
         signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -132,7 +136,7 @@ public class SignUpFragment extends Fragment {
                 String email = emailEdit.getText().toString();
                 String password = passEdit.getText().toString();
                 String repass = confirmPassEdit.getText().toString();
-                if(canSignUp(email, password, repass)) {
+                if (canSignUp(email, password, repass)) {
                     authVM.onSignUp(email, password, params -> {
                         loadingDialog.dismiss();
                         navController.navigate(R.id.action_signUpFragment_to_loginFragment);
@@ -142,14 +146,12 @@ public class SignUpFragment extends Fragment {
                                 .make(view, "Tài khoản đã tồn tại hoặc đã có lỗi xảy ra, vui lòng thử lại!", Snackbar.LENGTH_LONG);
                         snackbar.show();
                     });
-                }
-                else {
+                } else {
                     loadingDialog.dismiss();
                     String msg;
                     if (email.isEmpty() || password.isEmpty() || repass.isEmpty()) {
                         msg = "Vui lòng điền đầy đủ các trường";
-                    }
-                    else {
+                    } else {
                         msg = "Có gì đó không ổn, hãy thử lại!";
                     }
                     Snackbar snackbar = Snackbar
@@ -160,10 +162,10 @@ public class SignUpFragment extends Fragment {
         });
     }
 
-    private Boolean canSignUp(String email, String pass, String repass){
+    private Boolean canSignUp(String email, String pass, String repass) {
         Boolean repassOK = new ConfirmPWValidate(pass).validate(repass);
         Boolean emailOK = new EmailValidate().validate(email);
         Boolean passOK = new PasswordValidate().validate(pass);
-        return  repassOK && emailOK && passOK;
+        return repassOK && emailOK && passOK;
     }
 }

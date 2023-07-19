@@ -7,12 +7,16 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.coffee_shop_app.models.User;
 import com.example.coffee_shop_app.utils.interfaces.CallBack;
+import com.google.android.gms.auth.api.identity.BeginSignInRequest;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -80,11 +84,11 @@ public class AuthRepository {
                     FirebaseUser rawUser = task.getResult().getUser();
                     getUser(id, params -> {
                         User user = User.fromFireStore((DocumentSnapshot) params[0]);
-                        if(user != null){
+                        if (user != null) {
                             return;
                         }
                         user = new User(id, "No name", "No Phone Number", rawUser.getEmail(), DateTime.now().toDate(), true, false, false, "https://st3.depositphotos.com/6672868/13701/v/450/depositphotos_137014128-stock-illustration-user-profile-icon.jpg", "https://img.freepik.com/free-vector/restaurant-mural-wallpaper_23-2148703851.jpg?w=740&t=st=1680897435~exp=1680898035~hmac=8f6c47b6646a831c4a642b560cf9b10f1ddf80fda5d9d997299e1b2f71fe4cb9", DateTime.now().toDate());
-                        if(user != null){
+                        if (user != null) {
                             push(user);
                         }
                         onSuccess.invoke();
@@ -122,6 +126,39 @@ public class AuthRepository {
         });
     }
 
+    public void googleLogin(GoogleSignInAccount account, CallBack onSuccess, CallBack onFailed) {
+        AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
+        Log.e("TEST", "googleLogin: " + account.getEmail() );
+        firebaseAuth.signInWithCredential(credential).addOnSuccessListener(v -> {
+            Log.e("GOOGLE LOGIN SUCCESS", v.getUser().getUid());
+            FirebaseUser rawUser = v.getUser();
+            if (rawUser != null) {
+                getUser(rawUser.getUid(), params -> {
+                    User user = User.fromFireStore((DocumentSnapshot) params[0]);
+                    if (user == null) {
+                        String name = rawUser.getDisplayName() != null ? rawUser.getDisplayName() : "No Name";
+                        String avatarUrl = rawUser.getPhotoUrl() != null ? rawUser.getPhotoUrl().toString() : "https://st3.depositphotos.com/6672868/13701/v/450/depositphotos_137014128-stock-illustration-user-profile-icon.jpg";
+
+                        user = new User(rawUser.getUid(), name, "No Phone Number", rawUser.getEmail(), DateTime.now().toDate(), true, false, false, avatarUrl, "https://img.freepik.com/free-vector/restaurant-mural-wallpaper_23-2148703851.jpg?w=740&t=st=1680897435~exp=1680898035~hmac=8f6c47b6646a831c4a642b560cf9b10f1ddf80fda5d9d997299e1b2f71fe4cb9", DateTime.now().toDate());
+
+                        push(user);
+                    }
+
+                    currentUserLiveData.postValue(user);
+                    if (onSuccess != null) {
+                        onSuccess.invoke(user);
+                    }
+                });
+            }
+            isLoggedInLiveData.postValue(true);
+
+        }).addOnFailureListener(v -> {
+            if (onFailed != null) {
+                onFailed.invoke();
+            }
+        });
+    }
+
     public void signOut() {
         firebaseAuth.signOut();
         currentUserLiveData.postValue(null);
@@ -141,17 +178,18 @@ public class AuthRepository {
                 });
     }
 
-    public void update(User user, CallBack onSuccess, CallBack onFailed){
+    public void update(User user, CallBack onSuccess, CallBack onFailed) {
         fireStore.collection("users").document(user.getId()).update(User.toFireStore(user)).addOnSuccessListener((temp) -> {
             currentUserLiveData.postValue(user);
             onSuccess.invoke();
         }).addOnFailureListener(e -> {
             Log.e("auth repository", "update user failed.");
             onFailed.invoke();
-        });;
+        });
+        ;
     }
 
-    public void push(User user){
+    public void push(User user) {
         Map<String, Object> data = User.toFireStore(user);
         fireStore.collection("users").document(user.getId()).set(data).addOnFailureListener((temp) -> {
             Log.e("auth repository", "push user failed.");
