@@ -59,8 +59,11 @@ public class OrderRepository {
         if(listenerRegistration!=null){
             listenerRegistration.remove();
         }
-        //TODO: get order by current user
-        listenerRegistration = firestore.collection("beorders").whereEqualTo("store", "Cantavil")
+        if(StoreRepository.getInstance().getCurrentStore().getValue()==null){
+            return;
+        }
+        String storeId=StoreRepository.getInstance().getCurrentStore().getValue().getId();
+        listenerRegistration = firestore.collection("beorders").whereEqualTo("store", storeId)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
@@ -133,21 +136,22 @@ public class OrderRepository {
                                                 Map<String, Object> user=documentSnapshot.getData();
                                                 currentOrder.setUserName(user.get("name").toString());
                                                 currentOrder.setPhoneNumber(user.get("phoneNumber").toString());
+
+                                                //TODO: get orderFoods
+                                                if(map.get("orderedFoods")!=null){
+                                                    List<Object> orderedFoods = (List<Object>)map.get("orderedFoods");
+                                                    ArrayList<OrderFood> listOrderFood=new ArrayList<>();
+                                                    for (Object orderFood: orderedFoods) {
+                                                        listOrderFood.add(OrderFood.fromSnapshot((Map<String, Object>) orderFood));
+                                                        currentOrder.setProducts(listOrderFood);
+                                                    }
+                                                    listOrder.add(currentOrder);
+                                                    orderListMutableLiveData.postValue(listOrder);
+                                                } else{
+                                                    Log.e(TAG, "get order food failed.");
+                                                }
                                             }
                                         });
-                                        //TODO: get orderFoods
-                                        if(map.get("orderedFoods")!=null){
-                                            List<Object> orderedFoods = (List<Object>)map.get("orderedFoods");
-                                            ArrayList<OrderFood> listOrderFood=new ArrayList<>();
-                                            for (Object orderFood: orderedFoods) {
-                                                listOrderFood.add(OrderFood.fromSnapshot((Map<String, Object>) orderFood));
-                                                currentOrder.setProducts(listOrderFood);
-                                            }
-                                            listOrder.add(currentOrder);
-                                            orderListMutableLiveData.postValue(listOrder);
-                                        } else{
-                                            Log.e(TAG, "get order food failed.");
-                                        }
                                     } catch (ParseException e) {
                                         e.printStackTrace();
                                         Log.e(TAG, "get order food failed.");

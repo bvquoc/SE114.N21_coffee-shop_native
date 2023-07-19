@@ -20,7 +20,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/my_toolbar"
         app:layout_constraintBottom_toTopOf="@id/bottomNavView"
-        app:navGraph="@navigation/staff_nav" />
+        app:navGraph="@navigation/staff_nav"/>
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavView"
         app:layout_constraintEnd_toEndOf="parent"

@@ -16,11 +16,6 @@
         android:label="fragment_product_manage"
         tools:layout="@layout/fragment_product_manage" />
     <fragment
-        android:id="@+id/toppingManageFragment"
-        android:name="com.example.coffee_shop_staff_admin.fragments.ToppingManageFragment"
-        android:label="fragment_topping_manage"
-        tools:layout="@layout/fragment_topping_manage" />
-    <fragment
         android:id="@+id/profileFragment2"
         android:name="com.example.coffee_shop_staff_admin.fragments.profile.ProfileFragment"
         android:label="fragment_profile"
