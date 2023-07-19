@@ -68,6 +68,7 @@ public class AuthRepository {
             isLoggedInLiveData.postValue(true);
         }
     }
+
     public void emailLogin(String email, String password, CallBack onSuccess, CallBack onFailed) {
         firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
@@ -112,20 +113,42 @@ public class AuthRepository {
                 });
     }
 
-    public void update(User user, CallBack onSuccess, CallBack onFailed){
+    public void update(User user, CallBack onSuccess, CallBack onFailed) {
         fireStore.collection("users").document(user.getId()).update(User.toFireStore(user)).addOnSuccessListener((temp) -> {
             currentUserLiveData.postValue(user);
             onSuccess.invoke();
         }).addOnFailureListener(e -> {
             Log.e("auth repository", "update user failed.");
             onFailed.invoke();
-        });;
+        });
+        ;
     }
 
-    public void push(User user){
+    public void push(User user) {
         Map<String, Object> data = User.toFireStore(user);
         fireStore.collection("users").document(user.getId()).set(data).addOnFailureListener((temp) -> {
             Log.e("auth repository", "push user failed.");
         });
+    }
+
+    public void sendForgotPassword(String email, CallBack onSuccess, CallBack onFailed) {
+        firebaseAuth.fetchSignInMethodsForEmail(email)
+                .addOnSuccessListener(v -> {
+                    if (v.getSignInMethods().isEmpty()) {
+                        onFailed.invoke();
+                    } else {
+                        firebaseAuth.sendPasswordResetEmail(email)
+                                .addOnSuccessListener(d -> {
+                                    onSuccess.invoke();
+                                })
+                                .addOnFailureListener(d -> {
+                                    onFailed.invoke();
+                                });
+                    }
+                })
+                .addOnFailureListener(v -> {
+                    onFailed.invoke();
+                });
+
     }
 }

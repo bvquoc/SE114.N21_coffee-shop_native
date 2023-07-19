@@ -1,6 +1,7 @@
 package com.example.coffee_shop_staff_admin.fragments.auth;
 
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -52,9 +53,9 @@ public class LoginFragment extends Fragment {
 
     private TextInputLayout emailLayout, passLayout;
     private EditText emailEdit, passEdit;
-    private TextView signInText;
     private CheckBox rememberMe;
     private Button signInButton;
+    private TextView goForgot;
     private AuthViewModel authVM;
     private NavController navController;
     private SavedStateHandle savedStateHandle;
@@ -88,22 +89,34 @@ public class LoginFragment extends Fragment {
         signInButton = view.findViewById(R.id.btn_login);
         navController = Navigation.findNavController(view);
         rememberMe = view.findViewById(R.id.checkbox_remember);
+        goForgot = view.findViewById(R.id.btn_go_forgot);
 
         setValidation();
         setOnSignIn(view);
+        setOnGoForgot();
     }
 
-    private void setValidation(){
+    private void setOnGoForgot() {
+        goForgot.setOnClickListener(v -> {
+            navController.navigate(R.id.action_loginFragment_to_forgotPasswordFragment);
+        });
+    }
+
+    private void setValidation() {
         Validate emailValidate = new EmailValidate();
         Validate passValidate = new PasswordValidate();
 
         emailEdit.addTextChangedListener(new TextValidator(emailEdit) {
             @Override
             public void validate(TextView textView, String text) {
-                if (!emailValidate.validate(text)) {
-                    emailLayout.setError(emailValidate.validator(text));
-                } else {
+                if (text == null || text.isEmpty()) {
                     emailLayout.setError(null);
+                } else {
+                    if (!emailValidate.validate(text)) {
+                        emailLayout.setError(emailValidate.validator(text));
+                    } else {
+                        emailLayout.setError(null);
+                    }
                 }
             }
         });
@@ -111,25 +124,31 @@ public class LoginFragment extends Fragment {
         passEdit.addTextChangedListener(new TextValidator(passEdit) {
             @Override
             public void validate(TextView textView, String text) {
-                if (!passValidate.validate(text)) {
-                    passLayout.setError(passValidate.validator(text));
-                } else {
+                if (text == null || text.isEmpty()) {
                     passLayout.setError(null);
+                } else {
+                    if (!passValidate.validate(text)) {
+                        passLayout.setError(passValidate.validator(text));
+                    } else {
+                        passLayout.setError(null);
+                    }
                 }
             }
         });
     }
 
-    private void setOnSignIn(View view){
+    private void setOnSignIn(View view) {
         signInButton.setOnClickListener(v -> {
+            ProgressDialog loadingDialog = ProgressDialog.show(getContext(), "",
+                    "Loading. Please wait...", true);
+
             String email = emailEdit.getText().toString();
             String password = passEdit.getText().toString();
             SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
-            if(rememberMe.isChecked()){
+            if (rememberMe.isChecked()) {
                 editor.putBoolean(getString(R.string.is_remember_me), true);
-            }
-            else {
+            } else {
                 editor.putBoolean(getString(R.string.is_remember_me), false);
             }
             editor.apply();
@@ -137,15 +156,14 @@ public class LoginFragment extends Fragment {
             if (canLogin(email, password)) {
                 authVM.onEmailSignIn(email, password, params -> {
                     User temp = (User) params[0];
-
-                    if(!roleValidate(temp)){
+                    loadingDialog.dismiss();
+                    if (!roleValidate(temp)) {
                         String msg = "Bạn không có quyền truy cập vào phần này!";
                         Snackbar snackbar = Snackbar
                                 .make(view, msg, Snackbar.LENGTH_LONG);
                         snackbar.show();
                         authVM.onSignOut();
-                    }
-                    else {
+                    } else {
                         if (temp.getPhoneNumber().equals("No Phone Number")) {
                             openChangeInfoDialog(view, temp);
                         } else {
@@ -153,12 +171,14 @@ public class LoginFragment extends Fragment {
                         }
                     }
                 }, params -> {
+                    loadingDialog.dismiss();
                     String msg = "Email hoặc mật khẩu sai";
                     Snackbar snackbar = Snackbar
                             .make(view, msg, Snackbar.LENGTH_LONG);
                     snackbar.show();
                 });
             } else {
+                loadingDialog.dismiss();
                 String msg = "Vui lòng điền đầy đủ các trường";
                 Snackbar snackbar = Snackbar
                         .make(view, msg, Snackbar.LENGTH_LONG);
@@ -168,7 +188,7 @@ public class LoginFragment extends Fragment {
 
     }
 
-    private void openChangeInfoDialog(View view, User temp){
+    private void openChangeInfoDialog(View view, User temp) {
         bottomSheetDialog = new BottomSheetDialog(getContext(), R.style.BottomSheetTheme);
 
         bottomSheetDialog.setContentView(R.layout.change_info_bottom_sheet);
@@ -196,13 +216,17 @@ public class LoginFragment extends Fragment {
 
         Button changeButton = bottomSheetDialog.findViewById(R.id.btn_accept_change_info);
         changeButton.setOnClickListener(v -> {
+            ProgressDialog loadingDialog = ProgressDialog.show(getContext(), "",
+                    "Loading. Please wait...", true);
             temp.setDob(StringConverter.StringToDate(dob.getText().toString()));
             temp.setName(name.getText().toString());
             temp.setPhoneNumber(phone.getText().toString());
             authVM.onUpdate(temp, params -> {
+                loadingDialog.dismiss();
                 bottomSheetDialog.dismiss();
                 onGoToMainPage(temp);
             }, params -> {
+                loadingDialog.dismiss();
                 String msg = "Đã có lỗi xảy ra, vui lòng thử lại sau!";
                 Snackbar snackbar = Snackbar
                         .make(view, msg, Snackbar.LENGTH_LONG);
@@ -229,17 +253,24 @@ public class LoginFragment extends Fragment {
         bottomSheetDialog.show();
     }
 
-    private Boolean roleValidate(User user){
-        if(!user.isActive() || (!user.isStaff() && !user.isAdmin())){
+    private Boolean roleValidate(User user) {
+        if (!user.isActive() || (!user.isStaff() && !user.isAdmin())) {
             return false;
+        }
+        if(user.isStaff() && !user.isAdmin()){
+            if(StoreRepository.getInstance().getStoreListMutableLiveData().getValue() == null){
+                return false;
+            }
+            return StoreRepository.getInstance().getStoreListMutableLiveData().getValue().stream().anyMatch(item -> item.getId().equals(user.getStore()));
         }
         return true;
     }
-    private void onGoToMainPage(User user){
-        if(user.getStore() != null && !user.getStore().isEmpty()){
+
+    private void onGoToMainPage(User user) {
+        if (user.getStore() != null && !user.getStore().isEmpty()) {
             List<Store> storeList = StoreRepository.getInstance().getStoreListMutableLiveData().getValue();
-            for(Store item : storeList){
-                if(item.getId().equals(user.getStore())){
+            for (Store item : storeList) {
+                if (item.getId().equals(user.getStore())) {
                     currentStore.postValue(item);
                     break;
                 }
@@ -255,4 +286,6 @@ public class LoginFragment extends Fragment {
     private Boolean canLogin(String email, String password) {
         return new EmailValidate().validate(email) && new PasswordValidate().validate(password);
     }
+
+
 }

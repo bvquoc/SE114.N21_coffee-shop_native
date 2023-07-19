@@ -1,5 +1,7 @@
 package com.example.coffee_shop_staff_admin.fragments.profile;
 
+import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,6 +12,8 @@ import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
@@ -21,6 +25,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -29,8 +35,10 @@ import com.example.coffee_shop_staff_admin.activities.AuthActivity;
 import com.example.coffee_shop_staff_admin.activities.profile.ImageViewActivity;
 import com.example.coffee_shop_staff_admin.activities.profile.ProfileSettingActivity;
 import com.example.coffee_shop_staff_admin.databinding.FragmentProfileBinding;
+import com.example.coffee_shop_staff_admin.models.Store;
 import com.example.coffee_shop_staff_admin.models.User;
 import com.example.coffee_shop_staff_admin.repositories.AuthRepository;
+import com.example.coffee_shop_staff_admin.repositories.StoreRepository;
 import com.example.coffee_shop_staff_admin.viewmodels.ProfileSettingViewModel;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
@@ -42,6 +50,7 @@ public class ProfileFragment extends Fragment {
     TextView nameText;
 
     MutableLiveData<User> currentUser;
+    MutableLiveData<Store> currentStore;
 
     ProfileSettingViewModel viewModel;
 
@@ -52,13 +61,16 @@ public class ProfileFragment extends Fragment {
         super.onCreate(savedInstanceState);
         currentUser = AuthRepository.getInstance().getCurrentUserLiveData();
         viewModel = new ViewModelProvider(requireActivity()).get(ProfileSettingViewModel.class);
+        currentStore = StoreRepository.getInstance().getCurrentStore();
         createImageResultLauncher();
+        setToolBarTitle("Trang cá nhân");
 
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
     }
 
     @Override
@@ -91,6 +103,9 @@ public class ProfileFragment extends Fragment {
                 .into(imgCover);
 
         nameText.setText(currentUser.getValue().getName());
+        if (currentStore.getValue() != null) {
+            fragmentProfileBinding.txtStoreProfile.setText("Store: " + currentStore.getValue().getShortName());
+        }
 
         currentUser.observe(getViewLifecycleOwner(), new Observer<User>() {
             @Override
@@ -118,11 +133,26 @@ public class ProfileFragment extends Fragment {
         return fragmentProfileBinding.getRoot();
     }
 
+    public void setToolBarTitle(String title) {
+        Toolbar toolbar = ((AppCompatActivity) requireActivity()).findViewById(R.id.my_toolbar);
+        toolbar.setTitle(title);
+    }
+
     public void onGoSupport(View view) {
-        String msg = "Nav to support";
-        Snackbar snackbar = Snackbar
-                .make(view, msg, Snackbar.LENGTH_LONG);
-        snackbar.show();
+        final Dialog dialog = new Dialog(getActivity());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(false);
+        dialog.setContentView(R.layout.support_dialog);
+
+        ImageView closeBtn = (ImageView) dialog.findViewById(R.id.close_button);
+        closeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
     }
 
     public void onGoSettings(View view) {
@@ -237,7 +267,7 @@ public class ProfileFragment extends Fragment {
     }
 
     private void onOpenPickImage(Boolean type) {
-        if(type) {
+        if (type) {
             coverLauncher.launch(new PickVisualMediaRequest.Builder().build());
         } else {
             avaLaucher.launch(new PickVisualMediaRequest.Builder().build());

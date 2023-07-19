@@ -39,39 +39,84 @@
         </LinearLayout>
 
         <!--Filter-->
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
+            android:orientation="vertical"
             android:id="@+id/statusView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_8sdp"
             android:background="@color/white"
-            android:padding="@dimen/_16sdp"
+            android:paddingHorizontal="@dimen/_16sdp"
+            android:paddingTop="@dimen/_16sdp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/txtStatus"
-                style="@style/regularBlack16"
-                android:layout_width="wrap_content"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/edit_text_frame"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Chọn trạng thái:"
-                app:layout_constraintBottom_toBottomOf="@+id/txtStatusLabel"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/txtStatusLabel" />
-
-            <TextView
-                android:id="@+id/txtStatusLabel"
-                style="@style/regularBlack16"
-                android:layout_width="wrap_content"
+                app:startIconDrawable="@drawable/ic_search_24"
+                app:startIconTint="@color/blue"
+                app:endIconMode="clear_text"
+                app:endIconDrawable="@drawable/ic_clear_white_24"
+                app:endIconTint="@color/blue"
+                app:boxStrokeColor="@color/black"
+                app:boxCornerRadiusBottomEnd="@dimen/_4sdp"
+                app:boxCornerRadiusBottomStart="@dimen/_4sdp"
+                app:boxCornerRadiusTopEnd="@dimen/_4sdp"
+                app:boxCornerRadiusTopStart="@dimen/_4sdp"
+                app:startIconMinSize="@dimen/_38sdp"
+                app:hintAnimationEnabled="false"
+                app:hintEnabled="false">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/txt_search_product"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="@dimen/_8sdp"
+                    android:paddingHorizontal="0dp"
+                    android:maxLines="1"
+                    android:inputType="text"
+                    android:hint="Tìm kiếm sản phẩm"
+                    app:hintTextAppearance="@style/regularGrey14"
+                    style="@style/regularBlack14"/>
+            </com.google.android.material.textfield.TextInputLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/order_all_status_round"
-                android:text="Tất cả"
-                android:textColor="@color/black"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                android:orientation="horizontal">
+                <CheckBox
+                    android:layout_weight="0.33"
+                    android:id="@+id/product_stocking_check"
+                    style="@style/regularBlack10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@color/blue"
+                    android:enabled="true"
+                    android:text="Còn hàng"
+                    android:textSize="@dimen/font14" />
+                <CheckBox
+                    android:layout_weight="0.33"
+                    android:id="@+id/product_unstocking_check"
+                    style="@style/regularBlack10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@color/blue"
+                    android:enabled="true"
+                    android:text="Hết hàng"
+                    android:textSize="@dimen/font14" />
+                <CheckBox
+                    android:layout_weight="0.33"
+                    android:id="@+id/product_incomplete_check"
+                    style="@style/regularBlack10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@color/blue"
+                    android:text="Thiếu hàng"
+                    android:textSize="@dimen/font14" />
+            </LinearLayout>
+        </LinearLayout>
 
         <!--List product-->
         <androidx.core.widget.NestedScrollView

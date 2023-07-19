@@ -32,7 +32,7 @@
                     android:layout_marginTop="@dimen/_16sdp"
                     android:text="Đăng nhập"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/_30sdp" />
+                    android:textSize="@dimen/_28sdp" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/txt_email_layout_login"
@@ -81,17 +81,17 @@
                         android:buttonTint="@color/blue"
                         android:enabled="true"
                         android:text="Ghi nhớ tôi"
-                        android:textSize="@dimen/_12sdp" />
+                        android:textSize="@dimen/font14" />
 
                     <TextView
-                        style="@style/regularBlack10"
+                        android:id="@+id/btn_go_forgot" style="@style/regularBlack10"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
                         android:layout_marginTop="12dp"
                         android:text="Quên mật khẩu?"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/_12sdp" />
+                        android:textSize="@dimen/font14" />
                 </RelativeLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
