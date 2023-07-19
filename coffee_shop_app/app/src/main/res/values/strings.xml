@@ -4,7 +4,7 @@
     <string name="add_to_cart">Thêm vào giỏ -</string>
     <string name="size_text">Size: </string>
     <string name="topping_text">Topping: </string>
-    <string name="vndUnit">\ ₫\</string>
+    <string name="vndUnit">\ đ\</string>
     <string name="format">%,.0f</string>
 
     <string name="pick_up_from">Đến lấy tại</string>
