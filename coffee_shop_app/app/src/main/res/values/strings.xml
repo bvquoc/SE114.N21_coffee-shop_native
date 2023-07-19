@@ -15,7 +15,7 @@
     <string name="statusDeliveryFailed">Giao hàng thất bại</string>
     <string name="statusReady">Đã chuẩn bị</string>
     <string name="statusComplete">Hoàn thành</string>
-    <string name="statusCancelled">Đã huỷ</string>
+    <string name="statusCancelled">Đã hủy</string>
     <string name="chi_tiet_don_hang">Chi tiết đơn hàng</string>
     <string name="su_dung_mgg">Sử dụng mã giảm giá</string>
     <string name="lien_he_ho_tro">Liên hệ hỗ trợ</string>

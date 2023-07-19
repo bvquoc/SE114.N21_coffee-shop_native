@@ -15,6 +15,6 @@
         android:title="Giao hàng thất bại"
         android:id="@+id/orderFailed"/>
     <item
-        android:title="Đã huỷ"
+        android:title="Đã hủy"
         android:id="@+id/orderCancelled"/>
 </menu>
