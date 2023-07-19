@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.coffee_shop_app.R;
@@ -37,6 +38,8 @@ public class SignUpFragment extends Fragment {
     private Button signUpButton;
     private AuthViewModel authVM;
     private NavController navController;
+    private ImageView googleBtn, facebookBtn;
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -72,8 +75,16 @@ public class SignUpFragment extends Fragment {
 
         setOnSignUp(view);
         setValidation();
+        setOnLoginGoogle();
+        setOnLoginFacebook();
     }
 
+    private void setOnLoginFacebook() {
+    }
+
+    private void setOnLoginGoogle() {
+
+    }
     private void setValidation(){
         Validate emailValidate = new EmailValidate();
         Validate passValidate = new PasswordValidate();

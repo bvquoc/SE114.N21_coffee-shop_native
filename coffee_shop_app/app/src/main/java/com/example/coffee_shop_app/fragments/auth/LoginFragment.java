@@ -27,6 +27,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.coffee_shop_app.R;
@@ -66,6 +67,7 @@ public class LoginFragment extends Fragment {
     private SavedStateHandle savedStateHandle;
     private BottomSheetDialog bottomSheetDialog;
     private TextView goForgot;
+    private ImageView googleBtn, facebookBtn;
 
 
 
@@ -95,6 +97,8 @@ public class LoginFragment extends Fragment {
         navController = Navigation.findNavController(view);
         rememberMe = view.findViewById(R.id.checkbox_remember);
         goForgot = view.findViewById(R.id.btn_go_forgot);
+        googleBtn = view.findViewById(R.id.google_button);
+        facebookBtn = view.findViewById(R.id.facebook_button);
 
         Toolbar toolbar = view.findViewById(R.id.my_toolbar);
         toolbar.setTitle("");
@@ -109,7 +113,15 @@ public class LoginFragment extends Fragment {
 
         setOnSignIn(view);
         setOnGoForgot();
+        setOnLoginGoogle();
+        setOnLoginFacebook();
+    }
 
+    private void setOnLoginFacebook() {
+    }
+
+    private void setOnLoginGoogle() {
+        
     }
 
     private void setOnSignIn(View view){
