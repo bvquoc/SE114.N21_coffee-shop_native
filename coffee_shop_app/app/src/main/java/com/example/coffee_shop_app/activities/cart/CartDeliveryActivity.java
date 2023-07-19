@@ -55,6 +55,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
@@ -168,28 +169,37 @@ public class CartDeliveryActivity extends AppCompatActivity {
         });
     }
     private BottomSheetDialog changeOrderTypeBottomSheet;
-
+    private OrderDetailAdapter adapter;
     private void setUICartFood(){
         viewModel = new CartDeliveryViewModel();
         activityCartDeliveryBinding.setViewModel(viewModel);
+        setStoreListener();
         activityCartDeliveryBinding.btnPay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ConfirmDialog dialog=new ConfirmDialog(
-                        "Lưu ý",
-                        "Bạn sẽ không được huỷ đơn nếu xác nhận đặt hàng",
-                        new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                placeOrder();
-                            }
-                        },
-                        null);
-                dialog.show(getSupportFragmentManager(), PLACEORDER);
+                if(viewModel.getCartViewModel().getNotAvailableCartFoods().getValue().size()>0){
+                    NotificationDialog notAvaiDialog=new NotificationDialog(
+                            NotificationDialog.NotificationType.failed,
+                            "Có sản phầm không hợp lệ trong giỏ hàng !", null);
+                    notAvaiDialog.show(getSupportFragmentManager(), PLACEORDER);
+                }else{
+                    ConfirmDialog dialog=new ConfirmDialog(
+                            "Lưu ý",
+                            "Bạn sẽ không được huỷ đơn nếu xác nhận đặt hàng",
+                            new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    placeOrder();
+                                }
+                            },
+                            null);
+                    dialog.show(getSupportFragmentManager(), PLACEORDER);
+                }
+
             }
         });
 
-        OrderDetailAdapter adapter = new OrderDetailAdapter(cartFoods);
+        adapter = new OrderDetailAdapter(cartFoods);
         adapter.setOnCartQuantityUpdate(new OrderDetailAdapter.OnCartQuantityUpdate() {
             @Override
             public void onItemClick(CartFood cartFood, boolean isRemoved) {
@@ -258,6 +268,63 @@ public class CartDeliveryActivity extends AppCompatActivity {
                     activityCartDeliveryBinding.txtUsePromo.setText(promo.getPromoCode());
                 }else{
                     activityCartDeliveryBinding.txtUsePromo.setText("Sử dụng mã giảm giá");
+                }
+            }
+        });
+    }
+    private void setStoreListener(){
+        CartButtonViewModel.getInstance().getSelectedStore()
+                .observe(CartDeliveryActivity.this ,new Observer<Store>() {
+            @Override
+            public void onChanged(Store store) {
+                for (CartFood cf:
+                    viewModel.getCartViewModel().getCartFoods().getValue()) {
+                    List<Integer> notAvaiTempList=viewModel.getCartViewModel().
+                            getNotAvailableCartFoods().getValue();
+                    boolean isAvailable=!viewModel.getCartViewModel()
+                            .getNotAvailableCartFoods().getValue().contains(cf.getId());
+                    boolean isCurrent=true;
+                    String prdId= cf.getProduct().getId();
+                    if(store.getStateFood().containsKey(cf.getProduct().getId())
+                    && store.getStateFood().get(prdId)!=null){
+                        if(store.getStateFood().get(prdId).contains(cf.getSize())){
+                            isCurrent=false;
+                        }
+                        if(Objects.requireNonNull(store.getStateFood().get(cf.getProduct().getId())).isEmpty()){
+                            isCurrent=false;
+                        }
+                    }
+
+                    if(store.getStateTopping()!=null && store.getStateTopping().size()>0){
+                        if(cf.getTopping()!=null && !cf.getTopping().isEmpty()){
+                            for (String storeTopping :
+                                    store.getStateTopping()) {
+                                if(cf.getTopping().contains(storeTopping)){
+                                    isCurrent=false;
+                                }
+                            }
+                        }
+                    }
+
+                    if(isAvailable && !isCurrent){
+                        notAvaiTempList.add((Integer) cf.getId());
+                        viewModel.getCartViewModel()
+                                .getNotAvailableCartFoods().postValue(notAvaiTempList);
+                    }
+
+                    if(!isAvailable && isCurrent){
+                        notAvaiTempList.remove((Integer) cf.getId());
+                        viewModel.getCartViewModel()
+                                .getNotAvailableCartFoods().postValue(notAvaiTempList);
+                    }
+                }
+            }
+        });
+        viewModel.getCartViewModel().getNotAvailableCartFoods().observe(CartDeliveryActivity.this, new Observer<List<Integer>>() {
+            @Override
+            public void onChanged(List<Integer> integers) {
+                if(adapter!=null && adapter.getItemCount()>0){
+                    adapter.notifyDataSetChanged();
                 }
             }
         });
@@ -400,7 +467,7 @@ public class CartDeliveryActivity extends AppCompatActivity {
                                                                                 NotificationDialog.NotificationType.success,
                                                                                 "Đặt hàng thành công",
                                                                                 dialog1 -> {
-                                                                                    //TODO: Do something when dismiss here
+                                                                                    onBackPressed();
                                                                                 });
                                                                         dialog.dismiss();
                                                                         alertDialog.show(getSupportFragmentManager(), PLACEORDER);
@@ -417,9 +484,7 @@ public class CartDeliveryActivity extends AppCompatActivity {
                                         NotificationDialog alertDialog=new NotificationDialog(
                                                 NotificationDialog.NotificationType.failed,
                                                 "Đặt hàng không thành công",
-                                                dialog1 -> {
-                                                    //TODO: Do something when dismiss here
-                                                });
+                                                null);
                                         alertDialog.show(getSupportFragmentManager(), PLACEORDER);
                                         Log.e(PLACEORDER, "Receive json error");
                                     }
@@ -428,9 +493,7 @@ public class CartDeliveryActivity extends AppCompatActivity {
                                     NotificationDialog alertDialog=new NotificationDialog(
                                             NotificationDialog.NotificationType.failed,
                                             "Đặt hàng không thành công",
-                                            dialog1 -> {
-                                                //TODO: Do something when dismiss here
-                                            });
+                                            null);
                                     alertDialog.show(getSupportFragmentManager(), PLACEORDER);
                                     Log.e(PLACEORDER, e.getMessage());
                                 }

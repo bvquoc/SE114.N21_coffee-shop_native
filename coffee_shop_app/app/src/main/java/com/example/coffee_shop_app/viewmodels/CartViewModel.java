@@ -35,14 +35,42 @@ public  class CartViewModel extends BaseObservable {
     private MutableLiveData<Double> totalFood=new MutableLiveData<>();
     private MutableLiveData<Double> discount=new MutableLiveData<>();
     private MutableLiveData<Promo> promo=new MutableLiveData<>();
+    private MutableLiveData<List<Integer>> notAvailableCartFoods=new MutableLiveData<>(new ArrayList<>());
     public CartViewModel() {
-        cartFoods.observeForever(cartFoods -> calculateTotalFood());
+//        cartFoods.observeForever(cartFoods -> calculateTotalFood());
+
+        cartFoods.observeForever(new Observer<List<CartFood>>() {
+            @Override
+            public void onChanged(List<CartFood> cartFoods) {
+                calculateTotalFood();
+                List<Integer> notAvaiTempList=notAvailableCartFoods.getValue();
+                List<Integer> toRemove=new ArrayList<>();
+                boolean needPost=false;
+                for (Integer cfId :
+                     notAvailableCartFoods.getValue()) {
+                    if(!cartFoods.stream().anyMatch(cf->cf.getId()==cfId)){
+                        toRemove.add((Integer) cfId);
+                        needPost=true;
+                    }
+                }
+                if(needPost){
+                    notAvaiTempList.removeAll(toRemove);
+                    notAvailableCartFoods.postValue(notAvaiTempList);
+                }
+            }
+        });
         promo.observeForever(new Observer<Promo>() {
             @Override
             public void onChanged(Promo promo) {
                 calculatePromo();
             }
         });
+//        notAvailableCartFoods.observeForever(new Observer<List<Integer>>() {
+//            @Override
+//            public void onChanged(List<Integer> integers) {
+//                String temp="";
+//            }
+//        });
     }
     public void calculatePromo(){
         if(promo!=null && promo.getValue()!=null){
@@ -65,6 +93,10 @@ public  class CartViewModel extends BaseObservable {
 
     public void setCartFoods(MutableLiveData<List<CartFood>> cartFoods) {
         this.cartFoods = cartFoods;
+    }
+
+    public MutableLiveData<List<Integer>> getNotAvailableCartFoods() {
+        return notAvailableCartFoods;
     }
 
     public MutableLiveData<Double> getTotalFood() {
