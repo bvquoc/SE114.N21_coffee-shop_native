@@ -149,13 +149,13 @@ public class SignUpFragment extends Fragment {
 
     private void onGoogleSignInEnd(Intent data){
         Task<GoogleSignInAccount> accountTask = GoogleSignIn.getSignedInAccountFromIntent(data);
-//        ProgressDialog loadingDialog = ProgressDialog.show(getContext(), "",
-//                "Loading. Please wait...", true);
+        ProgressDialog loadingDialog = ProgressDialog.show(getContext(), "",
+                "Loading. Please wait...", true);
         try {
             GoogleSignInAccount account = accountTask.getResult();
             authVM.onGoogleSignIn(account, params -> {
                 Log.e(TAG, "onGoogleSignInEnd: SUCCESS");
-//                loadingDialog.dismiss();
+                loadingDialog.dismiss();
                 User temp = (User) params[0];
                 if(!temp.getActive()){
                     String msg = "Tài khoản của bạn đã bị chặn";
@@ -172,7 +172,7 @@ public class SignUpFragment extends Fragment {
                 }
             }, params -> {
                 Log.e(TAG, "onGoogleSignInEnd: Failed");
-//                loadingDialog.dismiss();
+                loadingDialog.dismiss();
                 String msg = "Đã có lỗi xảy ra, vui lòng thử lại sau";
                 Snackbar snackbar = Snackbar
                         .make(getView(), msg, Snackbar.LENGTH_LONG);
@@ -180,7 +180,7 @@ public class SignUpFragment extends Fragment {
             });
         } catch (Exception e){
             Log.e(TAG, "onGoogleSignInEnd: Failed VM");
-//            loadingDialog.dismiss();
+            loadingDialog.dismiss();
             String msg = "Đã có lỗi xảy ra, vui lòng thử lại sau";
             Snackbar snackbar = Snackbar
                     .make(getView(), msg, Snackbar.LENGTH_LONG);
