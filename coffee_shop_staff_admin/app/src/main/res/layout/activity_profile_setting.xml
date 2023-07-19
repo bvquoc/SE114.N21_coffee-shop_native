@@ -95,7 +95,9 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/_16sdp"
             android:layout_marginTop="@dimen/_16sdp"
-            android:hint="Họ và tên">
+            android:hint="Họ và tên"
+            app:hintTextAppearance="@style/regularBlue14"
+            app:errorTextAppearance="@style/regularRed14">
 
             <EditText
                 android:id="@+id/txt_name"
@@ -103,7 +105,8 @@
                 android:layout_height="wrap_content"
                 android:focusable="false"
                 android:maxLines="1"
-                android:text="@{viewModel.user.name}" />
+                android:text="@{viewModel.user.name}"
+                android:textAppearance="@style/regularBlack14"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -116,14 +119,17 @@
             android:hint="Ngày sinh"
             app:endIconDrawable="@drawable/ic_calendar"
             app:endIconMode="custom"
-            app:endIconTint="@color/grey_icon">
+            app:endIconTint="@color/grey_icon"
+            app:hintTextAppearance="@style/regularBlue14"
+            app:errorTextAppearance="@style/regularRed14">
 
             <EditText
                 android:id="@+id/txt_dob"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:focusable="false"
-                android:maxLines="1" />
+                android:maxLines="1"
+                android:textAppearance="@style/regularBlack14"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -132,16 +138,19 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/_16sdp"
             android:layout_marginTop="@dimen/_16sdp"
-            android:hint="Số điện thoại">
+            android:hint="Số điện thoại"
+            app:hintTextAppearance="@style/regularBlue14"
+            app:errorTextAppearance="@style/regularRed14">
 
             <EditText
                 android:id="@+id/txt_phone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:focusable="false"
-                android:inputType="date"
+                android:inputType="phone"
                 android:maxLines="1"
-                android:text="@{viewModel.user.phoneNumber}" />
+                android:text="@{viewModel.user.phoneNumber}"
+                android:textAppearance="@style/regularBlack14"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <include
