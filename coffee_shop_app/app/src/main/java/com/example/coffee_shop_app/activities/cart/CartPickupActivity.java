@@ -404,7 +404,9 @@ public class CartPickupActivity extends AppCompatActivity {
             @Override
             public void onChanged(List<Integer> integers) {
                 if(adapter!=null && adapter.getItemCount()>0){
-                    adapter.notifyDataSetChanged();
+                    adapter.setCartFoods(viewModel.getCartViewModel().getCartFoods().getValue());
+                    activityCartPickupBinding.orderDetails.recyclerOrderDetails.setAdapter(null);
+                    activityCartPickupBinding.orderDetails.recyclerOrderDetails.setAdapter(adapter);
                 }
             }
         });
