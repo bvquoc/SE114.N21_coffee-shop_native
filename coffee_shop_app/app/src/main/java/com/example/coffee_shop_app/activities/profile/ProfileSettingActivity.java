@@ -89,7 +89,8 @@ public class ProfileSettingActivity extends AppCompatActivity {
 
     private void checkProvider(){
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if(!user.getProviderId().equals("password")){
+        Log.e("provider", user.getProviderData().get(user.getProviderData().size() - 1).getProviderId());
+        if(!user.getProviderData().get(user.getProviderData().size() - 1).getProviderId().equals("password")){
             activityProfileSettingBinding.btnChangePassword.getRoot().setVisibility(View.GONE);
         }
     }
