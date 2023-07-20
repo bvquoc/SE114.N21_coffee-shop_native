@@ -134,11 +134,12 @@ public class LoginFragment extends Fragment {
     ActivityResultLauncher<Intent> googleResultLauncher;
     static final String TAG = "GOOGLE";
     private void setOnLoginGoogle() {
+        String default_web_client_id = "922590350887-rh70buq5aeh98sqocffa4p4136vh4444.apps.googleusercontent.com";
         //Google configure
         GoogleSignInOptions googleSignInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 //if this show an error, just ignore it
                 //it happen because of firebase security method
-                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestIdToken(default_web_client_id)
                 .requestEmail()
                 .build();
         googleSignInClient = GoogleSignIn.getClient(getActivity(), googleSignInOptions);
