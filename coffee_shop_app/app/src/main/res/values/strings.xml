@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">coffee_shop_app</string>
+    <string name="app_name">Coffee Shop</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="add_to_cart">Thêm vào giỏ -</string>
     <string name="size_text">Size: </string>
