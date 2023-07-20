@@ -9,7 +9,6 @@ import com.example.coffee_shop_staff_admin.models.AddressDelivery;
 import com.example.coffee_shop_staff_admin.models.Order;
 import com.example.coffee_shop_staff_admin.models.OrderFood;
 import com.example.coffee_shop_staff_admin.models.Store;
-import com.example.coffee_shop_staff_admin.viewmodels.OrderOfStoreViewModel;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -64,12 +63,11 @@ public class OrderRepository {
         if(listenerRegistration!=null){
             listenerRegistration.remove();
         }
-        if(StoreRepository.getInstance().getCurrentStore().getValue()==null){
+        if(StoreRepository.getInstance().getCurrentStoreLiveData().getValue()==null){
             return;
         }
-        String storeId=StoreRepository.getInstance().getCurrentStore().getValue().getId();
+        String storeId=StoreRepository.getInstance().getCurrentStoreLiveData().getValue().getId();
         listenerRegistration = firestore.collection("beorders").whereEqualTo("store", storeId)
-                .orderBy("dateOrder")
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {

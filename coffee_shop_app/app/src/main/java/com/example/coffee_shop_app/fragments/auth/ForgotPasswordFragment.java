@@ -20,6 +20,7 @@ import com.example.coffee_shop_app.repository.AuthRepository;
 import com.example.coffee_shop_app.utils.interfaces.Validate;
 import com.example.coffee_shop_app.utils.validation.EmailValidate;
 import com.example.coffee_shop_app.utils.validation.TextValidator;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 
 public class ForgotPasswordFragment extends Fragment {
@@ -61,9 +62,15 @@ public class ForgotPasswordFragment extends Fragment {
 
         sendEmail.setOnClickListener(v -> {
             AuthRepository.getInstance().sendForgotPassword(emailText.getText().toString(), params -> {
-                Log.d(TAG, "success");
+                String msg = "Đã gửi! Vui lòng kiểm tra hòm thư của bạn!";
+                Snackbar snackbar = Snackbar
+                        .make(getView(), msg, Snackbar.LENGTH_LONG);
+                snackbar.show();
             }, params -> {
-                Log.d(TAG, "Failed");
+                String msg = "Email chưa đăng ký hoặc đã có lỗi xảy ra.";
+                Snackbar snackbar = Snackbar
+                        .make(getView(), msg, Snackbar.LENGTH_LONG);
+                snackbar.show();
             });
         });
     }

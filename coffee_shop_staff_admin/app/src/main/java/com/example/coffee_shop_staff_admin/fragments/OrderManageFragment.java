@@ -56,7 +56,7 @@ public class OrderManageFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         FragmentManager fragmentManager=getChildFragmentManager();
 
-        StoreRepository.getInstance().getCurrentStore().observe(getViewLifecycleOwner(), new Observer<Store>() {
+        StoreRepository.getInstance().getCurrentStoreLiveData().observe(getViewLifecycleOwner(), new Observer<Store>() {
             @Override
             public void onChanged(Store store) {
                 OrderRepository.getInstance().registerSnapshotListener();

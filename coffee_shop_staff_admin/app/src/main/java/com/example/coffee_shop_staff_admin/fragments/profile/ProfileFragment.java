@@ -1,6 +1,5 @@
 package com.example.coffee_shop_staff_admin.fragments.profile;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -26,7 +25,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -41,7 +39,6 @@ import com.example.coffee_shop_staff_admin.repositories.AuthRepository;
 import com.example.coffee_shop_staff_admin.repositories.StoreRepository;
 import com.example.coffee_shop_staff_admin.viewmodels.ProfileSettingViewModel;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.snackbar.Snackbar;
 import com.squareup.picasso.Picasso;
 
 public class ProfileFragment extends Fragment {
@@ -61,7 +58,7 @@ public class ProfileFragment extends Fragment {
         super.onCreate(savedInstanceState);
         currentUser = AuthRepository.getInstance().getCurrentUserLiveData();
         viewModel = new ViewModelProvider(requireActivity()).get(ProfileSettingViewModel.class);
-        currentStore = StoreRepository.getInstance().getCurrentStore();
+        currentStore = StoreRepository.getInstance().getCurrentStoreLiveData();
         createImageResultLauncher();
         setToolBarTitle("Trang cá nhân");
 

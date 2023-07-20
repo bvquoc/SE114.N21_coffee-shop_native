@@ -13,6 +13,9 @@ import androidx.lifecycle.ViewModel;
 import com.example.coffee_shop_app.models.User;
 import com.example.coffee_shop_app.repository.AuthRepository;
 import com.example.coffee_shop_app.utils.interfaces.CallBack;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.GoogleAuthProvider;
 
 public class AuthViewModel extends ViewModel {
 
@@ -43,8 +46,8 @@ public class AuthViewModel extends ViewModel {
         repository.emailLogin(email, password, onSuccess, onFailed);
     }
 
-    public void onGoogleSignIn(){
-
+    public void onGoogleSignIn(GoogleSignInAccount account, CallBack onSuccess, CallBack onFailed){
+        repository.googleLogin(account, onSuccess, onFailed);
     }
 
     public void onFacebookSignIn(){

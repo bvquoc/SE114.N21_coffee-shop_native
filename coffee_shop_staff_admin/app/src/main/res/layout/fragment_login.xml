@@ -36,11 +36,12 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    app:errorEnabled="true"
                     android:layout_marginHorizontal="@dimen/_16sdp"
                     android:layout_marginTop="@dimen/_16sdp"
                     android:hint="Email"
                     app:hintTextAppearance="@style/regularBlue14"
-                    app:errorTextAppearance="@style/regularRed14">
+                    app:errorTextAppearance="@style/regularRed12">
 
                     <EditText
                         android:id="@+id/txt_email_login"
@@ -56,11 +57,11 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    app:errorEnabled="true"
                     android:layout_marginHorizontal="@dimen/_16sdp"
-                    android:layout_marginTop="@dimen/_16sdp"
                     android:hint="Mật khẩu"
                     app:hintTextAppearance="@style/regularBlue14"
-                    app:errorTextAppearance="@style/regularRed14">
+                    app:errorTextAppearance="@style/regularRed12">
 
                     <EditText
                         android:id="@+id/txt_password_login"
@@ -75,7 +76,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="20dp"
-                    android:layout_marginVertical="8dp">
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="-4dp">
 
                     <CheckBox
                         android:id="@+id/checkbox_remember"

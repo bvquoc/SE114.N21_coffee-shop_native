@@ -26,6 +26,8 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
@@ -82,8 +84,15 @@ public class ProfileSettingActivity extends AppCompatActivity {
         setFuntionButton();
         setOnChangeInfo();
         setOnChangePassword();
+        checkProvider();
     }
 
+    private void checkProvider(){
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if(!user.getProviderId().equals("password")){
+            activityProfileSettingBinding.btnChangePassword.getRoot().setVisibility(View.GONE);
+        }
+    }
     private void setOnChangeInfo() {
         DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
             @Override

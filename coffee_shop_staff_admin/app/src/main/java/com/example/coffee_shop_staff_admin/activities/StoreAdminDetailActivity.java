@@ -120,7 +120,7 @@ public class StoreAdminDetailActivity extends AppCompatActivity {
         activityStoreAdminDetailBinding.manageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                StoreRepository.getInstance().getCurrentStore().setValue(selectedStore);
+                StoreRepository.getInstance().getCurrentStoreLiveData().setValue(selectedStore);
                 Intent intent=new Intent(StoreAdminDetailActivity.this, StoreManageActivity.class);
                 startActivity(intent);
             }
