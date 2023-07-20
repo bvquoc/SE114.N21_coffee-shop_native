@@ -1,35 +1,21 @@
 # SE114.N21 - NHẬP MÔN DỨNG DỤNG DI ĐỘNG
 
-## Đề tài: COFFEE SHOP
+## Hướng dẫn cài đặt
+- **Bước 1**: Cài đặt môi trường để phát triển ứng dụng android tại: https://developer.android.com/studio?gclid=Cj0KCQjwk96lBhDHARIsAEKO4xZeXQNiOoL06S5LRBaESy28YNZBFTJ2oeTQhw9B5DfGPP7HjgWXj0kaAu4MEALw_wcB&gclsrc=aw.ds 
+- **Bước 2:** Tải project về máy
+- **Bước 3:** Chọn nhóm người dùng sử dụng app
+  - Nếu là *người dùng bình thường*: chọn folder *coffee_shop_app*
+  - Nếu là *nhân viên* hoặc *quản trị viên*: chọn folder *coffee_shop_staff_admin*
+- **Bước 4:** Mở folder đó lên
+- **Bước 5:** Ấn *Sync Project with Gradle Files*, xong rồi *Run "app"* và sử dụng
 
-## Mô tả:
+## Người đóng góp
+Nhóm 1 lớp SE114.N21 trường Đại học Công nghệ Thông tin
 
-> Ứng dụng ...
-
-### Tác giả
-
-|STT|Họ và tên          |MSSV       |Chức vụ   |Github|
-|:-:|:------------------|:---------:|:--------:|:-----------:|
-| 0	|[Leader name](mailto:2152xxxx@gm.uit.edu.vn)	| 2152xxxx	| ![](https://img.shields.io/badge/-Leader-blue) |[github](https://github.com/)|
-| 1	|[Bùi Vĩ Quốc](mailto:21520095@gm.uit.edu.vn)	| 21520095	| ![](https://img.shields.io/badge/-Member-blue)  |[bvquoc](https://github.com/bvquoc)|
-| 2	|[Nguyễn Lê Ngọc Mai](mailto:21520229@gm.uit.edu.vn)	| 21520229	| ![](https://img.shields.io/badge/-Member-blue)  |[NLNM-0-0](https://github.com/NLNM-0-0)|
-| 3	|[Vũ Hoàng](mailto:21520243@gm.uit.edu.vn)	| 21520243	| ![](https://img.shields.io/badge/-Member-blue)  |[vuhoang-gr](https://github.com/vuhoang-gr)|
-| 4	|[Nguyễn Minh Trí](mailto:21520495@gm.uit.edu.vn)	| 21520495	| ![](https://img.shields.io/badge/-Member-blue)  |[Karin1412](https://github.com/Karin1412)|
-| 5	|[Nguyễn Kim Anh Thư](mailto:21521495@gm.uit.edu.vn)	| 21521495	| ![](https://img.shields.io/badge/-Member-blue)  |[kimthu09](https://github.com/kimthu09)|
-
-**Giáo viên hướng dẫn:** Nguyễn Tấn Toàn
-
-### Công cụ
-
-- **IDE:** Android Studio
-- **Ngôn ngữ lập trình:** Java
-- **Design Pattern:** MVVM
-- **Backend** Golang
-- **Database**: Firestore
-
-### Tính năng
-
-1. Feature 1
-2. Feature 2
-3. Feature 3
-4. ...
+|MSSV            |Họ và tên                      |Tên Github                         |
+|----------------|-------------------------------|-----------------------------|
+|&nbsp;&nbsp;&nbsp;21520095&nbsp;&nbsp;&nbsp;        |&nbsp;&nbsp;&nbsp;Bùi Vĩ Quốc&nbsp;&nbsp;&nbsp;                       |&nbsp;&nbsp;&nbsp;[bvquoc](https://github.com/bvquoc)          |
+|&nbsp;&nbsp;&nbsp;21520243&nbsp;&nbsp;&nbsp;        |&nbsp;&nbsp;&nbsp;Vũ Hoàng&nbsp;&nbsp;&nbsp;                       |&nbsp;&nbsp;&nbsp;[vuhoang-gr](https://github.com/vuhoang-gr)          |
+|&nbsp;&nbsp;&nbsp;21520339&nbsp;&nbsp;&nbsp;        |&nbsp;&nbsp;&nbsp;Nguyễn Lê Ngọc Mai&nbsp;&nbsp;&nbsp;             |&nbsp;&nbsp;&nbsp;[NLNM-0-0](https://github.com/NLNM-0-0)           |
+|&nbsp;&nbsp;&nbsp;21520495&nbsp;&nbsp;&nbsp;        |&nbsp;&nbsp;&nbsp;Nguyễn Minh Trí&nbsp;&nbsp;&nbsp;             |&nbsp;&nbsp;&nbsp;[Karin1412](https://github.com/Karin1412)           |
+|&nbsp;&nbsp;&nbsp;21521495&nbsp;&nbsp;&nbsp;        |&nbsp;&nbsp;&nbsp;Nguyễn Kim Anh Thư&nbsp;&nbsp;&nbsp;             |&nbsp;&nbsp;&nbsp;[kimthu09](https://github.com/kimthu09)
