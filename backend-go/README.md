@@ -47,7 +47,7 @@ Status `400`:
 
 ```json
 {
-  "message": "Invalid request body, missing staffOf field"
+  "message": "Invalid request body, missing store field"
 }
 ```
 
