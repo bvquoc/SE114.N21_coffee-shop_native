@@ -1,7 +1,7 @@
 # SE114.N21 - NHẬP MÔN DỨNG DỤNG DI ĐỘNG
 
 ## Hướng dẫn cài đặt
-- **Bước 1**: Cài đặt môi trường để phát triển ứng dụng android tại: https://developer.android.com/studio?gclid=Cj0KCQjwk96lBhDHARIsAEKO4xZeXQNiOoL06S5LRBaESy28YNZBFTJ2oeTQhw9B5DfGPP7HjgWXj0kaAu4MEALw_wcB&gclsrc=aw.ds 
+- **Bước 1**: Cài đặt môi trường để phát triển ứng dụng Android tại: [https://developer.android.com/studio](https://developer.android.com/studio)
 - **Bước 2:** Tải project về máy
 - **Bước 3:** Chọn nhóm người dùng sử dụng app
   - Nếu là *người dùng bình thường*: chọn folder *coffee_shop_app*
